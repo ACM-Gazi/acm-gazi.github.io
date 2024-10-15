@@ -1,0 +1,14 @@
+backend:
+  name: github
+  repo: org/repo
+collections:
+- create: true
+  fields:
+  - label: Title
+    name: title
+    widget: string
+locale: en-us
+media_folder: static/uploads
+public_folder: /uploads
+search: true
+site_url: http://localhost:1313/

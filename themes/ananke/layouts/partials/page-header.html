@@ -1,0 +1,25 @@
+<header id="page-header" style="position: sticky; top: 0;">
+  <div>
+    {{ partial "site-navigation.html" . }}
+  </div>
+
+  <style>
+    #page-header {
+      transition: 250ms;
+    }
+
+    .header-floating {
+      background-color: var(--background-primary-dim);
+    }
+  </style>
+
+  <script>
+    const body = document.getElementById("body");
+    const header = document.getElementById("page-header");
+    const scrollBoundary = 25; // In pixels
+
+    body.addEventListener("scroll", () => {
+      header.classList.toggle("header-floating", body.scrollTop >= scrollBoundary);
+    });
+  </script>
+</header>

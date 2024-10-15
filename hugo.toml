@@ -1,0 +1,5 @@
+baseURL = 'https://acmgazi.com/'
+languageCode = 'en-us'
+title = 'ACM Gazi'
+theme = 'ananke'
+
