@@ -1,1 +1,32 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml"><url><loc>https://acm-gazi.github.io/</loc><lastmod>2024-10-12T17:51:57+00:00</lastmod></url><url><loc>https://acm-gazi.github.io/etkinlikler/acmix/</loc><lastmod>2024-10-12T17:51:57+00:00</lastmod></url><url><loc>https://acm-gazi.github.io/etkinlikler/</loc><lastmod>2024-10-12T17:51:57+00:00</lastmod></url><url><loc>https://acm-gazi.github.io/static/sponsorlar/</loc><lastmod>2024-10-11T20:03:32+03:00</lastmod></url><url><loc>https://acm-gazi.github.io/static/</loc><lastmod>2024-10-11T20:03:32+03:00</lastmod></url><url><loc>https://acm-gazi.github.io/haberler/haber-test/</loc><lastmod>2024-10-11T16:45:12+03:00</lastmod></url><url><loc>https://acm-gazi.github.io/haberler/</loc><lastmod>2024-10-11T16:45:12+03:00</lastmod></url><url><loc>https://acm-gazi.github.io/etkinlikler/ayazjam/</loc></url><url><loc>https://acm-gazi.github.io/categories/</loc></url><url><loc>https://acm-gazi.github.io/tags/</loc></url></urlset>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <url>
+    <loc>http://localhost:1313/</loc>
+    <lastmod>2024-10-12T17:51:57+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/etkinlikler/acmix/</loc>
+    <lastmod>2024-10-12T17:51:57+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/etkinlikler/</loc>
+    <lastmod>2024-10-12T17:51:57+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/static/sponsorlar/</loc>
+    <lastmod>2024-10-11T20:03:32+03:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/static/</loc>
+    <lastmod>2024-10-11T20:03:32+03:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/haberler/haber-test/</loc>
+    <lastmod>2024-10-11T16:45:12+03:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/haberler/</loc>
+    <lastmod>2024-10-11T16:45:12+03:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/etkinlikler/ayazjam/</loc>
+  </url><url>
+    <loc>http://localhost:1313/categories/</loc>
+  </url><url>
+    <loc>http://localhost:1313/tags/</loc>
+  </url>
+</urlset>

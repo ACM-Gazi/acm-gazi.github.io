@@ -65,7 +65,7 @@
     </div>
 
     {{ block "header" . }}{{ partial "site-header.html" .}}{{ end }}
-    <main class="pb7" role="main">
+    <main class="pb7" role="main" style="z-index: -1;">
       {{ block "main" . }}{{ end }}
     </main>
     {{ block "footer" . }}{{ partialCached "site-footer.html" . }}{{ end }}
@@ -73,6 +73,7 @@
 
   <style>
   #video-background {
+    background-color: var(--background-primary);
     position: fixed;
     top: 0;
     left: 0;
