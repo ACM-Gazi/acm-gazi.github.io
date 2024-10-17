@@ -1,6 +1,6 @@
 backend:
   name: github
-  repo: qewer33/acm-gazi.github.io
+  repo: acm-gazi/acm-gazi.github.io
   branch: main
   base_url: https://sveltia-cms-auth.qewer.workers.dev/
 media_folder: static/img
