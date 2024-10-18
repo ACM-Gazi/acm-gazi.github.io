@@ -88,7 +88,12 @@
   </div>
 
   <div id="nav-menu" class="nav-menu-hidden">
-    <div id="nav-menu-links-div"></div>
+    <div id="nav-menu-header">
+      <img id="logo" src="/images/acmlogo.png" alt="ACM Gazi logo" />
+      <div style="flex: 1;"></div>
+      <button id="nav-menu-close-button">Close</button>
+    </div>
+    <div id="nav-menu-links-div">
       <ul id="nav-menu-links-ul">
         <li><a href="#">Ana Sayfa</a></li>
         <li><a href="#">Etkinlikler</a></li>
@@ -96,6 +101,10 @@
         <li><a href="#">Hakkımızda</a></li>
         <li><a href="#">İletişim</a></li>
       </ul>
+    </div>
+    <div id="nav-menu-socials-div">
+      <a href="#"><img src="/images/instagram.png" alt="ACM Gazi Instagram" width="42" height="42" /></a>
+      <a href="#"><img src="/images/linkedin.png" alt="ACM Gazi Linkedin" width="42" height="42" /></a>
     </div>
   </div>
 
@@ -188,19 +197,55 @@
 
     #nav-menu {
       display: flex;
+      flex-direction: column;
       width: 100vw;
       height: 100vh;
       position: absolute;
       top: 0;
       left: 0;
       background-color: var(--background-primary);
-      z-index: 999;
+      z-index: 9999;
+      opacity: 1;
       transition: 250ms;
-      transition-timing-function: easeOutQuart;
+      transition-timing-function: ease-out;
     }
 
     .nav-menu-hidden {
       transform: translateY(-100vh);
+      opacity: 0 !important;
+    }
+
+    #nav-menu-header {
+      display: flex;
+      padding: 40px;
+    }
+
+    #nav-menu-links-ul {
+      display: flex;
+      flex-direction: column;
+      list-style-type: none;
+      padding: 0;
+    }
+
+    #nav-menu-links-ul li {
+      padding: 20px;
+      font-size: 24px;
+      text-align: center;
+    }
+
+    #nav-menu-links-ul li a {
+      text-decoration: none;
+      color: var(--foreground-primary);
+    }
+
+    #nav-menu-socials-div {
+      display: flex;
+      justify-content: center;
+      margin-top: 30px;
+    }
+
+    #nav-menu-socials-div a {
+      padding: 15px;
     }
 
     @media only screen and (max-width: 1000px) {
@@ -215,10 +260,15 @@
   </style>
 
   <script>
-    const navMenuButton = document.getElementById("nav-menu-button");
     const navMenu = document.getElementById("nav-menu");
-
+    
+    const navMenuButton = document.getElementById("nav-menu-button");
     navMenuButton.onclick = () => {
+      navMenu.classList.toggle("nav-menu-hidden");
+    }
+    
+    const navMenuCloseButton = document.getElementById("nav-menu-close-button");
+    navMenuCloseButton.onclick = () => {
       navMenu.classList.toggle("nav-menu-hidden");
     }
   </script>
@@ -246,7 +296,7 @@
     });
   </script>
 </header>
-    <main class="pb7" role="main">
+    <main class="pb7" role="main" style="z-index: -1;">
       
   <article class="pa3 pa4-ns nested-copy-line-height">
     <section class="cf ph3 ph5-l pv3 pv4-l f4 tc-l center measure-wide lh-copy mid-gray"></section>
@@ -290,6 +340,7 @@
 
   <style>
   #video-background {
+    background-color: var(--background-primary);
     position: fixed;
     top: 0;
     left: 0;
