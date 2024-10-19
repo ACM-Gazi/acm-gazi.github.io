@@ -5,11 +5,11 @@
     </a>
     <div id="nav-links-div">
       <ul id="nav-links-ul">
-        <li><a href="#">Ana Sayfa</a></li>
-        <li><a href="#">Etkinlikler</a></li>
-        <li><a href="#">Sponsorlar</a></li>
-        <li><a href="#">Hakkımızda</a></li>
-        <li><a href="#">İletişim</a></li>
+        <li><a href="/etkinlikler">Etkinlikler</a></li>
+        <li><a href="/haberler">Haberler</a></li>
+        <li><a href="/sponsorlar">Sponsorlar</a></li>
+        <li><a href="/hakkımızda">Hakkımızda</a></li>
+        <li><a href="/iletişim">İletişim</a></li>
       </ul>
     </div>
     <div style="flex: 1;"></div>
@@ -24,17 +24,17 @@
 
   <div id="nav-menu" class="nav-menu-hidden">
     <div id="nav-menu-header">
-      <img id="logo" src="/images/acmlogo.png" alt="ACM Gazi logo" />
+      <img id="menu-logo" src="/images/acmlogo.png" alt="ACM Gazi logo" />
       <div style="flex: 1;"></div>
       <button id="nav-menu-close-button">Close</button>
     </div>
     <div id="nav-menu-links-div">
       <ul id="nav-menu-links-ul">
-        <li><a href="#">Ana Sayfa</a></li>
-        <li><a href="#">Etkinlikler</a></li>
-        <li><a href="#">Sponsorlar</a></li>
-        <li><a href="#">Hakkımızda</a></li>
-        <li><a href="#">İletişim</a></li>
+        <li><a href="/etkinlikler">Etkinlikler</a></li>
+        <li><a href="/haberler">Haberler</a></li>
+        <li><a href="/sponsorlar">Sponsorlar</a></li>
+        <li><a href="/hakkımızda">Hakkımızda</a></li>
+        <li><a href="/iletişim">İletişim</a></li>
       </ul>
     </div>
     <div id="nav-menu-socials-div">
@@ -153,6 +153,10 @@
     #nav-menu-header {
       display: flex;
       padding: 40px;
+    }
+
+    #menu-logo {
+      height: 75px;
     }
 
     #nav-menu-links-ul {

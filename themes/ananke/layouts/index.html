@@ -22,7 +22,7 @@
         {{ $etkinlikler_posts := $.Param "recent_posts_number" | default 3 }}
         <section class="post-section">
           {{ range (first $etkinlikler_posts $etkinlikler) }}
-            <div class="relative w-100 mb4">
+            <div class="w-100 mb4">
               {{ .Render "summary-with-image" }}
             </div>
           {{ end }}
@@ -60,7 +60,7 @@
         {{ $n_haberler_posts := $.Param "recent_posts_number" | default 3 }}
         <section class="post-section">
           {{ range (first $n_haberler_posts $haberler) }}
-            <div class="relative w-100 mb4">
+            <div class="w-100 mb4">
               {{ .Render "summary-with-image" }}
             </div>
           {{ end }}
