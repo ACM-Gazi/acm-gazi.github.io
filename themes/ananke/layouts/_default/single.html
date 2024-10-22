@@ -7,15 +7,7 @@
   {{ $section := .Site.GetPage "section" .Section }}
   <article class="flex-l flex-wrap justify-between mw8 center ph3">
     <header class="mt4 w-100">
-      <aside class="instapaper_ignoref b helvetica tracked ttu">
-          {{/*
-          CurrentSection allows us to use the section title instead of inferring from the folder.
-          https://gohugo.io/variables/page/#section-variables-and-methods
-          */}}
-        {{ .CurrentSection.Title }}
-      </aside>
-      {{ partial "social-share.html" . }}
-      <h1 class="f1 athelas mt3 mb1">
+      <h1 class="f1 mt3 mb1">
         {{- .Title -}}
       </h1>
       {{ with .Params.author | default .Site.Params.author }}
@@ -47,7 +39,7 @@
         <span class="f6 mv4 dib tracked"> - {{ i18n "wordCount" .WordCount }} </span>
       {{ end }}
     </header>
-    <div class="nested-copy-line-height lh-copy {{ $.Param "post_content_classes"  | default "serif"}} f4 nested-links {{ $.Param "text_color" | default "mid-gray" }} {{ cond (eq $.Site.Language.LanguageDirection "rtl") "pl4-l" "pr4-l" }} w-two-thirds-l">
+    <div id="post-content-div">
       {{- .Content -}}
       {{- partial "tags.html" . -}}
       <div class="mt6 instapaper_ignoref">
@@ -63,6 +55,13 @@
     <aside class="w-30-l mt6-l">
       {{- partial "menu-contextual.html" . -}}
     </aside>
+
+    <style>
+      #post-content-div {
+        font: "Outfit";
+        font-size: 20px;
+      }
+    </style>
 
   </article>
 {{ end }}

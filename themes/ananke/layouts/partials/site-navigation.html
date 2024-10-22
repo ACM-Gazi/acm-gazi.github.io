@@ -15,8 +15,8 @@
     <div style="flex: 1;"></div>
     <div id="nav-socials-div">
       <ul id="nav-socials-ul">
-        <li><a href="#"><img src="/images/instagram.png" alt="ACM Gazi Instagram" width="42" height="42" /></a></li>
-        <li><a href="#"><img src="/images/linkedin.png" alt="ACM Gazi Linkedin" width="42" height="42" /></a></li>
+        <li><a href="https://www.instagram.com/acmgazi/" target="_blank" rel="noopener noreferrer"><img src="/images/instagram.png" alt="ACM Gazi Instagram" width="42" height="42" /></a></li>
+        <li><a href="https://tr.linkedin.com/company/acmgazi" target="_blank" rel="noopener noreferrer"><img src="/images/linkedin.png" alt="ACM Gazi Linkedin" width="42" height="42" /></a></li>
       </ul>
     </div>
     <button id="nav-menu-button">Menu</button>
@@ -38,8 +38,8 @@
       </ul>
     </div>
     <div id="nav-menu-socials-div">
-      <a href="#"><img src="/images/instagram.png" alt="ACM Gazi Instagram" width="42" height="42" /></a>
-      <a href="#"><img src="/images/linkedin.png" alt="ACM Gazi Linkedin" width="42" height="42" /></a>
+      <a href="https://www.instagram.com/acmgazi/" target="_blank" rel="noopener noreferrer"><img src="/images/instagram.png" alt="ACM Gazi Instagram" width="42" height="42" /></a>
+      <a href="https://tr.linkedin.com/company/acmgazi" target="_blank" rel="noopener noreferrer"><img src="/images/linkedin.png" alt="ACM Gazi Linkedin" width="42" height="42" /></a>
     </div>
   </div>
 
@@ -102,14 +102,39 @@
     }
 
     #nav-links-ul li a {
+      display: block;
+      position: relative;
       font-size: 18px;
       text-decoration: none;
-      color: var(--foreground-primary-dim);
+      color: var(--foreground-primary);
+      transition: 250ms;
+    }
+
+    #nav-links-ul li a::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 0;
+      width: 100%;
+      height: 0.1em;
+      background-color: var(--foreground-primary);
+      opacity: 0;
       transition: 250ms;
     }
 
     #nav-links-ul li a:hover {
       color: var(--foreground-primary);
+    }
+
+    #nav-links-ul li a::after {
+      opacity: 1;
+      transform: scale(0);
+      transform-origin: center;
+    }
+    
+    #nav-links-ul li a:hover::after,
+    #nav-links-ul li a:focus::after {
+      transform: scale(1);
     }
 
     #nav-socials-ul li a img {
