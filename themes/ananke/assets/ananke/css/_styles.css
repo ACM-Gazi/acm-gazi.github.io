@@ -5,6 +5,7 @@
 :root {
   --foreground-primary: #ffffff;
   --foreground-primary-dim: rgba(255, 255, 255, 0.5);
+  --foreground-link: #3081d8;
 
   --background-primary: #001221;
   --background-primary-dim: #0012217e;
@@ -33,6 +34,40 @@ body {
 
 h1, h2, h3, h4, p {
   color: var(--foreground-primary);
+}
+
+a {
+  position: relative;
+  text-decoration: none;
+  color: var(--foreground-link);
+  transition: 250ms;
+}
+
+a:hover {
+  color: var(--foreground-link);
+}
+
+a::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  width: 100%;
+  height: 0.1em;
+  background-color: var(--foreground-link);
+  opacity: 0;
+  transition: transform 250ms, opacity 250ms;
+}
+
+a::after {
+  opacity: 1;
+  transform: scale(0);
+  transform-origin: left;
+}
+
+a:hover::after,
+a:focus::after {
+  transform: scale(1);
 }
 
 .hidden {
