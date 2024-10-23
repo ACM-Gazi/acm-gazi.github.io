@@ -15,7 +15,7 @@ collections:
       preview: false
     fields:
       - { label: 'Başlık', name: 'title', widget: 'string' }
-      - { label: 'Yayınlanma Zamanı', name: 'date', widget: 'datetime' }
+      - { label: 'Yayınlanma Tarihi', name: 'date', widget: 'datetime' }
       - { label: 'Metin', name: 'body', widget: 'markdown' }
     media_folder: /static/media/haberler
   - name: 'etkinlikler'
@@ -28,5 +28,6 @@ collections:
     fields:
       - { label: 'Başlık', name: 'title', widget: 'string' }
       - { label: 'Resim', name: 'featured_image', widget: 'image' }
+      - { label: 'Etkinlik Tarihi', name: 'date', widget: 'datetime' }
       - { label: 'Metin', name: 'body', widget: 'markdown' }
     media_folder: /static/media/etkinlikler

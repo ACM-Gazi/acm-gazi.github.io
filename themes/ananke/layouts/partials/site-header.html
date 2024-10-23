@@ -1,15 +1,12 @@
 <header id="site-header" style="position: sticky; top: 0;">
-  <div>
-    {{ partial "site-navigation.html" . }}
-  </div>
+  {{ partial "site-navigation.html" . }}
 
   <style>
     #site-header {
+      display: flex;
+      justify-content: center;
+      min-height: 125px;
       transition: 250ms;
-    }
-
-    .header-floating {
-      background-color: var(--background-primary-dim);
     }
   </style>
 

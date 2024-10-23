@@ -1,6 +1,6 @@
 <nav role="navigation">
   <div id="nav-main">
-    <a href="{{ .Site.Home.RelPermalink }}" class="f3 fw2 hover-white no-underline white-90 dib">
+    <a href="{{ .Site.Home.RelPermalink }}" id="logo-link" class="f3 fw2 hover-white no-underline white-90 dib">
       <img id="logo" src="/images/acmlogo.png" alt="ACM Gazi logo" />
     </a>
     <div id="nav-links-div">
@@ -45,6 +45,7 @@
 
   <style>
     nav {
+      width: 80%;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -54,7 +55,7 @@
     }
 
     #nav-main {
-      width: 80%;
+      width: 100%;
       display: flex;
       align-items: center;
       padding: 6px 0;
@@ -69,6 +70,8 @@
 
     .header-floating nav {
       padding-top: 0;
+      height: 60%;
+      background-color: var(--background-primary-dim);
     }
 
     .header-floating #nav-main {
@@ -90,10 +93,11 @@
       top: 50%;
       left: 50%;
       transform: translate(-50%, -25%);
+      transition: 200ms;
     }
 
     .header-floating #nav-links-div {
-      transform: translate(-50%, -50%);
+      transform: translate(-50%, -100%);
     }
 
     #nav-links-ul, #nav-socials-ul {
@@ -139,6 +143,10 @@
     #nav-links-ul li a:hover::after,
     #nav-links-ul li a:focus::after {
       transform: scale(1);
+    }
+
+    #nav-socials-ul li a::after, #logo-link::after {
+      display: none;
     }
 
     #nav-socials-ul li a img {
