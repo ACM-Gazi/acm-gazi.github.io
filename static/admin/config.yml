@@ -12,7 +12,7 @@ collections:
     create: true
     slug: '{{year}}-{{month}}-{{day}}-{{slug}}'
     editor:
-      preview: false
+      preview: true
     fields:
       - { label: 'Başlık', name: 'title', widget: 'string' }
       - { label: 'Yayınlanma Tarihi', name: 'date', widget: 'datetime' }
@@ -24,10 +24,21 @@ collections:
     create: true
     slug: '{{year}}-{{month}}-{{day}}-{{slug}}'
     editor:
-      preview: false
+      preview: true
     fields:
       - { label: 'Başlık', name: 'title', widget: 'string' }
       - { label: 'Resim', name: 'featured_image', widget: 'image' }
       - { label: 'Etkinlik Tarihi', name: 'date', widget: 'datetime' }
       - { label: 'Metin', name: 'body', widget: 'markdown' }
     media_folder: /static/media/etkinlikler
+  - name: 'sponsorlar'
+    label: 'Sponsorlar'
+    folder: 'content/sponsorlar'
+    create: true
+    editor:
+      preview: false
+    fields:
+      - { label: 'İsin', name: 'name', widget: 'string' }
+      - { label: 'Logo', name: 'logo', widget: 'image' }
+      - { label: 'Tier', name: 'tier', widget: 'select', options: ['Altın', 'Gümüş', 'Bronz'] }
+    media_folder: /static/media/sponsorlar
