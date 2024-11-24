@@ -1,8 +1,7 @@
 ---
 title: Ayaz Jam
 featured_image: /static/media/etkinlikler/ayazjam.webp
+date: 2024-12-20T17:51:00
 draft: true
-date: 2024-10-12T17:51:57.000Z
 ---
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum
+**AyazJam**, katılımcılara oyun geliştirme sürecini baştan sona öğrenme ve deneyimleme imkanı sunuyor. Etkinlik boyunca, **önceden belirlenmiş bir tema** üzerine 48 saatlik bir süreyle oyun geliştirecek olan yarışmacılar, bu süreçte karşılaştıkları her türlü zorlukla başa çıkmayı öğrenecekler. Hem teknik hem de yaratıcı becerilerinizi geliştirebileceğiniz bu etkinlik, aynı zamanda **pratik bir deneyim** edinmenize olanak tanıyacak. Yarışmacıların tasarımlarını yaparken, belirlenen tema doğrultusunda yaratıcı çözümler geliştirmeleri bekleniyor.
