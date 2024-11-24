@@ -1,6 +1,6 @@
 ---
 title: Ayaz Jam
-featured_image: /static/media/etkinlikler/ayazjam.webp
+featured_image: /static/media/etkinlikler/Logo1.png
 date: 2024-11-23T18:43:00
 draft: true
 ---
