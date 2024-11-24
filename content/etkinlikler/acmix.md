@@ -1,7 +1,7 @@
 ---
 title: ACMİX-KAMPÜSTEN SEKTÖRE
 featured_image: /static/media/etkinlikler/acmix.webp
-date: 2024-11-24T18:42:00
+date: 2024-11-23T18:42:00
 draft: true
 ---
 ACM Gazi olarak, bu yılki **ACM Mix Etkinliği**’ni büyük bir heyecanla bekliyoruz!
