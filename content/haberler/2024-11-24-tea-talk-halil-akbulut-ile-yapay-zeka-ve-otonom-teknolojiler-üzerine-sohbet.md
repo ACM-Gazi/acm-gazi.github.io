@@ -1,6 +1,6 @@
 ---
 title: "Tea Talk: Halil Akbulut ile Yapay Zeka ve Otonom Teknolojiler Üzerine Sohbet"
-date: 2024-11-24T19:25:00
+date: 2024-11-24
 ---
 Merak ettiğiniz teknolojilere derinlemesine bir yolculuğa çıkmaya hazır mısınız? **HALİL AKBULUT**, **HAVELSAN Sistem Mühendisi**, iş hayatı boyunca **Derin Öğrenme, Makine Öğrenmesi, Robotik, Otonomi** gibi önemli alanlarda bir çok projede aktif olarak görev almış ve bu alanlarda önemli deneyimler kazanmıştır. Şimdi bu bilgilerini ve deneyimlerini sizlerle paylaşmak üzere **Tea Talk** etkinliğimize katılacak!
 

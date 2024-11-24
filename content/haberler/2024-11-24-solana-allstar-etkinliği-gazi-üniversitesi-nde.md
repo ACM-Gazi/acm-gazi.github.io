@@ -1,6 +1,6 @@
 ---
 title: Solana AllStar Etkinliği Gazi Üniversitesi'nde!
-date: 2024-11-24T19:24:00
+date: 2024-11-24
 ---
 Blockchain teknolojisi hakkında derinlemesine bilgi sahibi olmak isteyenler için harika bir fırsat! **Solana AllStar Etkinliği**, **Gazi Üniversitesi Bilgisayar Mühendisliği Bölümü** ve **Gazi Cyber Topluluğu** işbirliğiyle, **28 Kasım Perşembe günü**, **13:30 - 15:00** saatleri arasında **Gazi Üniversitesi Mühendislik Fakültesi Şehit Mustafa Avcu Konferans Salonu**'nda gerçekleşecek.
 
