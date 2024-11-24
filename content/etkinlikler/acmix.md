@@ -15,5 +15,3 @@ Bu etkinlik, sadece bilgilerinizi genişletmekle kalmayıp, aynı zamanda **fark
 
 **Tarih:** 28-29 Nisan
 **Yer:** Gazi Üniversitesi Mühendislik Fakültesi, Şehit Mustafa Avcı Konferans Salonu
-
-Katılımınızı sabırsızlıkla bekliyoruz! Bu fırsatı kaçırmayın ve **ACM Gazi Mix Etkinliği**’ne katılmayı sakın unutmayın!
