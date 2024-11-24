@@ -1,7 +1,7 @@
 ---
 title: İletişim
 ---
-🅾 [instagram](https://www.instagram.com/acmgazi/)
+![resim](/static/media/instagramtransparant.png) [instagram](https://www.instagram.com/acmgazi/)
 
  [linkedln](https://www.linkedin.com/company/acmgazi/posts/?feedView=all)
 
