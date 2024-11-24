@@ -6,39 +6,60 @@ backend:
 media_folder: static/img
 public_folder: /img
 collections:
-  - name: 'haberler'
-    label: 'Haberler'
-    folder: 'content/haberler'
+  - name: "haberler"
+    label: "Haberler"
+    folder: "content/haberler"
     create: true
-    slug: '{{year}}-{{month}}-{{day}}-{{slug}}'
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
     editor:
       preview: true
     fields:
-      - { label: 'Başlık', name: 'title', widget: 'string' }
-      - { label: 'Yayınlanma Tarihi', name: 'date', widget: 'datetime' }
-      - { label: 'Metin', name: 'body', widget: 'markdown' }
+      - { label: "Başlık", name: "title", widget: "string" }
+      - { label: "Yayınlanma Tarihi", name: "date", widget: "datetime" }
+      - { label: "Metin", name: "body", widget: "markdown" }
     media_folder: /static/media/haberler
-  - name: 'etkinlikler'
-    label: 'Etkinlikler'
-    folder: 'content/etkinlikler'
+  - name: "etkinlikler"
+    label: "Etkinlikler"
+    folder: "content/etkinlikler"
     create: true
-    slug: '{{year}}-{{month}}-{{day}}-{{slug}}'
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
     editor:
       preview: true
     fields:
-      - { label: 'Başlık', name: 'title', widget: 'string' }
-      - { label: 'Resim', name: 'featured_image', widget: 'image' }
-      - { label: 'Etkinlik Tarihi', name: 'date', widget: 'datetime' }
-      - { label: 'Metin', name: 'body', widget: 'markdown' }
+      - { label: "Başlık", name: "title", widget: "string" }
+      - { label: "Resim", name: "featured_image", widget: "image" }
+      - { label: "Etkinlik Tarihi", name: "date", widget: "datetime" }
+      - { label: "Metin", name: "body", widget: "markdown" }
     media_folder: /static/media/etkinlikler
-  - name: 'sponsorlar'
-    label: 'Sponsorlar'
-    folder: 'content/sponsorlar'
+  - name: "sponsorlar"
+    label: "Sponsorlar"
+    folder: "content/sponsorlar"
     create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
     editor:
       preview: false
     fields:
-      - { label: 'İsin', name: 'name', widget: 'string' }
-      - { label: 'Logo', name: 'logo', widget: 'image' }
-      - { label: 'Tier', name: 'tier', widget: 'select', options: ['Altın', 'Gümüş', 'Bronz'] }
+      - { label: "İsin", name: "title", widget: "string" }
+      - { label: "Logo", name: "featured_image", widget: "image" }
+      - {
+          label: "Tier",
+          name: "tier",
+          widget: "select",
+          options: ["Altın", "Gümüş", "Bronz"],
+        }
     media_folder: /static/media/sponsorlar
+  - name: "pages"
+    label: "Sayfalar"
+    files:
+      - name: "hakkimizda"
+        label: "Hakkımızda"
+        file: "content/hakkimizda.md"
+        fields:
+          - { label: "Başlık", name: "title", widget: "string" }
+          - { label: "Metin", name: "body", widget: "markdown" }
+      - name: "iletisim"
+        label: "İletişim"
+        file: "content/iletisim.md"
+        fields:
+          - { label: "Başlık", name: "title", widget: "string" }
+          - { label: "Metin", name: "body", widget: "markdown" }

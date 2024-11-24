@@ -9,7 +9,7 @@
 
     {{/* ETKİNLİKLER BÖLÜMÜ*/}}
     {{ $etkinlikler_name := "etkinlikler" }}
-    {{ $etkinlikler := where $.Site.RegularPages "Section" "in" $etkinlikler_name }}
+    {{ $etkinlikler := where $.Site.RegularPages "Section" $etkinlikler_name }}
     {{ $etkinlikler_count := len $etkinlikler }}
 
     {{ if ge $etkinlikler_count 1 }}
@@ -47,7 +47,7 @@
 
     {{/* HABERLER BÖLÜMÜ*/}}
     {{ $haberler_name := "haberler" }}
-    {{ $haberler := where $.Site.RegularPages "Section" "in" $haberler_name }}
+    {{ $haberler := where $.Site.RegularPages "Section" $haberler_name }}
     {{ $haberler_count := len $haberler }}
 
     {{ if ge $haberler_count 1 }}
