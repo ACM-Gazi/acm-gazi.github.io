@@ -3,8 +3,8 @@
 <div style="display: flex; justify-content: center;">
     <article id="ayazjam-main">
         <img id="ayazjam-logo" alt="ayazjam_logo" src="/media/etkinlikler/Logo1.png" width="450" />
-        <p id="ayazjam-date-text" style="font-size: 32px; margin-bottom: 7px;">🗓️ &#8202 20-21-22 Aralık</p>
-        <p id="ayazjam-date-text" style="font-size: 32px; margin-top: 7px;">📍 Ankara Teknopark - Nar Kuluçka Merkezi
+        <p id="ayazjam-date-text" style="font-size: 32px; margin-bottom: 7px; text-align: center;">🗓️ &#8202 20-21-22 Aralık</p>
+        <p id="ayazjam-date-text" style="font-size: 32px; margin-top: 7px; text-align: center;">📍 Ankara Teknopark - Nar Kuluçka Merkezi
         </p>
 
         <a href="https://forms.gle/N4Eq2LSBudwmksvf8" target="_blank" rel="noopener noreferrer" id="ayazjam-join-button">Hemen Başvur!</a>
@@ -115,5 +115,31 @@
     #ayazjam-sponsorlar-links a img {
         transform: scale(0.75);
     }
+
+    @media only screen and (max-width: 1000px) {
+        #ayazjam-main {
+            width: 75%;
+        }
+
+        #ayazjam-logo {
+            width: 120%;
+        }
+
+        #ayazjam-date-text {
+            font-size: 26px !important;    
+        }
+
+        .ayazjam-body-div p {
+            font-size: 18px;
+        }
+
+        #ayazjam-sponsorlar-links {
+            flex-direction: column;
+        }
+
+        #ayazjam-sponsorlar-links a img {
+            width: 100%;
+        }
+      }
 </style>
 {{ end }}
