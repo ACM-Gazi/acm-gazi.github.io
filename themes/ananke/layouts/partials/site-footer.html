@@ -1,10 +1,10 @@
 <footer role="contentinfo">
   <div id="footer-main" class="flex justify-between">
-    <a class="f4 fw4 hover-white no-underline white-70 dn dib-ns pv2 ph3" href="{{ .Site.Home.Permalink }}" >
+    <a class="f4 fw4 hover-white no-underline white-70 dib-ns pv2 ph3" href="{{ .Site.Home.Permalink }}" >
       © Gazi Üniversitesi ACM Topluluğu
     </a>
-    <div style="flex: 1;"></div>
-    <a class="hover-white no-underline white-70 dn dib-ns pv2 ph3" href="https://github.com/ACM-Gazi/acm-gazi.github.io" 
+    <div class="flex-sep"></div>
+    <a class="hover-white no-underline white-70 dib-ns pv2 ph3" href="https://github.com/ACM-Gazi/acm-gazi.github.io" 
     target="_blank" rel="noopener noreferrer">
       Bu web sitesi ACM Gazi AR-GE
       <br>
@@ -24,6 +24,26 @@
       width: 80%;
       height: 80px;
       align-items: center;
+    }
+
+    .flex-sep {
+      flex: 1;
+    }
+
+    @media only screen and (max-width: 1000px) {
+      #footer-main {
+        flex-direction: column;
+        height: auto;
+        padding: 0 15px;
+      }
+
+      #footer-main a {
+        text-align: center;
+      }
+
+      .flex-sep {
+        display: none;
+      }
     }
   </style>
 </footer>
