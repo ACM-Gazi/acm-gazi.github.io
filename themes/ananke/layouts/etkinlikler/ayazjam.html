@@ -4,10 +4,10 @@
     <article id="ayazjam-main">
         <img id="ayazjam-logo" alt="ayazjam_logo" src="/media/etkinlikler/Logo1.png" width="450" />
         <p id="ayazjam-date-text" style="font-size: 32px; margin-bottom: 7px; text-align: center;">🗓️ &#8202 20-21-22 Aralık</p>
-        <p id="ayazjam-date-text" style="font-size: 32px; margin-top: 7px; text-align: center;">📍 Ankara Teknopark - Nar Kuluçka Merkezi
+        <p id="ayazjam-date-text" style="font-size: 32px; margin-top: 7px; text-align: center;">📍 Teknopark Ankara - Nar Kuluçka Merkezi
         </p>
 
-        <a href="https://forms.gle/N4Eq2LSBudwmksvf8" target="_blank" rel="noopener noreferrer" id="ayazjam-join-button">Hemen Başvur!</a>
+        <a href="https://forms.gle/N4Eq2LSBudwmksvf8" target="_blank" rel="noopener noreferrer" id="join-button">Hemen Başvur!</a>
 
         <div class="ayazjam-body-div">
             <h2>AyazJam Nedir?</h3>
@@ -46,14 +46,16 @@
                     </a>
                 </div>
         </div>
+
+        <div class="ayazjam-body-div">
+            <h2>Konum</h2>
+            <iframe width="500" height="350" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" id="gmap_canvas" src="https://maps.google.com/maps?width=520&amp;height=400&amp;hl=en&amp;q=Serhat,%202224.%20Cd.%20No:1%20C%20Blok%20Kat%2014,%2006378%20Yenimahalle/Ankara%20Ankara+(Ankara%20Teknopark)&amp;t=&amp;z=12&amp;ie=UTF8&amp;iwloc=B&amp;output=embed"></iframe> <a href='https://dissertationschreibenlassen.com/'>Dissertation schreiben Hilfe</a> <script type='text/javascript' src='https://embedmaps.com/google-maps-authorization/script.js?id=82c456a30fd9f4084bb4ea6a9ec6eb0aa0600f88'></script>
+            <p>📍 Teknopark Ankara - Nar Kuluçka Merkezi</p>
+        </div>
     </article>
 </div>
 
 <style>
-    a {
-        position: unset;
-    }
-
     #ayazjam-main {
         display: flex;
         flex-direction: column;
@@ -66,7 +68,8 @@
         margin-bottom: 25px;
     }
 
-    #ayazjam-join-button {
+    #join-button {
+        position: unset;
         font-size: 20px;
         padding: 15px 35px;
         margin-top: 50px;
@@ -120,6 +123,10 @@
         transform: scale(0.75);
     }
 
+    iframe {
+        border-radius: 20px;
+    }
+
     @media only screen and (max-width: 1000px) {
         #ayazjam-main {
             width: 75%;
@@ -142,6 +149,10 @@
         }
 
         #ayazjam-sponsorlar-links a img {
+            width: 100%;
+        }
+
+        iframe {
             width: 100%;
         }
       }
