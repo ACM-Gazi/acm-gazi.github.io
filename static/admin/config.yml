@@ -15,7 +15,7 @@ collections:
       preview: true
     fields:
       - { label: "Başlık", name: "title", widget: "string" }
-      - { label: "Yayınlanma Tarihi", name: "date", widget: "datetime" }
+      - { label: "Yayınlanma Tarihi", name: "date", widget: "datetime", date_format: "DD.MM.YYYY", time_format: "" }
       - { label: "Metin", name: "body", widget: "markdown" }
     media_folder: /static/media/haberler
   - name: "etkinlikler"
@@ -28,7 +28,7 @@ collections:
     fields:
       - { label: "Başlık", name: "title", widget: "string" }
       - { label: "Resim", name: "featured_image", widget: "image" }
-      - { label: "Etkinlik Tarihi", name: "date", widget: "datetime" }
+      - { label: "Etkinlik Tarihi", name: "date", widget: "datetime", date_format: "DD.MM.YYYY", time_format: "" }
       - { label: "Metin", name: "body", widget: "markdown" }
     media_folder: /static/media/etkinlikler
   - name: "sponsorlar"
