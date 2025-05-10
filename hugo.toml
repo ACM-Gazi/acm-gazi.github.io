@@ -1,5 +1,6 @@
-baseURL = 'https://acm-gazi.github.io/'
-languageCode = 'en-us'
+baseURL = 'https://acmgazi.com/'
+languageCode = "tr"
 title = 'ACM Gazi'
+description = "Gazi Üniversitesi Bilgisayar Makineleri Birliği (ACM) Öğrenci Topluluğu resmi web sitesi"
 theme = 'ananke'
 

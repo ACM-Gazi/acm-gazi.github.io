@@ -5,6 +5,8 @@ backend:
   base_url: https://sveltia-cms-auth.qewer.workers.dev/
 media_folder: static/img
 public_folder: /img
+permalinks:
+  post: "/:slug/"
 collections:
   - name: "haberler"
     label: "Haberler"
