@@ -1,6 +1,6 @@
 ---
-title: ACMİX-KAMPÜSTEN SEKTÖRE
-featured_image: /static/media/etkinlikler/Varl%C4%B1k%206%404x.png
+title: ACMIX-KAMPÜSTEN SEKTÖRE
+featured_image: /static/media/etkinlikler/Varl%C4%B1k%206%404x-1.png
 date: 10.05.2025
 draft: true
 ---
@@ -22,7 +22,7 @@ katılımcılara hem bilgi hem de ilham dolu bir gün sunmayı amaçlıyoruz.
 
 ACMIX, yalnızca alanlara dair güncel gelişmeleri dinlemekle kalmayıp; aynı zamanda sektörün içinden gelen isimlerle tanışarak kariyerine yön vermek isteyen herkes için değerli bir buluşma noktası olacak.
 
-![](/static/media/etkinlikler/2.png)
+![](/static/media/etkinlikler/2-1.png)
 
 📍 Yer: Gazi Üniversitesi Mühendislik Fakültesi Konferans Salonu
 
