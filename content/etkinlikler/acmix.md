@@ -8,7 +8,7 @@ draft: true
 
 ACM Gazi ailesi olarak düzenlediğimiz ACMIX2025, teknolojiye ilgi duyan öğrencileri sektör profesyonelleriyle bir araya getiren, çok disiplinli bir etkinliktir.
 
-Yazılım, Yapay Zeka, Siber Güvenlik, Oyun Geliştirme ve Girişimcilik gibi günümüzün en güncel ve hızla gelişen alanlarında;
+Yazılım, Yapay Zeka, Siber Güvenlik, Oyun Geliştirme ve Girişimcilik gibi günümüzünden güncel ve hızla gelişen alanlarında;
 
 🎤 Alanında uzman konuşmacıların sunumları,
 
