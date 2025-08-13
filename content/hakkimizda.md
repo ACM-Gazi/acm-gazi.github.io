@@ -7,7 +7,7 @@ title: Hakkımızda
 
 ACM (Association for Computing Machinery), 1947’de kurulmuş, dünyanın en büyük bilgisayar bilimi ve bilişim topluluğudur. Amacı, bilgisayar bilimi ve teknolojisinin gelişmesini desteklemek, araştırmaları teşvik etmek ve meslektaşlar arasında bilgi paylaşımını sağlamaktır. Konferanslar, dergiler, eğitim kaynakları ve teknik raporlar sunarak hem akademik hem de endüstriyel alanda önemli bir bilgi ağı oluşturur. Dünya çapındaki profesyonel toplulukları ve üniversitelerdeki öğrenci kollarıyla geniş bir etkileşim ağına sahiptir. ACM’nin en prestijli ödülü olan **Turing Ödülü**, bilgisayar bilimine yapılan olağanüstü katkılardan dolayı her yıl verilir ve genellikle “bilgisayar biliminin Nobel’i” olarak anılır.
 
-![](/img/ACM Gazi.png)
+![](/img/ACM_Gazi.png)
 
 # ACM Gazi Öğrenci Topluluğu
 
