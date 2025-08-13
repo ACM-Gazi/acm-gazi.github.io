@@ -1,0 +1,81 @@
+{{ define "header" }}{{ partial "page-header.html" . }}{{ end }}
+{{ define "main" }}
+<div class="flex-l mt2 mw8 center">
+    <article class="center cf ph3 pb5 ph4-ns">
+        <header>
+            <h1 class="f1 tc pv4">
+                Sponsorlar
+            </h1>
+        </header>
+        <div class="content-div nested-copy-line-height lh-copy f4 nested-links {{ $.Param " text_color" |
+            default "mid-gray" }}">
+            {{/* SPONSORLAR BÖLÜMÜ*/}}
+            {{ $sponsorlar_name := "sponsorlar" }}
+            {{ $sponsorlar := where $.Site.RegularPages "Section" $sponsorlar_name }}
+            {{ $sponsorlar_count := len $sponsorlar }}
+
+            {{ if ge $sponsorlar_count 1 }}
+            <div class="post-section-wrapper" id="sponsorlar">
+                <section class="sponsors-section">
+                    {{ range ($sponsorlar) }}
+                    <div class="w-100 mb4">
+                        {{ $featured_image := partial "func/GetFeaturedImage.html" . }}
+                        {{ if $featured_image }}
+                        <div>
+                            <img src="{{ $featured_image }}" alt="image from {{ .Title }}">
+                        </div>
+                        {{ end }}
+                    </div>
+                    {{ end }}
+                </section>
+            </div>
+            {{ end }}
+        </div>
+    </article>
+
+    <style>
+        .content-div img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .post-section-wrapper {
+            margin: 50px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .sponsors-section {
+            margin: 20px 0;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+        }
+
+        .sponsors-section img {
+            margin: 0 30px;
+            width: 256px;
+            height: 128px;
+            object-fit: cover;
+            filter: grayscale(100%) contrast(0%) brightness(150%);
+            transition: 250ms;
+        }
+
+        .sponsors-section img:hover {
+            filter: grayscale(100%) contrast(0%) brightness(200%);
+        }
+
+        .glass-card {
+            padding: 18px 40px;
+            background: var(--background-primary-dim);
+            border-radius: 16px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(5.8px);
+            -webkit-backdrop-filter: blur(5.8px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+    </style>
+</div>
+{{ end }}

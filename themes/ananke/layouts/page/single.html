@@ -1,13 +1,13 @@
 {{ define "header" }}{{ partial "page-header.html" . }}{{ end }}
 {{ define "main" }}
   <div class="flex-l mt2 mw8 center">
-    <article class="center cf ph3 ph4-ns">
+    <article class="center cf ph3 pb5 ph4-ns">
       <header>
         <h1 class="f1 tc pv4">
           {{ .Title }}
         </h1>
       </header>
-      <div class="content-div nested-copy-line-height lh-copy pb5 f4 nested-links {{ $.Param "text_color" | default "mid-gray" }}">
+      <div class="content-div glass-card nested-copy-line-height lh-copy f4 nested-links {{ $.Param "text_color" | default "mid-gray" }}">
         {{ .Content }}
       </div>
     </article>
@@ -17,6 +17,16 @@
         max-width: 100%;
         height: auto;
         display: block;
+      }
+
+      .glass-card {
+        padding: 18px 40px;
+        background: var(--background-primary-dim);
+        border-radius: 16px;
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(5.8px);
+        -webkit-backdrop-filter: blur(5.8px);
+        border: 1px solid rgba(255, 255, 255, 0.15);
       }
     </style>
   </div>

@@ -39,10 +39,10 @@
         <span class="f6 mv4 dib tracked"> - {{ i18n "wordCount" .WordCount }} </span>
       {{ end }}
     </header>
-    <div id="post-content-div">
+    <div id="post-content-div" class="glass-card">
       {{- .Content -}}
       {{- partial "tags.html" . -}}
-      <div class="mt6 instapaper_ignoref">
+      <div class="instapaper_ignoref">
       {{ if .Site.Config.Services.Disqus.Shortname }}
         {{ template "_internal/disqus.html" . }}
       {{ end }}
@@ -66,6 +66,16 @@
         max-width: 100%;
         height: auto;
         display: block;
+      }
+
+      .glass-card {
+        padding: 18px 40px;
+        background: var(--background-primary-dim);
+        border-radius: 16px;
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(5.8px);
+        -webkit-backdrop-filter: blur(5.8px);
+        border: 1px solid rgba(255, 255, 255, 0.15);
       }
     </style>
 
