@@ -7,6 +7,33 @@
       <a href="https://chat.whatsapp.com/IRS4PGZw9FmDqdhC42Fd8m" target="_blank" id="join-button">Aramıza Katıl</a>
     </div>
 
+    {{/* SPONSORLAR BÖLÜMÜ*/}}
+    {{ $sponsorlar_name := "sponsorlar" }}
+    {{ $sponsorlar := where $.Site.RegularPages "Section" $sponsorlar_name }}
+    {{ $sponsorlar_count := len $sponsorlar }}
+
+    {{ if ge $sponsorlar_count 1 }}
+      <div class="post-section-wrapper" id="sponsorlar">
+        {{ with $.Site.GetPage "section" $sponsorlar_name }}
+            <h1 class="post-section-header">
+              Sponsorlarımız
+            </h1>
+          {{ end }}
+        <section class="sponsors-section">
+          {{ range ($sponsorlar) }}
+            <div class="w-100 mb4">
+              {{ $featured_image := partial "func/GetFeaturedImage.html" . }}
+                {{ if $featured_image }}
+                  <div>
+                    <img src="{{ $featured_image }}" alt="image from {{ .Title }}">
+                  </div>
+                {{ end }}
+            </div>
+          {{ end }}
+        </section>
+      </div>
+    {{ end }}
+
     {{/* ETKİNLİKLER BÖLÜMÜ*/}}
     {{ $etkinlikler_name := "etkinlikler" }}
     {{ $etkinlikler := where $.Site.RegularPages "Section" $etkinlikler_name }}
@@ -22,21 +49,13 @@
         {{ $etkinlikler_posts := $.Param "recent_posts_number" | default 3 }}
         <section class="post-section">
           {{ range (first $etkinlikler_posts $etkinlikler) }}
-            <div class="w-100 mb4">
+            <div class="w-100 mb4 glass-card">
               {{ .Render "summary-with-image" }}
             </div>
           {{ end }}
         </section>
         {{ if ge $etkinlikler_count (add $etkinlikler_posts 1) }}
         <section class="post-section">
-          <h1 class="f3">{{ i18n "more" }}</h1>
-          {{ range (first 4 (after $etkinlikler_posts $etkinlikler))  }}
-            <h2 class="f5 fw4 mb4 dib {{ cond (eq $.Site.Language.LanguageDirection "rtl") "ml3" "mr3" }}">
-              <a href="{{ .RelPermalink }}" class="link black dim">
-                {{ .Title }}
-              </a>
-            </h2>
-          {{ end }}
           {{ with $.Site.GetPage "section" $etkinlikler_name }}
             <a href="{{ .RelPermalink }}" class="link db f6 pa2 br3 bg-mid-gray white dim w4 tc">{{ i18n "allTitle" . }}</a>
           {{ end }}
@@ -60,26 +79,11 @@
         {{ $n_haberler_posts := $.Param "recent_posts_number" | default 3 }}
         <section class="post-section">
           {{ range (first $n_haberler_posts $haberler) }}
-            <div class="w-100 mb4">
+            <div class="w-100 mb4 glass-card">
               {{ .Render "summary-with-image" }}
             </div>
           {{ end }}
         </section>
-        {{ if ge $haberler_count (add $n_haberler_posts 1) }}
-        <section class="post-section">
-          <h1 class="f3">{{ i18n "more" }}</h1>
-          {{ range (first 4 (after $n_haberler_posts $haberler))  }}
-            <h2 class="f5 fw4 mb4 dib {{ cond (eq $.Site.Language.LanguageDirection "rtl") "ml3" "mr3" }}">
-              <a href="{{ .RelPermalink }}" class="link black dim">
-                {{ .Title }}
-              </a>
-            </h2>
-          {{ end }}
-          {{ with $.Site.GetPage "section" $haberler_name }}
-            <a href="{{ .RelPermalink }}" class="link db f6 pa2 br3 bg-mid-gray white dim w4 tc">{{ i18n "allTitle" . }}</a>
-          {{ end }}
-          </section>
-        {{ end }}
       </div>
     {{ end }}
 
@@ -186,9 +190,30 @@
     }
 
     .post-section-wrapper {
+      margin: 50px 0;
       display: flex;
       flex-direction: column;
       align-items: center;
+    }
+
+    .sponsors-section {
+      margin: 20px 0;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+    }
+
+    .sponsors-section img {
+      margin: 0 30px;
+      width: 200px;
+      height: 100px;
+      object-fit: cover;
+      filter: grayscale(100%) contrast(0%) brightness(150%);
+      transition: 250ms;
+    }
+
+    .sponsors-section img:hover {
+      filter: grayscale(100%) contrast(0%) brightness(200%);
     }
 
     .post-section {
@@ -199,6 +224,16 @@
     .post-section-header {
       text-align: center;
       font-size: 48px;
+    }
+
+    .glass-card {
+      padding: 0 40px;
+      background: var(--background-primary-dim);
+      border-radius: 16px;
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+      backdrop-filter: blur(5.8px);
+      -webkit-backdrop-filter: blur(5.8px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
     }
   </style>
 {{end}}

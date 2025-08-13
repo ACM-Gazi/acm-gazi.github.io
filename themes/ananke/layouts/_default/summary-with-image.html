@@ -1,12 +1,12 @@
 {{ $featured_image := partial "func/GetFeaturedImage.html" . }}
 <article class="bb b--black-10">
   <div class="db pv4 ph3 ph0-l no-underline dark-gray">
-    <div class="flex flex-column flex-row-ns">
+    <div class="flex flex-column items-center">
       {{ if $featured_image }}
           {{/* Trimming the slash and adding absURL make sure the image works no matter where our site lives */}}
         <div>
           <a href="{{.RelPermalink}}">
-            <img src="{{ $featured_image }}" alt="image from {{ .Title }}" width="256" height="256">
+            <img src="{{ $featured_image }}" alt="image from {{ .Title }}" class="summary-img">
           </a>
         </div>
       {{ end }}
@@ -25,4 +25,12 @@
       </div>
     </div>
   </div>
+
+  <style>
+    .summary-img {
+      width: 256px;
+      height: auto;
+      object-fit: cover;
+    }
+  </style>
 </article>

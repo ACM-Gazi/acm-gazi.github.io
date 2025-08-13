@@ -1,7 +1,7 @@
 {{ define "main" }}
   <article class="pa3 pa4-ns nested-copy-line-height">
     <header>
-      <h1 class="f1 center">
+      <h1 class="f1 tc-l">
         {{ .Title }}
       </h1>
     </header>
@@ -10,13 +10,26 @@
       {{- .Content -}}
     </section>
     -->
-    <section class="flex-ns flex-wrap justify-around mt5">
+    <section class="flex-ns flex-column-ns justify-center-ns items-center-ns mt5">
       {{ range .Paginator.Pages }}
-        <div class="relative w-100 w-30-l mb4">
+        <div class="relative w-100 w-60-l mb4 glass-card">
           {{ .Render "summary-with-image" }}
         </div>
       {{ end }}
     </section>
     {{- template "_internal/pagination.html" . -}}
+
+    <style>
+      .glass-card {
+        padding: 0 40px;
+        background: var(--background-primary-dim);
+        border-radius: 16px;
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(5.8px);
+        -webkit-backdrop-filter: blur(5.8px);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+      }
+    </style>
   </article>
 {{ end }}
+

@@ -2,7 +2,6 @@
 title: ACM Gazi ARGE Takımları
 date: 2025-02-23T12:19:00
 ---
-![](/static/media/haberler/Picture1.png)   ![](/static/media/haberler/picture3.jpg) ![](/static/media/haberler/Picture2.png)  
 
 🚀 Biz Kimiz?
 
