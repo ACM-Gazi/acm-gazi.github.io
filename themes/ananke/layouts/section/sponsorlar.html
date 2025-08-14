@@ -1,33 +1,76 @@
 {{ define "header" }}{{ partial "page-header.html" . }}{{ end }}
 {{ define "main" }}
-<div class="flex-l mt2 mw8 center">
+<div class="fade-in settle-up flex-l mt2 mw8 center">
     <article class="center cf ph3 pb5 ph4-ns">
         <header>
-            <h1 class="f1 tc pv4">
-                Sponsorlar
-            </h1>
+            <h1 class="f1 tc pt4">Sponsorlar</h1>
         </header>
+
         <div class="content-div nested-copy-line-height lh-copy f4 nested-links {{ $.Param " text_color" |
             default "mid-gray" }}">
-            {{/* SPONSORLAR BÖLÜMÜ*/}}
-            {{ $sponsorlar_name := "sponsorlar" }}
-            {{ $sponsorlar := where $.Site.RegularPages "Section" $sponsorlar_name }}
-            {{ $sponsorlar_count := len $sponsorlar }}
+            {{ $sponsorlar := where $.Site.RegularPages "Section" "sponsorlar" }}
+            {{ if gt (len $sponsorlar) 0 }}
+            {{ $gold := where $sponsorlar "Params.Tier" "Altın" }}
+            {{ $silver := where $sponsorlar "Params.Tier" "Gümüş" }}
+            {{ $bronze := where $sponsorlar "Params.Tier" "Bronz" }}
 
-            {{ if ge $sponsorlar_count 1 }}
             <div class="post-section-wrapper" id="sponsorlar">
+                {{ if gt (len $gold) 0 }}
+                <h2 class="tier-title gold">Altın</h2>
                 <section class="sponsors-section">
-                    {{ range ($sponsorlar) }}
-                    <div class="w-100 mb4">
+                    {{ range $gold }}
+                    {{ $url := .Params.Link }}
+                    <a class="sponsor-card" href="{{ $url }}" target="_blank" rel="noopener">
                         {{ $featured_image := partial "func/GetFeaturedImage.html" . }}
                         {{ if $featured_image }}
-                        <div>
-                            <img src="{{ $featured_image }}" alt="image from {{ .Title }}">
-                        </div>
+                        <img src="{{ $featured_image }}" alt="image from {{ .Title }}">
                         {{ end }}
-                    </div>
+                        <div class="sponsor-title">{{ .Title }}</div>
+                        {{ with .Params.Role }}
+                        <div class="sponsor-subtitle">{{ . }}</div>
+                        {{ end }}
+                    </a>
                     {{ end }}
                 </section>
+                {{ end }}
+
+                {{ if gt (len $silver) 0 }}
+                <h2 class="tier-title silver">Gümüş</h2>
+                <section class="sponsors-section">
+                    {{ range $silver }}
+                    {{ $url := .Params.Link }}
+                    <a class="sponsor-card" href="{{ $url }}" target="_blank" rel="noopener">
+                        {{ $featured_image := partial "func/GetFeaturedImage.html" . }}
+                        {{ if $featured_image }}
+                        <img src="{{ $featured_image }}" alt="image from {{ .Title }}">
+                        {{ end }}
+                        <div class="sponsor-title">{{ .Title }}</div>
+                        {{ with .Params.Role }}
+                        <div class="sponsor-subtitle">{{ . }}</div>
+                        {{ end }}
+                    </a>
+                    {{ end }}
+                </section>
+                {{ end }}
+
+                {{ if gt (len $bronze) 0 }}
+                <h2 class="tier-title bronze">Bronz</h2>
+                <section class="sponsors-section">
+                    {{ range $bronze }}
+                    {{ $url := .Params.Link }}
+                    <a class="sponsor-card" href="{{ $url }}" target="_blank" rel="noopener">
+                        {{ $featured_image := partial "func/GetFeaturedImage.html" . }}
+                        {{ if $featured_image }}
+                        <img src="{{ $featured_image }}" alt="image from {{ .Title }}">
+                        {{ end }}
+                        <div class="sponsor-title">{{ .Title }}</div>
+                        {{ with .Params.Role }}
+                        <div class="sponsor-subtitle">{{ . }}</div>
+                        {{ end }}
+                    </a>
+                    {{ end }}
+                </section>
+                {{ end }}
             </div>
             {{ end }}
         </div>
@@ -45,17 +88,65 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            width: 100%;
+        }
+
+        .tier-title {
+            display: inline-block;
+            padding: 0.3em 1.5em;
+            border-radius: 9999px;
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: #001321;
+            text-align: center;
+            box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .tier-title.gold {
+            background: linear-gradient(135deg, #FFD700, #b78900);
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
+        }
+
+        .tier-title.silver {
+            background: linear-gradient(135deg, #c0c0c0, #7a7f85);
+            box-shadow: 0 0 10px rgba(192, 192, 192, 0.6);
+        }
+
+        .tier-title.bronze {
+            background: linear-gradient(135deg, #cd7f32, #8a572a);
+            box-shadow: 0 0 10px rgba(205, 127, 50, 0.6);
         }
 
         .sponsors-section {
-            margin: 20px 0;
+            margin: 20px 0 40px;
             display: flex;
-            flex-direction: row;
-            align-items: center;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+            width: 100%;
         }
 
-        .sponsors-section img {
-            margin: 0 30px;
+        .sponsor-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .sponsor-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-top: 1.5rem;
+            color: var(--foreground-primary)
+        }
+
+        .sponsor-subtitle {
+            font-size: 0.9rem;
+            margin-top: 0.2rem;
+            color: var(--foreground-primary-dim)
+        }
+
+        .sponsor-card img {
             width: 256px;
             height: 128px;
             object-fit: cover;
@@ -63,18 +154,8 @@
             transition: 250ms;
         }
 
-        .sponsors-section img:hover {
+        .sponsor-card img:hover {
             filter: grayscale(100%) contrast(0%) brightness(200%);
-        }
-
-        .glass-card {
-            padding: 18px 40px;
-            background: var(--background-primary-dim);
-            border-radius: 16px;
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-            backdrop-filter: blur(5.8px);
-            -webkit-backdrop-filter: blur(5.8px);
-            border: 1px solid rgba(255, 255, 255, 0.15);
         }
     </style>
 </div>

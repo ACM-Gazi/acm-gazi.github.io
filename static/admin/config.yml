@@ -42,6 +42,8 @@ collections:
       preview: false
     fields:
       - { label: "İsin", name: "title", widget: "string" }
+      - { label: "Rol", name: "role", widget: "string" }
+      - { label: "Link", name: "link", widget: "string" }
       - { label: "Logo", name: "featured_image", widget: "image" }
       - {
           label: "Tier",

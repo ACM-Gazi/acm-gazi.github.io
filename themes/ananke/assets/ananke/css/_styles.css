@@ -32,7 +32,11 @@ body {
   min-height: 100vh;
 }
 
-h1, h2, h3, h4, p {
+h1,
+h2,
+h3,
+h4,
+p {
   color: var(--foreground-primary);
 }
 
@@ -91,4 +95,64 @@ a:focus::after {
 
 .nested-links a {
   overflow-wrap: break-word;
+}
+
+.glass-card {
+  padding: 18px 40px;
+  background: var(--background-primary-dim);
+  border-radius: 16px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(5.8px);
+  -webkit-backdrop-filter: blur(5.8px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes settleUp {
+  0% {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes settleDown {
+  0% {
+    opacity: 0;
+    transform: translateY(-40px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  opacity: 0;
+  animation: fadeIn 0.8s ease-out forwards;
+}
+
+.settle-up {
+  opacity: 0;
+  animation: settleUp 0.8s ease-out forwards;
+}
+
+.settle-down {
+  opacity: 0;
+  animation: settleDown 0.8s ease-out forwards;
 }

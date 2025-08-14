@@ -1,4 +1,4 @@
-<nav role="navigation">
+<nav role="navigation" class="fade-in settle-down">
   <div id="nav-main">
     <a href="{{ .Site.Home.RelPermalink }}" id="logo-link" class="f3 fw2 hover-white no-underline white-90 dib">
       <img id="logo" src="/images/acmlogo.png" alt="ACM Gazi logo" />
@@ -74,6 +74,9 @@
       padding-top: 0;
       height: 60%;
       background-color: var(--background-primary-dim);
+      backdrop-filter: blur(5.8px);
+      -webkit-backdrop-filter: blur(5.8px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.15);
     }
 
     .header-floating #nav-main {
@@ -99,7 +102,7 @@
     }
 
     .header-floating #nav-links-div {
-      transform: translate(-50%, -100%);
+      transform: translate(-50%, -50%);
     }
 
     #nav-links-ul, #nav-socials-ul {
