@@ -21,7 +21,7 @@
           {{ end }}
         <section class="sponsors-section">
           {{ range ($sponsorlar) }}
-            <div class="w-100 mb4">
+            <div class="mb4">
               {{ $featured_image := partial "func/GetFeaturedImage.html" . }}
                 {{ if $featured_image }}
                   <div>
@@ -201,6 +201,8 @@
       display: flex;
       flex-direction: row;
       align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
     }
 
     .sponsors-section img {
@@ -224,6 +226,12 @@
     .post-section-header {
       text-align: center;
       font-size: 48px;
+    }
+
+    @media only screen and (max-width: 1000px) {
+      .post-section {
+        width: 90%;
+      }
     }
   </style>
 {{end}}
