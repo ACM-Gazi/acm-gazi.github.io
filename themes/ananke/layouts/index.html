@@ -7,6 +7,33 @@
       <a href="https://chat.whatsapp.com/IRS4PGZw9FmDqdhC42Fd8m" target="_blank" id="join-button">Aramıza Katıl</a>
     </div>
 
+        {{/* HAKKIMIZDA KISA BLOKLAR (Sponsorlar'dan önce) */}}
+    <section id="about-short">
+      <div class="about-card glass-card">
+        <img src="/images/biz_kimiz.png" width="256" height="256" alt="Biz kimiz görseli" loading="lazy">
+        <h2>Biz kimiz?</h2>
+        <p>
+          ACM Gazi Öğrenci Topluluğu, 2019 yılında Gazi Üniversitesi Mühendislik Fakültesi çatısı altında kurulmuş; bilgisayar biliminin farklı alanlarında etkin, yaratıcı ve teknoloji odaklı bir öğrenci topluluğudur. Küresel ACM ağının bir parçası olarak, üniversitemizdeki 300’den fazla aktif üyemizle disiplinler arası projeler geliştiriyor, yarışmalara katılıyor ve yenilikçi fikirleri hayata geçiriyoruz. Sadece teknik projelere değil, üyelerimizin sosyalleşmesini ve güçlü bağlar kurmasını sağlayan etkinliklere de önem veriyoruz. Böylece akademik başarıyı, sosyal etkileşim ve topluluk ruhuyla birleştiren destekleyici bir ortam oluşturuyoruz.
+        </p>
+      </div>
+
+      <div class="about-card glass-card">
+        <img src="/images/neler_yapıyoruz.png" width="256" height="256" alt="Neler yapıyoruz görseli" loading="lazy">
+        <h2>Neler yapıyoruz?</h2>
+        <p>
+          Sadece ilham verici değil, aynı zamanda uygulamalı deneyime odaklıyız. Teknofest takımlarımızla savunma, uzay ve oyun teknolojilerinde yenilikçi projeler geliştiriyoruz. ACMIX etkinliğimzde alanında tanınmış isimleri kampüsümüze getiriyor, AyazJam ile Türkiye genelinden katılımcıların yer aldığı 24 saatlik oyun geliştirme yarışmaları düzenliyoruz. Tea and Talk, teknik geziler gibi etkinliklerle üyelerimizin teknik gelişimine; oyun gecesi ve diğer sosyal etkinliklerle de sosyal bağlarını güçlendirmelerine katkı sağlıyoruz. Ayrıca, Ar-Ge çalışma gruplarımız aracılığıyla oyun geliştirme, siber güvenlik ve gömülü sistemler gibi bilgisayar mühendisliği alanlarında öğrencilerin yetkinliklerini artırıyoruz.
+        </p>
+      </div>
+
+      <div class="about-card glass-card">
+        <img src="/images/neden_bize_katılmalısın.png" width="256" height="256" alt="Neden katılmalısın görseli" loading="lazy">
+        <h2>Neden bize katılmalısın?</h2>
+        <p>
+          ACM Gazi’ye katılarak, yürüttüğümüz projeler, etkinlikler ve çalışma grupları sayesinde edinebileceğin deneyimlerin bir parçası olursun. Burada sadece bilgini uygulamaya dökmekle kalmaz, farklı disiplinlerden insanlarla çalışarak bakış açını genişletirsin. Alanında uzman konuklarla tanışma, yeni teknolojileri yakından görme ve kendi projelerine ilham katma fırsatı yakalarsın. Üstelik güçlü topluluk kültürü ve sosyal etkinliklerle, hem teknik hem sosyal anlamda kendini sürekli geliştirebileceğin destekleyici bir ortamın parçası olursun.
+        </p>
+      </div>
+    </section>
+
     {{/* SPONSORLAR BÖLÜMÜ*/}}
     {{ $sponsorlar_name := "sponsorlar" }}
     {{ $sponsorlar := where $.Site.RegularPages "Section" $sponsorlar_name }}
@@ -87,62 +114,6 @@
       </div>
     {{ end }}
 
-    <!-- //////////////////////////////////////////// -->
-<!--
-    {{/* Define a section to pull recent posts from. For Hugo 0.20 this will default to the section with the most number of pages. */}}
-    {{ $mainSections := .Site.Params.mainSections | default (slice "post") }}
-    
-    {{/* Check to see if the section is defined for ranging through it */}}
-    {{range ($mainSections)}}
-    {{/* Derive the section name  */}}
-    {{ $section_name := . }}
-    {{/* Create a variable with that section to use in multiple places. */}}
-    {{ $section := where $.Site.RegularPages "Section" "in" $section_name }}
-    {{ $section_count := len $section }}
-    {{ if ge $section_count 1 }}
-      <div class="pa3 pa4-ns w-100 w-70-ns center">
-        {{/* Use $section_name to get the section title. Use "with" to only show it if it exists */}}
-        {{ with $.Site.GetPage "section" $section_name }}
-            <h1 class="flex-none">
-              {{ $.Param "recent_copy" | default (i18n "recentTitle" .) }}
-            </h1>
-          {{ end }}
-
-        {{ $n_posts := $.Param "recent_posts_number" | default 3 }}
-
-        <section class="w-100 mw8">
-          {{/* Range through the first $n_posts items of the section */}}
-          {{ range (first $n_posts $section) }}
-            <div class="relative w-100 mb4">
-              {{ .Render "summary-with-image" }}
-            </div>
-          {{ end }}
-        </section>
-
-        {{ if ge $section_count (add $n_posts 1) }}
-        <section class="w-100">
-          <h1 class="f3">{{ i18n "more" }}</h1>
-          {{/* Now, range through the next four after the initial $n_posts items. Nest the requirements, "after" then "first" on the outside */}}
-          {{ range (first 4 (after $n_posts $section))  }}
-            <h2 class="f5 fw4 mb4 dib {{ cond (eq $.Site.Language.LanguageDirection "rtl") "ml3" "mr3" }}">
-              <a href="{{ .RelPermalink }}" class="link black dim">
-                {{ .Title }}
-              </a>
-            </h2>
-          {{ end }}
-
-          {{/* As above, Use $section_name to get the section title, and URL. Use "with" to only show it if it exists */}}
-          {{ with $.Site.GetPage "section" $section_name }}
-            <a href="{{ .RelPermalink }}" class="link db f6 pa2 br3 bg-mid-gray white dim w4 tc">{{ i18n "allTitle" . }}</a>
-          {{ end }}
-          </section>
-        {{ end }}
-
-      </div>
-    {{ end }}
-  {{ end }}
-   -->
-
   <style>
     #home-section {
       height: 100vh;
@@ -196,6 +167,49 @@
       align-items: center;
     }
 
+    /* === HAKKIMIZDA KISA BLOKLAR === */
+    #about-short {
+      width: 100%;
+      margin: 60px 0 20px 0;
+      display: flex;
+      gap: 28px;
+      align-items: stretch;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .about-card {
+      max-width: 380px;
+      padding: 24px;
+      text-align: center;
+      transition: transform 200ms ease, box-shadow 200ms ease;
+    }
+
+    .about-card:hover {
+      transform: translateY(-16px);
+      box-shadow: 0 10px 60px rgba(13, 138, 255, 0.4);
+    }
+
+    .about-card img {
+      display: block;
+      margin: 0 auto 16px auto;
+      width: 256px;
+      height: 256px;
+      object-fit: contain;    /* 256x256 görseli taşırmadan göster */
+      filter: drop-shadow(0 0px 64px rgba(255, 255, 255, 0.50));
+    }
+
+    .about-card h3 {
+      margin: 8px 0 10px 0;
+    }
+
+    .about-card p {
+      margin: 0;
+      line-height: 1.55;
+      color: var(--foreground-primary);
+      opacity: 0.9;
+    }
+
     .sponsors-section {
       margin: 20px 0;
       display: flex;
@@ -229,7 +243,27 @@
     }
 
     @media only screen and (max-width: 1000px) {
+      h1 {
+        font-size: 32px !important;
+      }
+
+      h3 {
+        font-size: 16px !important;
+      }
+
+      #upper-title {
+        font-size: 14px;
+      }
+
+      #title {
+        font-size: 100px !important;
+      }
+
       .post-section {
+        width: 90%;
+      }
+
+      .about-card {
         width: 90%;
       }
     }
