@@ -7,7 +7,7 @@
   {{ $section := .Site.GetPage "section" .Section }}
   <article class="fade-in settle-up flex-l flex-wrap justify-between mw8 center ph3">
     <header class="mt4 w-100">
-      <h1 class="f1 mt3 mb1">
+      <h1 class="f1 mt3 mb1" id="title">
         {{- .Title -}}
       </h1>
       {{ with .Params.author | default .Site.Params.author }}
@@ -66,6 +66,12 @@
         max-width: 100%;
         height: auto;
         display: block;
+      }
+
+      @media only screen and (max-width: 1000px) {
+        #title {
+          padding: 0 !important;
+        }
       }
     </style>
 

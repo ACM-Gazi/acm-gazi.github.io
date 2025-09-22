@@ -7,3 +7,6 @@ pluralizeListTitles = false
 
 [params]
 description = "Gazi Üniversitesi Bilgisayar Makineleri Birliği (ACM) Öğrenci Topluluğu resmi web sitesi"
+
+[markup.goldmark.renderer]
+unsafe = true

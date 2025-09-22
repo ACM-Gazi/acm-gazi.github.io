@@ -67,3 +67,9 @@ collections:
         fields:
           - { label: "Başlık", name: "title", widget: "string" }
           - { label: "Metin", name: "body", widget: "markdown" }
+      - name: "linkler"
+        label: "Linkler"
+        file: "content/linkler.md"
+        fields:
+          - { label: "Başlık", name: "title", widget: "string" }
+          - { label: "Metin", name: "body", widget: "markdown" }

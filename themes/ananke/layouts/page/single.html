@@ -3,7 +3,7 @@
   <div class="fade-in settle-up flex-l mt2 mw8 center">
     <article class="center cf ph3 pb5 ph4-ns">
       <header>
-        <h1 class="f1 tc pv4">
+        <h1 class="f1 tc pv4" id="title">
           {{ .Title }}
         </h1>
       </header>
@@ -17,6 +17,12 @@
         max-width: 100%;
         height: auto;
         display: block;
+      }
+
+      @media only screen and (max-width: 1000px) {
+        #title {
+          padding: 0 !important;
+        }
       }
     </style>
   </div>
