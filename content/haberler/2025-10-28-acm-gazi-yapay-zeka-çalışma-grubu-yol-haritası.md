@@ -1,6 +1,6 @@
 ---
 title: ACM Gazi Yapay Zeka Çalışma Grubu Yol Haritası
-date: 28.10.2025
+date: 2025-01-01T11:27:00
 ---
 # Yapay Zeka Yol Haritası
 
