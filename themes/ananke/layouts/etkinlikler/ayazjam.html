@@ -1,18 +1,50 @@
 {{ define "header" }}{{ partial "page-header.html" . }}{{ end }}
 {{ define "main" }}
+<div class="stars parallax-stars"></div>
+<div class="snow"></div>
 <div style="display: flex; justify-content: center;">
     <article id="ayazjam-main">
         <img id="ayazjam-logo" alt="ayazjam_logo" src="/media/etkinlikler/Logo1.png" width="450" />
-        <p id="ayazjam-date-text" style="font-size: 32px; margin-bottom: 7px; text-align: center;">🗓️ &#8202 20-21-22 Aralık</p>
-        <p id="ayazjam-date-text" style="font-size: 32px; margin-top: 7px; text-align: center;">📍 Teknopark Ankara - Nar Kuluçka Merkezi
-        </p>
+        <p id="ayazjam-date-text" class="hero-subtitle">🗓️ &#8202 5-6-7 Aralık</p>
+        <p id="ayazjam-date-text" class="hero-subtitle">📍 Teknopark Ankara - Nar Kuluçka Merkezi</p>
 
-        <a href="https://forms.gle/N4Eq2LSBudwmksvf8" target="_blank" rel="noopener noreferrer" id="join-button">Hemen Başvur!</a>
+        <div class="countdown-wrap">
+            <div class="countdown-grid">
+                <div class="countdown-card">
+                    <div class="countdown-label">Gün</div>
+                    <div class="countdown-value" id="countdown-days">--</div>
+                </div>
+                <div class="countdown-card">
+                    <div class="countdown-label">Saat</div>
+                    <div class="countdown-value" id="countdown-hours">--</div>
+                </div>
+                <div class="countdown-card">
+                    <div class="countdown-label">Dakika</div>
+                    <div class="countdown-value" id="countdown-mins">--</div>
+                </div>
+                <div class="countdown-card">
+                    <div class="countdown-label">Saniye</div>
+                    <div class="countdown-value" id="countdown-secs">--</div>
+                </div>
+            </div>
+        </div>
 
-        <div class="ayazjam-body-div">
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLScSBCkIijdhvdMIpfv7cIkKslZ3vS5Nmmu9jrIxUHceXSY6xA/viewform"
+            target="_blank" rel="noopener noreferrer" id="join-button">Hemen Başvur!</a>
+
+        <div class="hero-badges">
+            <span class="badge-chip">⏱️ 48 Saat</span>
+            <span class="badge-chip">🏢 Fiziksel</span>
+            <span class="badge-chip">🤝 Mentör Desteği</span>
+            <span class="badge-chip">🏆 Ödüller</span>
+            <span class="badge-chip">🍫 İkramlar</span>
+            <span class="badge-chip">🎮 Etkinlikler</span>
+        </div>
+
+        <div class="ayazjam-body-div glass-card">
             <h2>AyazJam Nedir?</h3>
                 <p class="ayazjam-body-text">
-                    🖥️ ACM Gazi topluluğu tarafından 20-22 Aralık tarihlerinde gerçekleşecek olan bir 🎮 "game jam"dır.
+                    🖥️ ACM Gazi topluluğu tarafından 5-6-7 Aralık tarihlerinde gerçekleşecek olan bir 🎮 "game jam"dır.
                     Yarışmacı takımlar ⏰ 48 saat süre içerisinde önceden belirlenmiş olan temaya uygun oyun
                     geliştirecekler ve geliştirilen oyunlar 🖌️ temaya uygunluk, ✨ özgünlük, 🎨 yaratıcılık gibi birçok
                     faktör hesaba katılarak oyun geliştirme sektörüne hâkim 🤵 jüriler tarafından değerlendirilip
@@ -20,14 +52,15 @@
                 </p>
         </div>
 
-        <div class="ayazjam-body-div">
+        <div class="ayazjam-body-div glass-card">
             <h2>AyazJam Nasıl Bir Etkinlik Olacak?</h3>
                 <p class="ayazjam-body-text">
                     AyazJam 🏢 teknopark anlaşmaları ile gerçekleşecek olup fiziksel özellik taşıyacaktır. 🎉 Kahoot
                     yarışmaları, çeşitli bilmeceler gibi buz kırma etkinlikleri ile takımların kaynaşması sağlanacak ve
                     yarışmanın daha eğlenceli hale gelmesi sağlanacaktır. Yarışma anında sektörde görev alan 🤵 mentor
                     kişilerin yardımı sağlanarak az deneyime sahip olan yarışmacılara kolaylık sağlanacak ve gamejamin
-                    devamlılığı sağlanmış olacaktır. Takımlar yaptıkları 🎮 oyunları jüriye sunacaklar bu sayede fiziksel
+                    devamlılığı sağlanmış olacaktır. Takımlar yaptıkları 🎮 oyunları jüriye sunacaklar bu sayede
+                    fiziksel
                     ortamın imkanlarından daha iyi faydalanılmış olacak.
                     Gamejam paydaşlarımızın katkılarıyla yarışmacı arkadaşlara 🍔 yiyecek, ☕ içecek, ve 🍫 atıştırmalık
                     ihtiyaçları sağlanacaktır. Kazanan takımları motive edecek 🥇 ödüllerin ayarlanması paydaşlarımız
@@ -35,7 +68,7 @@
                 </p>
         </div>
 
-        <div class="ayazjam-body-div">
+        <div class="ayazjam-body-div glass-card">
             <h2>Sponsorlarımız</h3>
                 <div id="ayazjam-sponsorlar-links">
                     <a href="https://www.taleworlds.com/" target="_blank" rel="noopener noreferrer">
@@ -50,150 +83,584 @@
                 </div>
         </div>
 
-        <div class="ayazjam-body-div">
+        <div class="ayazjam-body-div glass-card">
             <h2>Konum</h2>
-            <iframe width="500" height="350" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" id="gmap_canvas" src="https://maps.google.com/maps?width=520&amp;height=400&amp;hl=en&amp;q=Serhat,%202224.%20Cd.%20No:1%20C%20Blok%20Kat%2014,%2006378%20Yenimahalle/Ankara%20Ankara+(Ankara%20Teknopark)&amp;t=&amp;z=12&amp;ie=UTF8&amp;iwloc=B&amp;output=embed"></iframe>
+            <iframe width="500" height="350" frameborder="0" scrolling="no" marginheight="0" marginwidth="0"
+                id="gmap_canvas"
+                src="https://maps.google.com/maps?width=520&amp;height=400&amp;hl=en&amp;q=Serhat,%202224.%20Cd.%20No:1%20C%20Blok%20Kat%2014,%2006378%20Yenimahalle/Ankara%20Ankara+(Ankara%20Teknopark)&amp;t=&amp;z=12&amp;ie=UTF8&amp;iwloc=B&amp;output=embed"></iframe>
             <p>📍 Teknopark Ankara - Nar Kuluçka Merkezi</p>
         </div>
 
-        <div class="ayazjam-body-div">
+        <div class="ayazjam-body-div faq-wrapper">
             <h2>Sıkça Sorulan Sorular</h2>
             <div class="faq-entry-div">
-                <h3>Katılım ücretsiz mi?</h3>
-                <p>
-                    Katılım yarışmacılarımız için tamamen ücretsizdir.
-                </p>
+                <details class="glass-card">
+                    <summary>🕒 Etkinlik ne zaman ve nerede gerçekleşecek?</summary>
+                    <div class="faq-answer">
+                        <p>
+                            5 – 6 – 7 Aralık tarihlerinde, Teknopark Ankara’da fiziksel olarak gerçekleştirilecektir.
+                        </p>
+                    </div>
+                </details>
             </div>
             <div class="faq-entry-div">
-                <h3>AyazJam katılımcıların ulaşımını karşılayacak mı?</h3>
-                <p>
-                    Maalesef, ACM Gazi olarak şimdilik Ayaz Jam katılımcılarının ulaşım masraflarını karşılayamıyoruz. Ulaşım rotasına Instagram adresimiz üzerinden erişebilirsiniz.
-                </p>
+                <details class="glass-card">
+                    <summary>💰 Katılım ücreti var mı?</summary>
+                    <div class="faq-answer">
+                        <p>
+                            Hayır, katılım tamamen ücretsizdir.
+                        </p>
+                    </div>
+                </details>
             </div>
             <div class="faq-entry-div">
-                <h3>Kimler katılabilir?</h3>
-                <p>
-                    18 yaşından büyük, Oyun Geliştirmeye ilgili olan herkes etkinliğimize katılabilir.
-                </p>
+                <details class="glass-card">
+                    <summary>💰 Toplam kaç kişi katılacak?</summary>
+                    <div class="faq-answer">
+                        <p>
+                            175 kişilik kontenjanımız bulunacaktır. Elini çabuk tut ve sayılı kişilerden birisi sen ol!
+                        </p>
+                    </div>
+                </details>
             </div>
             <div class="faq-entry-div">
-                <h3>Takımım olmadan katılırsam seçilme şansım azalır mı?</h3>
-                <p>
-                    Tabii ki hayır. ACM Gazi olarak oyun geliştirme ekosistemine en çok ilgi duyan insanları daha da motive etmek için çabalıyoruz. Ayrıca, etkinlik programımızda yer alacak olan "Ice Breaking" etkinliklerimiz ve takımlaştırma aşamalarımız tam da takımı olmayan katılımcıları ekosisteme dahil etmek için düzenlendi.
-                </p>
+                <details class="glass-card">
+                    <summary>👥 Katılım bireysel mi, takım olarak mı yapılabilir?</summary>
+                    <div class="faq-answer">
+                        <p>
+                            Bireysel veya en fazla 5 kişilik takımlar halinde katılım mümkündür.
+                        </p>
+                    </div>
+                </details>
             </div>
             <div class="faq-entry-div">
-                <h3>Bilgisayar desteği sağlanıyor mu?</h3>
-                <p>
-                    Maalesef, ACM Gazi olarak şimdilik Ayaz Jam katılımcılarına bilgisayar tahsis edemiyoruz. Etkinlik alanına kendi bilgisayarlarınızla gelmelisiniz.
-                </p>
+                <details class="glass-card">
+                    <summary>💻 Bilgisayar sağlanacak mı?</summary>
+                    <div class="faq-answer">
+                        <p>
+                            Maalesef hayır. Her katılımcı kendi bilgisayarıyla gelmelidir.
+                        </p>
+                    </div>
+                </details>
             </div>
             <div class="faq-entry-div">
-                <h3>Yemek sağlanacak mı?</h3>
-                <p>
-                    Tabii ki! Sitemizden de görebileceğiniz üzere pek çok sponsorumuz bu etkinlikte katılımcılarımızın rahatını düşünüyor. Kahvaltı, Akşam Yemeği ve sürpriz atıştırmalık servisleri ile yemek sıkıntısını ortadan kaldırıyoruz!
-                </p>
+                <details class="glass-card">
+                    <summary>🍕 Yemek veya içecek sağlanacak mı?</summary>
+                    <div class="faq-answer">
+                        <p>
+                            Evet! ADL yemek sponsorumuz olarak etkinlik süresince katılımcılara yemek sağlayacaktır.
+                        </p>
+                        <p>
+                            Bunun dışında çeşitli ikramlar ve atıştırmalıklar da alanda mevcut olacak.
+                        </p>
+                    </div>
+                </details>
             </div>
             <div class="faq-entry-div">
-                <h3>Etkinlikte sosyal etkinlikler olacak mı?</h3>
-                <p>
-                    Ice Breaking etkinlikleri, gece oyun etkinlikleri, mini ödüllü etkinlikler ve Network imkanıyla dolu AyazJam'de sosyalleşememek mümkün değil! 
-                </p>
+                <details class="glass-card">
+                    <summary>⚡ Elektrik prizleri ve internet olacak mı?</summary>
+                    <div class="faq-answer">
+                        <p>
+                            Evet! Teknopark Ankara tarafından priz altyapısı sağlanacak ve internet hızı etkinlik
+                            süresince 5 katına çıkarılacaktır. ⚡
+                        </p>
+                    </div>
+                </details>
             </div>
             <div class="faq-entry-div">
-                <h3>Kış mevsiminde Ankara soğuk olur mu, üşümemek için teçhizatlanmalı mıyım?</h3>
-                <p>
-                    Kesinlikle! Ankara "Ayaz"ı ruhumuzu bile keseceğinden, oldukça sıkı giyinmelisiniz. Etkinlik alanı efektif bir şekilde ısıtılacaktır. Ancak dışarıda üşümeyeceğinizin garantisini veremiyoruz.
-                </p>
+                <details class="glass-card">
+                    <summary>🚪 Giriş-çıkış saatleri nasıl olacak?</summary>
+                    <div class="faq-answer">
+                        <p>
+                            “Ekibe bildirilen özel durumlar haricinde” 21.00 – 09.00 saatleri arasında alana giriş
+                            yapılamayacaktır.
+                        </p>
+                        <p>
+                            Gece vakti alandan çıkış yalnızca taksi veya kişisel araç ile yapılabilir. Alan sanayi
+                            bölgesinde bulunduğu için yaya çıkışı güvenlik gerekçesiyle yasaktır.
+                        </p>
+                    </div>
+                </details>
+            </div>
+            <div class="faq-entry-div">
+                <details class="glass-card">
+                    <summary>🏆 Ödül var mı?</summary>
+                    <div class="faq-answer">
+                        <p>
+                            Ana ödül şu anda açıklanmadı, ancak etkinlik boyunca sürpriz ödüller, mini yarışmalar ve
+                            eğlenceli etkinlikler seni bekliyor!
+                        </p>
+                    </div>
+                </details>
+            </div>
+            <div class="faq-entry-div">
+                <details class="glass-card">
+                    <summary>🎟 Katılım herkese açık mı?</summary>
+                    <div class="faq-answer">
+                        <p>
+                            Etkinlik herkese açık şekilde gerçekleştirilecek ancak sadece başvurusu kabul edilen kişiler
+                            alana giriş yapabilecektir. Öğrenci olmak gibi bir zorunluluk bulunmayıp 18 yaş üzeri herkes
+                            katılabilir.
+                        </p>
+                    </div>
+                </details>
+            </div>
+            <div class="faq-entry-div">
+                <details class="glass-card">
+                    <summary>👨‍💻 Tüm takımın alanda olması şart mı?</summary>
+                    <div class="faq-answer">
+                        <p>
+                            Hayır, ancak her takımdan en az bir kişi etkinlik süresince alanda bulunmalıdır. Bu kişi gün
+                            içinde değişebilir.
+                        </p>
+                    </div>
+                </details>
+            </div>
+            <div class="faq-entry-div">
+                <details class="glass-card">
+                    <summary>🧠 Tema ne zaman açıklanacak?</summary>
+                    <div class="faq-answer">
+                        <p>
+                            Tema Cuma günü saat 15:00’te açıklanacaktır.
+                        </p>
+                    </div>
+                </details>
+            </div>
+            <div class="faq-entry-div">
+                <details class="glass-card">
+                    <summary>🎮 Hangi motorları veya araçları kullanabilirim?</summary>
+                    <div class="faq-answer">
+                        <p>
+                            Herhangi bir kısıtlama yoktur, dilediğin oyun motorunu (Unity, Unreal, Godot vb.)
+                            kullanabilirsin.
+                        </p>
+                    </div>
+                </details>
+            </div>
+            <div class="faq-entry-div">
+                <details class="glass-card">
+                    <summary>🔥 Hava soğuk olacak mı, ne getirmeliyim?</summary>
+                    <div class="faq-answer">
+                        <p>
+                            Etkinlik Aralık ayında yapılacağı için dışarısı oldukça soğuk olacaktır.
+                        </p>
+                        <p>
+                            -&gt; Ceket veya mont getirmeyi unutma!
+                        </p>
+                        <p>
+                            Ancak iç mekan ısıtılacak ve oldukça sıcak olacaktır
+                        </p>
+                        <p>
+                            -&gt; Rahat kıyafetler, pijama, terlik gibi eşyalar Jam süresince konforunuzu sağlama
+                            alacaktır.
+                        </p>
+                    </div>
+                </details>
+            </div>
+            <div class="faq-entry-div">
+                <details class="glass-card">
+                    <summary>😴 Uyuma alanı olacak mı?</summary>
+                    <div class="faq-answer">
+                        <p>
+                            Evet, bir uyuma alanı sağlanacaktır.
+                        </p>
+                        <p>
+                            Yastık, şişme yatak, battaniye gibi konforunuzu sağlayacak eşyalar getirmenizi tavsiye
+                            ederiz. Ancak gerekli değildir.
+                        </p>
+                    </div>
+                </details>
+            </div>
+            <div class="faq-entry-div">
+                <details class="glass-card">
+                    <summary>📸 Fotoğraf ve video çekilecek mi?</summary>
+                    <div class="faq-answer">
+                        <p>
+                            Evet! Etkinlik boyunca fotoğraf ve video çekimleri yapılacaktır. Katılımcılar, KVKK metni
+                            kapsamında bu paylaşımları onaylamış sayılacaktır.
+                        </p>
+                    </div>
+                </details>
             </div>
         </div>
     </article>
 </div>
 
 <style>
+    @import url('https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+    .pixel-font {
+        font-family: "Pixelify Sans", sans-serif;
+        font-optical-sizing: auto;
+    }
+
+    .press-font {
+        font-family: "Press Start 2P", system-ui;
+        font-weight: 400;
+        font-style: normal;
+    }
+
     #ayazjam-main {
         display: flex;
         flex-direction: column;
         align-items: center;
         width: 60%;
+        position: relative;
+        z-index: 2;
+    }
+
+    #ayazjam-main::before {
+        content: "";
+        position: absolute;
+        top: -140px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 150%;
+        height: 560px;
+        background: radial-gradient(ellipse at center, rgba(80, 150, 255, 0.14) 0%, rgba(0, 9, 18, 0) 65%);
+        z-index: -1;
+        filter: blur(2px);
     }
 
     #ayazjam-logo {
         margin-top: 65px;
-        margin-bottom: 25px;
+        margin-bottom: 50px;
+        position: relative;
+        z-index: 3;
+    }
+
+    .hero-subtitle {
+        font-family: "Press Start 2P", system-ui;
+        font-size: 20px;
+        letter-spacing: 0.05em;
+        margin: 12px 0;
+        text-align: center;
+        display: block;
     }
 
     #join-button {
-        position: unset;
+        position: relative;
         font-size: 20px;
-        padding: 15px 55px;
-        margin-top: 50px;
-        margin-bottom: 75px;
-        border-radius: 999px;
-        border: 1px solid var(--foreground-primary);
+        padding: 17px 58px;
+        margin-top: 32px;
+        margin-bottom: 60px;
+        border-radius: 0;
+        border: 2px solid var(--foreground-primary);
         color: var(--foreground-primary);
-        background-color: var(--accent);
-        box-shadow: 0px 0px 50px 7px rgba(10, 95, 186, 0.75);
+        background: linear-gradient(135deg, var(--accent) 0%, #0a4f96 100%);
+        box-shadow:
+            4px 4px 0 rgba(0, 0, 0, 0.45),
+            0 0 0 3px var(--background-primary) inset;
         text-decoration: none;
-        transition: 250ms;
+        transition: 140ms ease;
+        overflow: hidden;
+        font-family: "Press Start 2P", system-ui;
+        letter-spacing: 0.04em;
     }
 
     #join-button:hover {
         color: var(--background-primary);
         background-color: var(--foreground-primary);
-        box-shadow: 0px 0px 100px 15px rgba(10, 95, 186, 0.75);
+        background: linear-gradient(135deg, var(--foreground-primary) 0%, #2a6fe3 100%);
+        box-shadow:
+            6px 6px 0 rgba(0, 0, 0, 0.55),
+            0 0 0 3px var(--background-primary) inset;
+        transform: translate(-2px, -2px);
     }
 
     #join-button::after {
-        display: none;
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -60%;
+        width: 50%;
+        height: 100%;
+        background: linear-gradient(120deg, transparent 0%, rgba(255, 255, 255, 0.32) 45%, transparent 85%);
+        transform: skewX(-20deg);
+        animation: button-shine 3s ease-in-out infinite;
+        pointer-events: none;
     }
 
-    .ayazjam-body-div {
-        margin-bottom: 50px;
+    @keyframes button-shine {
+        0% {
+            left: -70%;
+        }
+        40% {
+            left: 120%;
+        }
+        100% {
+            left: 120%;
+        }
+    }
+
+    #body {
+        background-color: #000912;
+        position: relative;
+        overflow-x: hidden;
+    }
+
+    /* Disable global background video on this page */
+    #video-background,
+    #video-background video {
+        display: none !important;
+    }
+
+    .stars {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 0;
+        opacity: 0.4;
+        background-image:
+            radial-gradient(1px 1px at 20% 30%, rgba(255, 255, 255, 0.7) 60%, transparent 70%),
+            radial-gradient(1.5px 1.5px at 70% 80%, rgba(255, 255, 255, 0.6) 60%, transparent 70%),
+            radial-gradient(1.2px 1.2px at 40% 60%, rgba(255, 255, 255, 0.8) 60%, transparent 70%),
+            radial-gradient(1px 1px at 10% 80%, rgba(255, 255, 255, 0.5) 60%, transparent 70%);
+        background-size: 280px 280px, 320px 320px, 360px 360px, 300px 300px;
+        animation: stars-drift 60s linear infinite;
+    }
+
+    @keyframes stars-drift {
+        0% {
+            background-position: 0 0, 0 0, 0 0, 0 0;
+        }
+        50% {
+            background-position: -80px 140px, 60px 180px, -40px 160px, 50px 120px;
+        }
+        100% {
+            background-position: -160px 280px, 120px 360px, -80px 320px, 100px 240px;
+        }
+    }
+
+    .snow {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 1;
+        overflow: hidden;
+    }
+
+    .snow canvas {
+        width: 100%;
+        height: 100%;
+        display: block;
+    }
+
+  .ayazjam-body-div {
+      width: 100%;
+      max-width: 1000px;
+      margin: 0 auto 50px auto;
+      box-sizing: border-box;
+  }
+
+  /* Force square corners on glass cards */
+  .glass-card {
+      border-radius: 0 !important;
+      background: linear-gradient(180deg, rgba(15, 25, 40, 0.85) 0%, rgba(10, 15, 25, 0.92) 100%);
+      border: 3px solid rgba(255, 255, 255, 0.45);
+      box-shadow:
+          6px 6px 0 rgba(0, 0, 0, 0.55);
+      padding: 31px 31px 15px 31px;
+  }
+
+  .hero-badges {
+      margin-top: 24px;
+      margin-bottom: 40px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 14px;
+  }
+
+  .badge-chip {
+      font-family: "Press Start 2P", system-ui;
+      font-size: 13px;
+      letter-spacing: 0.03em;
+      padding: 12px 18px;
+      border: 3px solid rgba(255, 255, 255, 0.45);
+      background: linear-gradient(180deg, rgba(20, 32, 50, 0.92), rgba(12, 20, 32, 0.98));
+      box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.6);
+      text-transform: uppercase;
+      color: var(--foreground-primary);
+  }
+
+    .countdown-wrap {
+        margin: 28px 0 28px 0;
+        text-align: center;
+    }
+
+    .countdown-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 22px;
+    }
+
+    .countdown-card {
+        border: 3px solid rgba(255, 255, 255, 0.45);
+        background: linear-gradient(180deg, rgba(20, 32, 50, 0.9), rgba(12, 20, 32, 0.95));
+        box-shadow: 7px 7px 0 rgba(0, 0, 0, 0.6);
+        padding: 22px 16px;
+    }
+
+    .countdown-label {
+        font-family: "Pixelify Sans", sans-serif;
+        font-size: 16px;
+        letter-spacing: 0.03em;
+        margin-bottom: 10px;
+    }
+
+    .countdown-value {
+        font-family: "Press Start 2P", system-ui;
+        font-size: 26px;
+        letter-spacing: 0.12em;
+        color: var(--foreground-primary);
+    }
+
+    .faq-wrapper {
+        width: 100%;
+        max-width: 1000px;
+        margin: 0 auto 50px auto;
+        box-sizing: border-box;
     }
 
     .ayazjam-body-div h2 {
-        font-size: 32px;
+        font-size: 26px;
+        font-weight: 400;
         text-align: center;
+        margin-bottom: 16px;
+        letter-spacing: 0.04em;
+        font-family: "Press Start 2P", system-ui;
+        line-height: 1.4;
     }
 
     .ayazjam-body-div p {
-        font-size: 22px;
-        line-height: 1.4;
+        font-size: 23px;
+        line-height: 1.5;
         text-align: center;
+        letter-spacing: 0.005em;
+        font-family: "Pixelify Sans", sans-serif;
     }
 
     #ayazjam-sponsorlar-links {
         display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
     }
 
     #ayazjam-sponsorlar-links a {
         display: flex;
         align-items: center;
         justify-content: center;
-        margin: 20px;
+        margin: 12px 18px;
     }
 
     #ayazjam-sponsorlar-links a img {
-        transform: scale(0.75);
+        max-width: 250px;
+        width: 100%;
+        height: auto;
+        object-fit: contain;
+        transform: scale(0.78);
+        filter: grayscale(100%) brightness(0.8);
+        transition: transform 180ms ease, filter 180ms ease, box-shadow 180ms ease;
+    }
+
+    #ayazjam-sponsorlar-links a:hover img {
+        filter: grayscale(0%) brightness(1);
+        transform: scale(0.82);
     }
 
     iframe {
-        border-radius: 20px;
+        border-radius: 0;
+        display: block;
+        margin: 0 auto;
+        max-width: 100%;
     }
 
     .faq-entry-div {
-        margin-top: 50px;
+        margin-top: 30px;
+        width: 100%;
+        max-width: 100%;
     }
 
-    .faq-entry-div h3 {
-        font-size: 24px;
-        margin-bottom: 0px;
+    .faq-entry-div details {
+        padding: 24px 26px;
+        border-radius: 0;
+        border: 3px solid rgba(255, 255, 255, 0.35);
+        background-color: rgba(12, 20, 32, 0.92);
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        box-sizing: border-box;
+        display: block;
+        word-break: break-word;
+        overflow: hidden;
+        box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.55);
+        transition: background-color 200ms ease, border-color 200ms ease, box-shadow 200ms ease;
     }
 
-    .faq-entry-div p {
+    .faq-entry-div details[open] {
+        background-color: rgba(20, 30, 45, 0.95);
+        border-color: rgba(255, 255, 255, 0.45);
+        box-shadow: 7px 7px 0 rgba(0, 0, 0, 0.6);
+    }
+
+    .faq-entry-div summary {
+        position: relative;
+        display: block;
+        font-size: 26px;
+        margin: 0;
+        cursor: pointer;
+        list-style: none;
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        box-sizing: border-box;
+        padding-right: 28px;
+        font-weight: 400;
+        font-family: "Pixelify Sans", sans-serif;
+        letter-spacing: 0.01em;
+    }
+
+    .faq-entry-div summary::after {
+        content: "";
+        position: absolute;
+        right: 0;
+        top: 50%;
+        transform: translateY(-50%) rotate(45deg);
+        width: 10px;
+        height: 10px;
+        border-right: 2px solid currentColor;
+        border-bottom: 2px solid currentColor;
+        transition: transform 200ms ease;
+    }
+
+    .faq-entry-div details[open] summary::after {
+        transform: translateY(-50%) rotate(-135deg);
+    }
+
+    .faq-entry-div summary::-webkit-details-marker {
+        display: none;
+    }
+
+    .faq-answer {
+        max-height: 0;
+        opacity: 0;
+        padding-top: 18px;
+        overflow: hidden;
+        transition: max-height 300ms ease, opacity 200ms ease;
+    }
+
+    .faq-entry-div details[open] .faq-answer {
+        max-height: 600px;
+        opacity: 1;
+    }
+
+    .faq-answer p {
         text-align: left;
-        margin-top: 10px;
+        margin-top: 12px;
+        margin-bottom: 0;
     }
 
     @media only screen and (max-width: 1000px) {
@@ -226,4 +693,126 @@
         }
       }
 </style>
+
+<script>
+    (function () {
+        const elDays = document.getElementById('countdown-days');
+        const elHours = document.getElementById('countdown-hours');
+        const elMins = document.getElementById('countdown-mins');
+        const elSecs = document.getElementById('countdown-secs');
+        if (!elDays || !elHours || !elMins || !elSecs) return;
+
+        const getTarget = () => {
+            const now = new Date();
+            const year = now.getFullYear();
+            const target = new Date(year, 11, 5, 18, 0, 0); // Dec 5 18:00 local
+            if (target.getTime() < now.getTime()) {
+                return new Date(year + 1, 11, 5, 18, 0, 0);
+            }
+            return target;
+        };
+
+        let target = getTarget();
+
+        const pad = (n) => String(n).padStart(2, '0');
+
+        const tick = () => {
+            const now = new Date();
+            if (now > target) target = getTarget();
+
+            let diff = target - now;
+            if (diff < 0) diff = 0;
+
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+            const mins = Math.floor((diff / (1000 * 60)) % 60);
+            const secs = Math.floor((diff / 1000) % 60);
+
+            elDays.textContent = pad(days);
+            elHours.textContent = pad(hours);
+            elMins.textContent = pad(mins);
+            elSecs.textContent = pad(secs);
+        };
+
+        tick();
+        setInterval(tick, 1000);
+    })();
+</script>
+
+<script>
+    (() => {
+        const container = document.querySelector('.snow');
+        if (!container) return;
+
+        const canvas = document.createElement('canvas');
+        canvas.setAttribute('aria-hidden', 'true');
+        container.appendChild(canvas);
+
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+
+        let w = 0;
+        let h = 0;
+        const flakes = [];
+        const FLAKE_COUNT = 220;
+
+        const resize = () => {
+            w = window.innerWidth;
+            h = window.innerHeight;
+            canvas.width = w;
+            canvas.height = h;
+        };
+
+        const resetFlake = (flake) => {
+            flake.x = Math.random() * (w - 120) + 60; // avoid edges to reduce side entry
+            flake.y = -Math.random() * h - 40; // start above view so they fall in naturally
+            flake.w = 2 + Math.random() * 3.5;
+            flake.h = flake.w + Math.random() * 2.5;
+            flake.dy = 0.7 + Math.random() * 1.8;
+            flake.dx = -0.4 + Math.random() * 0.8;
+            flake.windOffset = Math.random() * Math.PI * 2;
+            flake.windSpeed = 0.0025 + Math.random() * 0.0035;
+            flake.alpha = 0.45 + Math.random() * 0.4;
+        };
+
+        resize();
+
+        for (let i = 0; i < FLAKE_COUNT; i++) {
+            const flake = {};
+            resetFlake(flake);
+            // stratify initial x to avoid clustering on edges
+            const laneWidth = Math.max(w / FLAKE_COUNT, 1);
+            flake.x = (i * laneWidth) + Math.random() * laneWidth;
+            flake.x = Math.min(Math.max(flake.x, 60), w - 60);
+            flake.y = Math.random() * h; // seed screen so it doesn't start empty
+            flakes.push(flake);
+        }
+
+        let lastTime = null;
+
+        const tick = (now) => {
+            const dt = lastTime === null ? 16 : now - lastTime;
+            lastTime = now;
+            ctx.clearRect(0, 0, w, h);
+
+            flakes.forEach((f) => {
+                const wind = Math.sin(now * 0.0015 + f.windOffset) * 1.8;
+                f.x += (f.dx + wind) * (dt / 16);
+                f.y += f.dy * (dt / 16);
+
+                if (f.y > h + 10) resetFlake(f);
+                if (f.x > w + 80 || f.x < -80) resetFlake(f);
+
+                ctx.globalAlpha = f.alpha;
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(f.x, f.y, f.w, f.h);
+            });
+
+            requestAnimationFrame(tick);
+        };
+
+        window.addEventListener('resize', resize, { passive: true });
+        requestAnimationFrame(tick);
+    })();
+</script>
 {{ end }}
