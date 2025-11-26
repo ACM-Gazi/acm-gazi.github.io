@@ -1,9 +1,42 @@
+{{ define "head" }}
+{{ partial "head-additions.html" . }}
+<meta name="description"
+    content="AyazJam, ACM Gazi tarafından 5-6-7 Aralık'ta Teknopark Ankara'da düzenlenen 48 saatlik fiziksel game jam. Başvur, ekip kur, ödülleri kazan." />
+<link rel="canonical" href="{{ .Permalink }}">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Event",
+  "name": "AyazJam",
+  "description": "ACM Gazi'nin 5-6-7 Aralık tarihlerinde Teknopark Ankara'da düzenlediği 48 saatlik fiziksel game jam.",
+  "startDate": "2024-12-05T18:00:00+03:00",
+  "endDate": "2024-12-07T23:59:00+03:00",
+  "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+  "eventStatus": "https://schema.org/EventScheduled",
+  "location": {
+    "@type": "Place",
+    "name": "Teknopark Ankara - Nar Kuluçka Merkezi",
+    "address": "Serhat, 2224. Cd. No:1 C Blok Kat 14, 06378 Yenimahalle, Ankara"
+  },
+  "image": [
+    "https://ayazjam.acmgazi.com/media/etkinlikler/Logo1.png",
+    "{{ .Permalink }}"
+  ],
+  "organizer": {
+    "@type": "Organization",
+    "name": "ACM Gazi",
+    "url": "https://acmgazi.com"
+  }
+}
+</script>
+{{ end }}
 {{ define "header" }}{{ partial "page-header.html" . }}{{ end }}
 {{ define "main" }}
 <div class="stars parallax-stars"></div>
 <div class="snow"></div>
 <div style="display: flex; justify-content: center;">
     <article id="ayazjam-main">
+        <h1 class="page-title">AyazJam</h1>
         <img id="ayazjam-logo" alt="ayazjam_logo" src="/media/etkinlikler/Logo1.png" width="450" />
         <p id="ayazjam-date-text" class="hero-subtitle">🗓️ &#8202 5-6-7 Aralık</p>
         <p id="ayazjam-date-text" class="hero-subtitle">📍 Teknopark Ankara - Nar Kuluçka Merkezi</p>
@@ -330,6 +363,16 @@
         z-index: 3;
     }
 
+    .page-title {
+        font-family: "Press Start 2P", system-ui;
+        font-size: 28px;
+        letter-spacing: 0.05em;
+        margin: 0 0 16px 0;
+        text-align: center;
+        color: var(--foreground-primary);
+        display: none;
+    }
+
     .hero-subtitle {
         font-family: "Press Start 2P", system-ui;
         font-size: 20px;
@@ -493,27 +536,27 @@
     .countdown-grid {
         display: grid;
         grid-template-columns: repeat(4, minmax(0, 1fr));
-        gap: 22px;
+        gap: 24px;
     }
 
     .countdown-card {
         border: 3px solid rgba(255, 255, 255, 0.45);
         background: linear-gradient(180deg, rgba(20, 32, 50, 0.9), rgba(12, 20, 32, 0.95));
         box-shadow: 7px 7px 0 rgba(0, 0, 0, 0.6);
-        padding: 22px 16px;
+        padding: 26px 18px;
     }
 
     .countdown-label {
         font-family: "Pixelify Sans", sans-serif;
-        font-size: 16px;
+        font-size: 17px;
         letter-spacing: 0.03em;
         margin-bottom: 10px;
     }
 
     .countdown-value {
         font-family: "Press Start 2P", system-ui;
-        font-size: 26px;
-        letter-spacing: 0.12em;
+        font-size: 30px;
+        letter-spacing: 0.14em;
         color: var(--foreground-primary);
     }
 
@@ -663,17 +706,68 @@
         margin-bottom: 0;
     }
 
-    @media only screen and (max-width: 1000px) {
+    @media only screen and (max-width: 900px) {
         #ayazjam-main {
-            width: 75%;
+            width: 90%;
         }
 
         #ayazjam-logo {
-            width: 120%;
+            width: 90%;
+            margin-bottom: 24px;
         }
 
-        #ayazjam-date-text {
-            font-size: 26px !important;
+        .hero-subtitle {
+            font-size: 14px;
+            margin: 8px 0;
+        }
+
+        #join-button {
+            font-size: 16px;
+            padding: 14px 42px;
+            margin-top: 24px;
+            margin-bottom: 40px;
+        }
+
+        .hero-badges {
+            gap: 10px;
+            margin-top: 16px;
+            margin-bottom: 28px;
+        }
+
+        .badge-chip {
+            font-size: 11px;
+            padding: 10px 12px;
+            border-width: 2px;
+            box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.5);
+        }
+
+        .countdown-grid {
+            gap: 14px;
+        }
+
+        .countdown-card {
+            border-width: 2px;
+            box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.5);
+            padding: 16px 12px;
+        }
+
+        .countdown-label {
+            font-size: 13px;
+            margin-bottom: 6px;
+        }
+
+        .countdown-value {
+            font-size: 20px;
+            letter-spacing: 0.08em;
+        }
+
+        .glass-card {
+            padding: 24px 24px 12px 24px;
+        }
+
+        .ayazjam-body-div h2 {
+            font-size: 20px;
+            margin-bottom: 12px;
         }
 
         .ayazjam-body-div p {
@@ -690,6 +784,24 @@
 
         iframe {
             width: 100%;
+        }
+
+        .faq-entry-div {
+            margin-top: 22px;
+        }
+
+        .faq-entry-div details {
+            padding: 18px 18px;
+            border-width: 2px;
+            box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.5);
+        }
+
+        .faq-entry-div summary {
+            font-size: 20px;
+        }
+
+        .faq-answer {
+            padding-top: 12px;
         }
       }
 </style>
