@@ -38,29 +38,33 @@
     <article id="ayazjam-main">
         <h1 class="page-title">AyazJam</h1>
         <img id="ayazjam-logo" alt="ayazjam_logo" src="/media/etkinlikler/Logo1.png" width="450" />
-        <p id="ayazjam-date-text" class="hero-subtitle">🗓️ &#8202 5-6-7 Aralık</p>
-        <p id="ayazjam-date-text" class="hero-subtitle">📍 Teknopark Ankara - Nar Kuluçka Merkezi</p>
-
         <div class="countdown-wrap">
-            <div class="countdown-grid">
-                <div class="countdown-card">
+            <div class="countdown-grid" id="countdown-grid">
+                <div class="countdown-card countdown-days">
                     <div class="countdown-label">Gün</div>
                     <div class="countdown-value" id="countdown-days">--</div>
+                    <div class="countdown-progress"><span id="prog-days"></span></div>
                 </div>
                 <div class="countdown-card">
                     <div class="countdown-label">Saat</div>
                     <div class="countdown-value" id="countdown-hours">--</div>
+                    <div class="countdown-progress"><span id="prog-hours"></span></div>
                 </div>
                 <div class="countdown-card">
                     <div class="countdown-label">Dakika</div>
                     <div class="countdown-value" id="countdown-mins">--</div>
+                    <div class="countdown-progress"><span id="prog-mins"></span></div>
                 </div>
                 <div class="countdown-card">
                     <div class="countdown-label">Saniye</div>
                     <div class="countdown-value" id="countdown-secs">--</div>
+                    <div class="countdown-progress"><span id="prog-secs"></span></div>
                 </div>
             </div>
         </div>
+
+        <p id="ayazjam-date-text" class="hero-subtitle">🗓️ &#8202 5-6-7 Aralık</p>
+        <p id="ayazjam-date-text" class="hero-subtitle">📍 Teknopark Ankara - Nar Kuluçka Merkezi</p>
 
         <a href="https://docs.google.com/forms/d/e/1FAIpQLScSBCkIijdhvdMIpfv7cIkKslZ3vS5Nmmu9jrIxUHceXSY6xA/viewform"
             target="_blank" rel="noopener noreferrer" id="join-button">Hemen Başvur!</a>
@@ -377,7 +381,7 @@
         font-family: "Press Start 2P", system-ui;
         font-size: 20px;
         letter-spacing: 0.05em;
-        margin: 12px 0;
+        margin: 10px 0 6px 0;
         text-align: center;
         display: block;
     }
@@ -516,6 +520,11 @@
       gap: 14px;
   }
 
+  .hero-badges.started-mode {
+      margin-top: 60px;
+      margin-bottom: 56px;
+  }
+
   .badge-chip {
       font-family: "Press Start 2P", system-ui;
       font-size: 13px;
@@ -529,35 +538,99 @@
   }
 
     .countdown-wrap {
-        margin: 28px 0 28px 0;
+        margin: 36px 0 36px 0;
         text-align: center;
     }
 
     .countdown-grid {
         display: grid;
         grid-template-columns: repeat(4, minmax(0, 1fr));
-        gap: 24px;
+        gap: 26px;
+    }
+
+    .countdown-grid.started {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 
     .countdown-card {
         border: 3px solid rgba(255, 255, 255, 0.45);
         background: linear-gradient(180deg, rgba(20, 32, 50, 0.9), rgba(12, 20, 32, 0.95));
         box-shadow: 7px 7px 0 rgba(0, 0, 0, 0.6);
-        padding: 26px 18px;
+        padding: 30px 20px;
+        position: relative;
+        overflow: hidden;
     }
 
     .countdown-label {
         font-family: "Pixelify Sans", sans-serif;
-        font-size: 17px;
+        font-size: 18px;
         letter-spacing: 0.03em;
         margin-bottom: 10px;
     }
 
     .countdown-value {
         font-family: "Press Start 2P", system-ui;
-        font-size: 30px;
-        letter-spacing: 0.14em;
+        font-size: 34px;
+        letter-spacing: 0.15em;
         color: var(--foreground-primary);
+    }
+
+    .countdown-card::before {
+        content: "";
+        position: absolute;
+        inset: 6px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        pointer-events: none;
+    }
+
+    .countdown-card::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: repeating-linear-gradient(
+            180deg,
+            rgba(255, 255, 255, 0.05) 0px,
+            rgba(255, 255, 255, 0.05) 2px,
+            transparent 2px,
+            transparent 4px
+        );
+        opacity: 0.25;
+        pointer-events: none;
+    }
+
+    .countdown-progress {
+        position: absolute;
+        left: 10px;
+        right: 10px;
+        bottom: 10px;
+        height: 6px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+    }
+
+    .countdown-progress span {
+        display: block;
+        height: 100%;
+        background: linear-gradient(90deg, rgba(94, 183, 255, 0.9), rgba(168, 120, 255, 0.9));
+    }
+
+    .countdown-grid.started .countdown-card {
+        padding: 38px 26px;
+        box-shadow: 10px 10px 0 rgba(0, 0, 0, 0.7);
+    }
+
+    .countdown-grid.started .countdown-label {
+        font-size: 19px;
+    }
+
+    .countdown-grid.started .countdown-value {
+        font-size: 48px;
+        letter-spacing: 0.18em;
+    }
+
+    .countdown-wrap.started-mode {
+        margin-top: 32px;
+        margin-bottom: 60px;
     }
 
     .faq-wrapper {
@@ -748,17 +821,17 @@
         .countdown-card {
             border-width: 2px;
             box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.5);
-            padding: 16px 12px;
+            padding: 18px 14px;
         }
 
         .countdown-label {
-            font-size: 13px;
+            font-size: 14px;
             margin-bottom: 6px;
         }
 
         .countdown-value {
-            font-size: 20px;
-            letter-spacing: 0.08em;
+            font-size: 22px;
+            letter-spacing: 0.09em;
         }
 
         .glass-card {
@@ -808,11 +881,27 @@
 
 <script>
     (function () {
+        const params = new URLSearchParams(window.location.search);
+        const forceJam = params.has('forcejam');
+
         const elDays = document.getElementById('countdown-days');
         const elHours = document.getElementById('countdown-hours');
         const elMins = document.getElementById('countdown-mins');
         const elSecs = document.getElementById('countdown-secs');
-        if (!elDays || !elHours || !elMins || !elSecs) return;
+        const progDays = document.getElementById('prog-days');
+        const progHours = document.getElementById('prog-hours');
+        const progMins = document.getElementById('prog-mins');
+        const progSecs = document.getElementById('prog-secs');
+        const daysCard = document.querySelector('.countdown-days');
+        const grid = document.getElementById('countdown-grid');
+        const subtitleEls = document.querySelectorAll('#ayazjam-date-text');
+        const joinBtn = document.getElementById('join-button');
+        if (!elDays || !elHours || !elMins || !elSecs || !grid || subtitleEls.length < 2) return;
+
+        const originalLine1 = subtitleEls[0].textContent;
+        const originalLine2 = subtitleEls[1].textContent;
+        const startedLine1 = '48 SAATL\u0130K AYAZ BA\u015eLADI!!!';
+        const startedLine2 = 'B\u00fct\u00fcn Yar\u0131\u015fmac\u0131lara Ba\u015far\u0131lar!!!';
 
         const getTarget = () => {
             const now = new Date();
@@ -825,25 +914,90 @@
         };
 
         let target = getTarget();
+        let jamEnd = new Date(target.getTime() + 48 * 60 * 60 * 1000);
 
+        const HOUR = 1000 * 60 * 60;
+        const DAY = HOUR * 24;
         const pad = (n) => String(n).padStart(2, '0');
+
+        const setStartedUI = (started) => {
+            if (started) {
+                daysCard && (daysCard.style.display = 'none');
+                grid.classList.add('started');
+                const wrap = document.querySelector('.countdown-wrap');
+                if (wrap) wrap.classList.add('started-mode');
+                const badges = document.querySelector('.hero-badges');
+                if (badges) badges.classList.add('started-mode');
+                subtitleEls[0].textContent = startedLine1;
+                subtitleEls[1].textContent = startedLine2;
+                if (joinBtn) joinBtn.style.display = 'none';
+            } else {
+                daysCard && (daysCard.style.display = '');
+                grid.classList.remove('started');
+                const wrap = document.querySelector('.countdown-wrap');
+                if (wrap) wrap.classList.remove('started-mode');
+                const badges = document.querySelector('.hero-badges');
+                if (badges) badges.classList.remove('started-mode');
+                subtitleEls[0].textContent = originalLine1;
+                subtitleEls[1].textContent = originalLine2;
+                if (joinBtn) joinBtn.style.display = '';
+            }
+        };
+
+        let started = forceJam;
+        if (started) {
+            const now = new Date();
+            target = now;
+            jamEnd = new Date(now.getTime() + 48 * 60 * 60 * 1000);
+            setStartedUI(true);
+        }
 
         const tick = () => {
             const now = new Date();
-            if (now > target) target = getTarget();
 
-            let diff = target - now;
+            if (!started && now >= target) {
+                started = true;
+                setStartedUI(true);
+            }
+
+            if (started) {
+                if (now > jamEnd) {
+                    target = getTarget();
+                    jamEnd = new Date(target.getTime() + 48 * 60 * 60 * 1000);
+                    started = forceJam ? true : now >= target;
+                    setStartedUI(started);
+                }
+            }
+
+            let diff = started ? (jamEnd - now) : (target - now);
             if (diff < 0) diff = 0;
 
-            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+            const days = Math.floor(diff / DAY);
+            const hoursTotal = Math.floor(diff / HOUR);
+            const hours = started ? hoursTotal : Math.floor(hoursTotal % 24);
             const mins = Math.floor((diff / (1000 * 60)) % 60);
             const secs = Math.floor((diff / 1000) % 60);
 
-            elDays.textContent = pad(days);
+            elDays.textContent = started ? '' : pad(days);
             elHours.textContent = pad(hours);
             elMins.textContent = pad(mins);
             elSecs.textContent = pad(secs);
+
+            if (started) {
+                if (daysCard) daysCard.style.display = 'none';
+                grid.classList.add('started');
+            }
+
+            if (progSecs) progSecs.style.width = `${(diff % 60000) / 60000 * 100}%`;
+            if (progMins) progMins.style.width = `${(diff % (HOUR)) / (HOUR) * 100}%`;
+            if (progHours) {
+                const hourBlock = started ? (48) : 24;
+                const remHours = started ? hours : hours;
+                progHours.style.width = `${(remHours % hourBlock) / hourBlock * 100}%`;
+            }
+            if (progDays) {
+                progDays.style.width = started ? '0%' : `${(diff % DAY) / DAY * 100}%`;
+            }
         };
 
         tick();
