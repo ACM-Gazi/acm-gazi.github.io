@@ -10,37 +10,21 @@ logo: "/roadmaps/yapay-zeka.png"
 
 ## 1. Genel Tanıtım
 
-- Yapay zeka nedir?
-  
+- **Yapay zeka nedir?**  
   Yapay zeka (AI), makinelerin insan benzeri problem çözme görevlerini yerine getirmesini sağlayan dönüştürücü bir teknolojidir. Yapay zeka, görüntüleri tanımaktan ve yaratıcı içerik oluşturmaktan veri odaklı tahminler yapmaya kadar işletmelerin daha akıllı kararlar almasını sağlar.
 
-- Hangi temel probleme çözüm üretir?
-  
-  Yapay zekâ, eğitildiği alandaki verilerden örüntüleri öğrenerek benzer problemleri çözme becerisi kazanır.  Bu sayede geçmiş deneyimlerden yola çıkarak yeni durumlara uygun çözümler üretebilir.  Örneğin tıpta hastalık belirtilerini analiz edebilir veya finans alanında risk tahmini yapabilir.  Modelin başarısı, aldığı verinin kalitesi ve çeşitliliğine bağlıdır.  Ne kadar iyi eğitilirse, o kadar doğru ve güvenilir sonuçlar üretir.  Sonuç olarak yapay zekâ, eğitildiği alanda karmaşık problemleri insanlardan daha hızlı çözebilir.
+- **Hangi temel probleme çözüm üretir?**  
+  Yapay zekâ, eğitildiği alandaki verilerden örüntüleri öğrenerek benzer problemleri çözme becerisi kazanır. Bu sayede geçmiş deneyimlerden yola çıkarak yeni durumlara uygun çözümler üretebilir. Örneğin tıpta hastalık belirtilerini analiz edebilir veya finans alanında risk tahmini yapabilir. Modelin başarısı, aldığı verinin kalitesi ve çeşitliliğine bağlıdır. Ne kadar iyi eğitilirse, o kadar doğru ve güvenilir sonuçlar üretir. Sonuç olarak yapay zekâ, eğitildiği alanda karmaşık problemleri insanlardan daha hızlı çözebilir.
 
-- Günümüzdeki önemi ve kullanım alanları nelerdir?
-  
-  Yapay zeka, sektörleri dönüştüren ve işletmeler için yeni fırsatların kilidini açan geniş kapsamlı bir dizi güçlü teknoloji sunar. 
-  
-  ### Görüntü oluşturma
-  
-  Yapay zeka, basit metin açıklamalarını saniyeler içinde yüksek kaliteli, gerçekçi görüntülere dönüştürür. Örneğin, “dağların üzerinde bir gün batımı” gibi bir komut istemi girildiğinde, yapay zeka anında çarpıcı görseller üretebilir.. Bu çığır açan teknoloji; pazarlama, eğlence ve tasarım gibi yaratıcı sektörlerde devrim yaratıyor ve içerik oluşturma sürecini önemli ölçüde hızlandırıyor.
-  
-  ### Metin oluşturma
-  
-  Yapay zeka, e-postalar gibi kısa içeriklerden karmaşık raporlara kadar insan benzeri metinleri otomatik olarak oluşturabilir. Müşteri desteği, pazarlama ve içerik oluşturma alanlarında yaygın olarak benimsenen bu teknoloji, yazma sürecini kolaylaştırarak verimliliği artırır ve değerli zamandan tasarruf sağlar.
-  
-  ### Konuşma oluşturma ve tanıma
-  
-  Yapay zeka destekli konuşma üretimi, doğal, insan benzeri konuşma oluştururken, konuşma tanıma, makinelerin konuşulan kelimeleri anlamasını ve işlemesini sağlar. Bu teknolojiler, Alexa gibi sanal asistanlar aracılığıyla kesintisiz, sesle etkinleştirilen deneyimler sunmanın, müşteri hizmetlerini, akıllı cihazları ve erişilebilirlik çözümlerini geliştirmenin anahtarıdır.
-  
-  ### Çok modlu yapay zeka
-  
-  Çok modlu yapay zeka, karmaşık içeriklerin daha kapsamlı bir şekilde anlaşılmasını sağlamak için metin, görüntü ve ses verilerini entegre eder. Çok modlu yapay zeka; nesneleri tanıyarak, konuşmayı kopyalayarak ve ekrandaki metni aynı anda yorumlayarak, gerçek zamanlı olarak gelişmiş öngörüler sunar. Bu özellik; video analizi, otonom araçlar ve daha fazlası için yapay zekadan yararlanan sektörler için son derece önemlidir ve daha akıllı, daha hızlı karar verme ve yenilik için yeni olasılıkların kilidini açar.
+- **Günümüzdeki önemi ve kullanım alanları nelerdir?**  
+  Yapay zeka, sektörleri dönüştüren ve işletmeler için yeni fırsatların kilidini açan geniş kapsamlı bir dizi güçlü teknoloji sunar:
+  - **Görüntü oluşturma:** Basit metin açıklamalarını saniyeler içinde yüksek kaliteli, gerçekçi görüntülere dönüştürür. Örneğin, “dağların üzerinde bir gün batımı” gibi bir komut istemi girildiğinde, yapay zeka anında çarpıcı görseller üretebilir. Bu çığır açan teknoloji; pazarlama, eğlence ve tasarım gibi yaratıcı sektörlerde devrim yaratıyor ve içerik oluşturma sürecini önemli ölçüde hızlandırıyor.
+  - **Metin oluşturma:** Yapay zeka, e-postalar gibi kısa içeriklerden karmaşık raporlara kadar insan benzeri metinleri otomatik olarak oluşturabilir. Müşteri desteği, pazarlama ve içerik oluşturma alanlarında yaygın olarak benimsenen bu teknoloji, yazma sürecini kolaylaştırarak verimliliği artırır ve değerli zamandan tasarruf sağlar.
+  - **Konuşma oluşturma ve tanıma:** Yapay zeka destekli konuşma üretimi, doğal, insan benzeri konuşma oluştururken, konuşma tanıma, makinelerin konuşulan kelimeleri anlamasını ve işlemesini sağlar. Bu teknolojiler, Alexa gibi sanal asistanlar aracılığıyla kesintisiz, sesle etkinleştirilen deneyimler sunmanın, müşteri hizmetlerini, akıllı cihazları ve erişilebilirlik çözümlerini geliştirmenin anahtarıdır.
+  - **Çok modlu yapay zeka:** Çok modlu yapay zeka, karmaşık içeriklerin daha kapsamlı bir şekilde anlaşılmasını sağlamak için metin, görüntü ve ses verilerini entegre eder. Çok modlu yapay zeka; nesneleri tanıyarak, konuşmayı kopyalayarak ve ekrandaki metni aynı anda yorumlayarak, gerçek zamanlı olarak gelişmiş öngörüler sunar. Bu özellik; video analizi, otonom araçlar ve daha fazlası için yapay zekadan yararlanan sektörler için son derece önemlidir ve daha akıllı, daha hızlı karar verme ve yenilik için yeni olasılıkların kilidini açar.
 
-- Bu alt dalın sektördeki konumu nasıldır?
-  
-  Yapay zekâ, eğitildiği alandaki verilerden örüntüleri öğrenerek karmaşık problemleri çözme becerisi kazanmıştır.  Bilgisayar mühendisliği sektöründe ise artık temel bir teknoloji haline gelmiştir.  Günümüzde yazılım geliştirme, veri analizi, siber güvenlik ve sistem optimizasyonu gibi birçok alanda yapay zekâ aktif olarak kullanılmaktadır.  Bu durum mühendislerin hem üretkenliğini artırmakta hem de yeni nesil çözümler geliştirmelerine olanak sağlamaktadır.  Ayrıca yapay zekâ, bilgisayar mühendisliğinde araştırma ve inovasyonun merkezine yerleşmiştir. Kısacası, yapay zekâ artık yalnızca bir araç değil, bilgisayar mühendisliğinin geleceğini şekillendiren temel bir bileşendir.
+- **Bu alt dalın sektördeki konumu nasıldır?**  
+  Yapay zekâ, eğitildiği alandaki verilerden örüntüleri öğrenerek karmaşık problemleri çözme becerisi kazanmıştır. Bilgisayar mühendisliği sektöründe ise artık temel bir teknoloji haline gelmiştir. Günümüzde yazılım geliştirme, veri analizi, siber güvenlik ve sistem optimizasyonu gibi birçok alanda yapay zekâ aktif olarak kullanılmaktadır. Bu durum mühendislerin hem üretkenliğini artırmakta hem de yeni nesil çözümler geliştirmelerine olanak sağlamaktadır. Ayrıca yapay zekâ, bilgisayar mühendisliğinde araştırma ve inovasyonun merkezine yerleşmiştir. Kısacası, yapay zekâ artık yalnızca bir araç değil, bilgisayar mühendisliğinin geleceğini şekillendiren temel bir bileşendir.
 
 ---
 

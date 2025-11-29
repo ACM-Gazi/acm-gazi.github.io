@@ -28,12 +28,12 @@ preparers:
 Bu alanın altında yer alan alanlar nelerdir?
 
 | Alt Alan                           | Kısa Açıklama                            | Uygulama Örneği |
-| --------                           | -------------                            | --------------- |
-| Mikrodenetleyici Sistemleri        | Donanım üzerinde doğrudan çalışan, belirli bir işlevi yerine getiren küçük işlemci tabanlı sistemlerdir.                                       |   Arduino ile sensör verisi okuyup LED kontrol etmek.              |
-|Gerçek Zamanlı Sistemler (RTOS)                                    |  Zamanın kritik olduğu, işlemlerin belirli süre içinde tamamlanması gereken sistemlerdir.                                        | Araba hava yastığı veya fren kontrol sistemi.                |
-|                   IoT (Nesnelerin İnterneti)                 |    Gömülü sistemlerin internet üzerinden birbirine bağlanarak veri paylaşması ve uzaktan kontrol edilmesidir.                                      |     Akıllı ev sistemlerinde sıcaklık sensörünün mobil uygulamaya veri göndermesi.            |
-|                Gömülü Yapay Zeka                    |                  Küçük cihazlarda veri işleyip karar verebilen yapay zekâ modellerinin çalıştırılmasıdır.                        |        Güvenlik kameralarının gerçek zamanlı yüz tanıma yapması.         |
-|            Otomotiv Gömülü Sistemleri                        |    Araçlarda güvenlik, performans ve konforu artırmak için geliştirilen özel sistemlerdir.                                      |          ABS, otomatik park veya otonom sürüş sistemleri.       |
+| ------------------------------- | ----------------------------------------- | --------------- |
+| Mikrodenetleyici Sistemleri     | Donanım üzerinde doğrudan çalışan, belirli bir işlevi yerine getiren küçük işlemci tabanlı sistemlerdir. | Arduino ile sensör verisi okuyup LED kontrol etmek. |
+| Gerçek Zamanlı Sistemler (RTOS) | Zamanın kritik olduğu, işlemlerin belirli süre içinde tamamlanması gereken sistemlerdir. | Araba hava yastığı veya fren kontrol sistemi. |
+| IoT (Nesnelerin İnterneti)      | Gömülü sistemlerin internet üzerinden birbirine bağlanarak veri paylaşması ve uzaktan kontrol edilmesidir. | Akıllı ev sistemlerinde sıcaklık sensörünün mobil uygulamaya veri göndermesi. |
+| Gömülü Yapay Zeka               | Küçük cihazlarda veri işleyip karar verebilen yapay zekâ modellerinin çalıştırılmasıdır. | Güvenlik kameralarının gerçek zamanlı yüz tanıma yapması. |
+| Otomotiv Gömülü Sistemleri      | Araçlarda güvenlik, performans ve konforu artırmak için geliştirilen özel sistemlerdir. | ABS, otomatik park veya otonom sürüş sistemleri. |
 ---
 
 ## 3. Temel Konular ve Kavramlar
@@ -41,13 +41,13 @@ Bu alanın altında yer alan alanlar nelerdir?
 Öğrenilmesi gereken temel konular ve açıklamaları:
 
 | Temel Konu                  | Neden Önemli?                                                     | Öğrenme Sırası |
-|----------------------------|-------------------------------------------------------------------|----------------|
-| C Programlama              | Gömülü kartlar genelde C ile programlanır, temel dil bilgisidir   | 1 |
-| Temel Elektronik Bilgisi   | Sensör, direnç, voltaj vb. anlamadan devre kurulamaz              | 2 |
-| Mikrodenetleyici Kullanımı | Arduino / STM32 gibi kartlarla gerçek uygulama geliştirmeyi sağlar| 3 |
-| Sensör ve Motor Bağlama    | Gerçek dünyadan veri alıp hareket kontrolü yapmayı öğretir        | 4 |
-| Temel Haberleşme (UART/I2C)| Kartın başka cihazlarla konuşmasını sağlar                        | 5 |
-| Basit RTOS Mantığı         | Birden fazla işi aynı anda düzenli çalıştırmayı öğretir           | 6 |
+| --------------------------- | ----------------------------------------------------------------- | -------------- |
+| C Programlama              | Gömülü kartlar genelde C ile programlanır, temel dil bilgisidir    | 1              |
+| Temel Elektronik Bilgisi   | Sensör, direnç, voltaj vb. anlamadan devre kurulamaz               | 2              |
+| Mikrodenetleyici Kullanımı | Arduino / STM32 gibi kartlarla gerçek uygulama geliştirmeyi sağlar | 3              |
+| Sensör ve Motor Bağlama    | Gerçek dünyadan veri alıp hareket kontrolü yapmayı öğretir         | 4              |
+| Temel Haberleşme (UART/I2C) | Kartın başka cihazlarla konuşmasını sağlar                        | 5              |
+| Basit RTOS Mantığı         | Birden fazla işi aynı anda düzenli çalıştırmayı öğretir            | 6              |
 
 ---
 
