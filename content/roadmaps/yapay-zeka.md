@@ -1,12 +1,11 @@
 ---
-title: ACM Gazi Yapay Zeka Çalışma Grubu Yol Haritası
+title: Yapay Zeka Çalışma Grubu Yol Haritası
 date: 2025-01-01T11:27:00
----
-
-**Hazırlayan:**  Muhammed Arif Dayı
-
-**ACM Gazi AR-GE Birimi**
-
+preparers:
+  - Ece Naz Altuner
+  - Muhammed Arif Dayı
+  - Mehmet Emircan Küllücek
+logo: "/roadmaps/yapay-zeka.png"
 ---
 
 ## 1. Genel Tanıtım

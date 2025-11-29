@@ -4,27 +4,21 @@
 
 {{ define "main" }}
   {{ $section := .Site.GetPage "section" .Section }}
+  {{ $logo := .Params.logo | default "/img/ACM_Gazi.png" }}
+  {{ $preparers := .Params.preparers }}
   <article class="fade-in settle-up flex-l flex-wrap justify-between mw8 center ph3 roadmap-article">
-    <header class="mt4 w-100">
+    <header class="mt4 w-100 roadmap-hero">
+      <div class="roadmap-hero-logo">
+        <img src="{{ $logo | relURL }}" alt="{{ .Title }} logosu" loading="lazy">
+      </div>
       <h1 class="f1 mt3 mb1" id="title">
         {{- .Title -}}
       </h1>
-      {{ with .Params.author | default .Site.Params.author }}
-        <p class="tracked">
-          {{ $.Render "by" }} <strong>
-            {{- if reflect.IsSlice . -}}
-              {{ delimit . ", " | markdownify }}
-            {{- else -}}
-              {{ . | markdownify }}
-            {{- end -}}
-          </strong>
+      {{ with $preparers }}
+        <p class="f5 mt4 mb1 preparer-line">
+          <strong>Hazırlayanlar:</strong> <strong>{{ cond (reflect.IsSlice .) (delimit . ", ") . }}</strong>
         </p>
-      {{ end }}
-
-      {{ if not .Date.IsZero }}
-        <time class="f6 mv4 dib tracked" {{ printf `datetime="%s"` (.Date.Format "2006-01-02T15:04:05Z07:00") | safeHTMLAttr }}>
-          {{- .Date | time.Format (default "January 2, 2006" .Site.Params.date_format) -}}
-        </time>
+        <p class="f5 mt2 mb3 acm-line"><strong>ACM Gazi AR-GE Birimi</strong></p>
       {{ end }}
 
       {{ if (or (eq (.Param "show_reading_time") true) (eq $section.Params.show_reading_time true)) }}
@@ -53,6 +47,37 @@
     <style>
       .roadmap-article {
         gap: 1.5rem;
+      }
+
+      .roadmap-hero {
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .roadmap-hero-logo {
+        width: 160px;
+        height: 160px;
+        border-radius: 0;
+        background: transparent;
+        border: none;
+        display: grid;
+        place-items: center;
+        padding: 0;
+        margin-bottom: 1rem;
+      }
+
+      .roadmap-hero-logo img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+        display: block;
+      }
+
+      .preparer-line,
+      .acm-line {
+        color: rgba(255, 255, 255, 0.8);
       }
 
       .roadmap-content {

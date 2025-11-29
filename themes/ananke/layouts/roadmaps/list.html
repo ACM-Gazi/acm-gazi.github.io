@@ -1,0 +1,78 @@
+{{ define "main" }}
+  <article class="pa3 pa4-ns nested-copy-line-height">
+    <header class="tc">
+      <h1 class="fade-in settle-up f1">
+        Çalışma Grupları Yol Haritaları
+      </h1>
+      {{ with .Content }}
+        <div class="fade-in settle-up measure-wide center lh-copy mt3">
+          {{ . }}
+        </div>
+      {{ end }}
+    </header>
+
+    <section class="fade-in settle-up roadmap-grid mt5">
+      {{ range .Pages.ByTitle }}
+        {{ $logo := .Params.logo | default "/img/ACM_Gazi.png" }}
+        {{ $displayTitle := trim (replace (replace .Title "Yol Haritası" "") "Çalışma Grubu" "") " " }}
+        <a class="roadmap-card glass-card link" href="{{ .RelPermalink }}">
+          <div class="roadmap-logo-wrap">
+            <img src="{{ $logo | relURL }}" alt="{{ .Title }} logosu" loading="lazy">
+          </div>
+          <h2 class="f3 mv3 tc roadmap-card-title">{{ $displayTitle }}</h2>
+        </a>
+      {{ end }}
+    </section>
+
+    <style>
+      .roadmap-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+        justify-content: center;
+        max-width: 70vw;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .roadmap-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        transition: transform 180ms ease, box-shadow 180ms ease;
+        padding: 1.5rem 1.75rem;
+        padding-bottom: 1rem;
+        width: min(400px, 100%);
+      }
+
+      .roadmap-card:hover,
+      .roadmap-card:focus {
+        transform: translateY(-4px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+      }
+
+      .roadmap-logo-wrap {
+        width: 120px;
+        height: 120px;
+        display: grid;
+        place-items: center;
+        border-radius: 0;
+        background: transparent;
+        border: none;
+        padding: 0;
+      }
+
+      .roadmap-logo-wrap img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+        display: block;
+      }
+
+      .roadmap-card-title {
+        margin-top: 1.2rem;
+      }
+    </style>
+  </article>
+{{ end }}
