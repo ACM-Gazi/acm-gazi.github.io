@@ -5,6 +5,7 @@ logo: "/roadmaps/oyun-geliştirme.png"
 preparers:
   - Kayra Orbay
 ---
+
 ## 1. Genel Tanıtım
 
 - **Oyun geliştirme nedir?**  
