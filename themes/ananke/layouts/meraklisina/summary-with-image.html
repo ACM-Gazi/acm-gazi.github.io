@@ -1,0 +1,89 @@
+{{ $featured_image := partial "func/GetFeaturedImage.html" . }}
+<article class="bb b--black-10">
+  <div class="db pv4 ph3 ph0-l no-underline dark-gray">
+    <div class="meraklisina-card">
+      {{ with .Params.logo }}
+        <div class="meraklisina-card-logo">
+          <img src="/meraklisina/{{ . }}" alt="Meraklısına logosu">
+        </div>
+      {{ end }}
+      <div class="meraklisina-card-content">
+        {{ if $featured_image }}
+          <div class="meraklisina-card-image">
+            <a href="{{.RelPermalink}}">
+              <img src="{{ $featured_image }}" alt="image from {{ .Title }}" class="summary-img">
+            </a>
+          </div>
+        {{ end }}
+        <div class="blah w-100{{ if $featured_image }} {{ cond (eq $.Site.Language.LanguageDirection "rtl") "pr3-ns" "pl3-ns" }}{{ end }}">
+          <h1 class="mt0 lh-title">
+            <a href="{{.RelPermalink}}" class="color-inherit link">
+              {{ .Title }}
+            </a>
+          </h1>
+          <div class="f6 f5-l lh-copy nested-copy-line-height nested-links">
+            {{ .Summary }}
+          </div>
+          <a href="{{.RelPermalink}}">Tamamını oku...</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    .summary-img {
+      width: 256px;
+      height: auto;
+      object-fit: cover;
+    }
+
+    .meraklisina-card {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+    }
+
+    .meraklisina-card-logo img {
+      width: auto;
+      height: auto;
+      max-width: 220px;
+      object-fit: contain;
+      display: block;
+    }
+
+    .meraklisina-card-content {
+      flex: 1;
+    }
+
+    @media only screen and (max-width: 1000px) {
+      .meraklisina-card {
+        flex-direction: column;
+      }
+
+      .meraklisina-card-logo img {
+        max-width: 160px;
+      }
+    }
+  </style>
+  <script>
+    (function () {
+      if (window.__meraklisinaLogoSizer) return;
+      window.__meraklisinaLogoSizer = true;
+
+      function sizeLogos() {
+        document.querySelectorAll(".meraklisina-card").forEach(function (card) {
+          var img = card.querySelector(".meraklisina-card-logo img");
+          if (!img) return;
+          var height = card.getBoundingClientRect().height;
+          if (height > 0) {
+            img.style.height = Math.round(height * 0.8) + "px";
+            img.style.width = "auto";
+          }
+        });
+      }
+
+      window.addEventListener("load", sizeLogos);
+      window.addEventListener("resize", sizeLogos);
+    })();
+  </script>
+</article>

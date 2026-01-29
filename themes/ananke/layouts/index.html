@@ -114,6 +114,29 @@
       </div>
     {{ end }}
 
+    {{/* MERAKLISINA BÖLÜMÜ*/}}
+    {{ $meraklisina_name := "meraklisina" }}
+    {{ $meraklisina := where $.Site.RegularPages "Section" $meraklisina_name }}
+    {{ $meraklisina_count := len $meraklisina }}
+
+    {{ if ge $meraklisina_count 1 }}
+      <div class="post-section-wrapper">
+        {{ with $.Site.GetPage "section" $meraklisina_name }}
+            <h1 class="post-section-header">
+              Meraklısına
+            </h1>
+          {{ end }}
+        {{ $n_meraklisina_posts := $.Param "recent_posts_number" | default 3 }}
+        <section class="post-section">
+          {{ range (first $n_meraklisina_posts $meraklisina) }}
+            <div class="w-100 mb4 glass-card">
+              {{ .Render "summary-with-image" }}
+            </div>
+          {{ end }}
+        </section>
+      </div>
+    {{ end }}
+
   <style>
     #home-section {
       height: 100vh;

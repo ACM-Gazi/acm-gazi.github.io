@@ -1,0 +1,134 @@
+{{ define "header" }}
+  {{/* We can override any block in the baseof file be defining it in the template */}}
+  {{ partial "page-header.html" . }}
+{{ end }}
+
+{{ define "main" }}
+  {{ $section := .Site.GetPage "section" .Section }}
+  <article class="fade-in settle-up flex-l flex-wrap justify-between mw8 center ph3">
+    <header class="mt4 w-100 mb4 meraklisina-header">
+      <div class="meraklisina-header-inner">
+        {{ with .Params.logo }}
+          <div class="meraklisina-header-logo">
+            <img src="/meraklisina/{{ . }}" alt="Meraklısına logosu">
+          </div>
+        {{ end }}
+        <div class="meraklisina-header-text">
+          <p class="f6 tracked ttu mb3">
+            Meraklısına Serisi
+          </p>
+          <h1 class="f1 mt0 mb4 meraklisina-title" id="title">
+            {{- .Title -}}
+          </h1>
+          {{ with .Params.author | default .Site.Params.author }}
+          <p class="tracked mt1 mb3">
+            Yazar:
+            <strong>
+            {{- if reflect.IsSlice . -}}
+                {{ delimit . ", " | markdownify }}
+            {{- else -}}
+                {{ . | markdownify }}
+            {{- end -}}
+            </strong>
+          </p>
+          {{ end }}
+          {{ if (or (eq (.Param "show_reading_time") true) (eq $section.Params.show_reading_time true) )}}
+            <span class="f6 mv4 dib tracked"> - {{ i18n "readingTime" .ReadingTime }} </span>
+            <span class="f6 mv4 dib tracked"> - {{ i18n "wordCount" .WordCount }} </span>
+          {{ end }}
+        </div>
+      </div>
+    </header>
+    <div id="post-content-div" class="glass-card">
+      {{- .Content -}}
+      {{- partial "tags.html" . -}}
+      <div class="instapaper_ignoref">
+      {{ if .Site.Config.Services.Disqus.Shortname }}
+        {{ template "_internal/disqus.html" . }}
+      {{ end }}
+      {{ if .Site.Params.commentoEnable }}
+        {{- partial "commento.html" . -}}
+      {{ end }}
+      </div>
+    </div>
+
+    <aside class="w-30-l mt6-l">
+      {{- partial "menu-contextual.html" . -}}
+    </aside>
+
+    <style>
+      #post-content-div {
+        font: "Outfit";
+        font-size: 20px;
+        line-height: 1.7;
+      }
+
+      #post-content-div img {
+        max-width: 100%;
+        height: auto;
+        display: block;
+      }
+
+      .meraklisina-title {
+        font-size: 3.25rem;
+      }
+
+      .meraklisina-header {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+      }
+
+      .meraklisina-header-inner {
+        display: flex;
+        align-items: stretch;
+        gap: 40px;
+        max-width: 900px;
+        width: fit-content;
+      }
+
+      .meraklisina-header-logo {
+        flex: 0 0 auto;
+      }
+
+      .meraklisina-header-logo img {
+        height: 100%;
+        width: auto;
+        max-width: 140px;
+        object-fit: contain;
+        display: block;
+      }
+
+      .meraklisina-header-text {
+        flex: 0 1 720px;
+      }
+
+      @media only screen and (max-width: 1000px) {
+        #title {
+          padding: 0 !important;
+        }
+
+        .meraklisina-title {
+          font-size: 2.25rem;
+        }
+
+        .meraklisina-header {
+          align-items: center;
+        }
+
+        .meraklisina-header-inner {
+          flex-direction: column;
+          gap: 12px;
+          width: 100%;
+          max-width: 720px;
+        }
+
+        .meraklisina-header-logo img {
+          width: 72px;
+          height: 72px;
+        }
+      }
+    </style>
+
+  </article>
+{{ end }}

@@ -1,0 +1,22 @@
+{{ define "main" }}
+  <article class="pa3 pa4-ns nested-copy-line-height">
+    <header>
+      <h1 class="fade-in settle-up f1 tc">
+        {{ .Title }}
+      </h1>
+    </header>
+    <!--
+    <section class="cf ph3 ph5-l pv3 pv4-l f4 tc-l center measure-wide lh-copy {{ $.Param "text_color" | default "mid-gray" }}">
+      {{- .Content -}}
+    </section>
+    -->
+    <section class="fade-in settle-up flex-ns flex-column-ns justify-center-ns items-center-ns mt5">
+      {{ range .Paginator.Pages }}
+        <div class="relative w-100 w-60-l mb4 glass-card">
+          {{ .Render "summary-with-image" }}
+        </div>
+      {{ end }}
+    </section>
+    {{- template "_internal/pagination.html" . -}}
+  </article>
+{{ end }}
