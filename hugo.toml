@@ -1,4 +1,4 @@
-baseURL = 'https://acmgazi.com/'
+baseURL = 'https://acmgazi.org/'
 languageCode = "tr"
 title = 'ACM Gazi'
 theme = 'ananke'
