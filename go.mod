@@ -1,4 +1,4 @@
-module acmgazi.com
+module acmgazi.org
 
 go 1.22.7
 

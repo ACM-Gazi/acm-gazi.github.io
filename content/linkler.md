@@ -10,7 +10,7 @@ title: Linkler
 
 [![](/img/LinkedinLink.png)](https://www.linkedin.com/company/acmgazi/posts/?feedView=all)
 
-[![](/img/WebsiteLink.png)](https://acmgazi.com)
+[![](/img/WebsiteLink.png)](https://acmgazi.org)
 
 <style>
     div:has(> #links) {
