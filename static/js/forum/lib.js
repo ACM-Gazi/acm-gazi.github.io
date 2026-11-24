@@ -267,3 +267,18 @@ export function removablePostFiles(post, authorPosts, bucketPublicPrefix) {
     return parts.length === 2 && parts[0] === post.author_id && parts[1] && parts[1] !== 'no-cover' && !stillUsed(path);
   });
 }
+
+/** Banner above an unpublished article (the database shows those only to the author and admins). */
+export function articleBanner(post) {
+  if (post.status === 'pending') return { kind: 'warning', text: 'Bu yazı onay bekliyor. Şu an sadece yazarı ve adminler görebilir.' };
+  if (post.status === 'rejected') return { kind: 'error', text: `Bu yazı reddedildi. Sebep: ${post.reject_reason ?? ''}`.trim() };
+  return null;
+}
+
+export function canDeleteComment(comment, me) {
+  return !!me && (me.role === 'admin' || me.id === comment.author_id);
+}
+
+export function articleDate(post) {
+  return formatDate(post.approved_at ?? post.created_at);
+}

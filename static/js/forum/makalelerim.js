@@ -31,7 +31,7 @@ function row(post) {
   return el('li', { class: 'forum-row' },
     cover(post),
     el('div', { class: 'forum-row-main' },
-      el('h2', { class: 'forum-row-title', text: post.title }),
+      el('h2', { class: 'forum-row-title' }, el('a', { class: 'forum-plain-link', href: `/forum/yazi/?id=${post.id}`, text: post.title })),
       el('span', { class: `forum-badge forum-badge-${post.status}`, text: info.label }),
       el('p', { class: 'forum-hint', text: info.date }),
       post.status === 'rejected' && post.reject_reason

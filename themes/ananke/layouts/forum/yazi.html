@@ -1,0 +1,13 @@
+{{ define "header" }}{{ partial "page-header.html" . }}{{ end }}
+
+{{ define "main" }}
+  {{ partial "forum-head.html" . }}
+  <div class="forum-wrap fade-in settle-up">
+    {{ partial "forum-bar.html" . }}
+    <div id="article-root">
+      <div class="forum-state forum-loading" role="status"><span class="forum-spinner" aria-hidden="true"></span><span>Yükleniyor…</span></div>
+    </div>
+    <noscript><p>Yazıyı okumak için tarayıcında JavaScript'i etkinleştir.</p></noscript>
+  </div>
+  <script type="module" src="/js/forum/yazi.js"></script>
+{{ end }}

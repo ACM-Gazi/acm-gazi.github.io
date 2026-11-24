@@ -1,0 +1,4 @@
+---
+title: Yazı
+layout: yazi
+---

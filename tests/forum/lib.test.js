@@ -4,7 +4,7 @@ import {
   isAllowedEmail, YEAR_OPTIONS, formatByline, validatePost, validateComment,
   validateSignup, validateImageFile, excerpt, firstImageUrl, getIdParam,
   formatDate, translateAuthError, storagePathsFromMarkdown, formatMajors, validateProfile,
-  validateAvatarFile, safeNext, parseAuthHash, parseVerifyParams, charCount, draftKey, imageObjectPath, coverCropRect, validateCoverFile, summarizePosts, postStatusInfo, removablePostFiles,
+  validateAvatarFile, safeNext, parseAuthHash, parseVerifyParams, charCount, draftKey, imageObjectPath, coverCropRect, validateCoverFile, summarizePosts, postStatusInfo, removablePostFiles, articleBanner, canDeleteComment, articleDate,
 } from '../../static/js/forum/lib.js';
 import { renderMarkdown, PURIFY_CONFIG } from '../../static/js/forum/render.js';
 
@@ -306,4 +306,36 @@ describe('removablePostFiles', () => {
     ['u1/b.png', 'u1/c.webp']));
   test('placeholder cover is not a file', () => assert.deepEqual(removablePostFiles({ ...post, cover_path: 'u1/no-cover', body_md: '' }, [], P), []));
   test('broken percent code does not crash', () => assert.deepEqual(removablePostFiles({ ...post, body_md: `![a](${P}u1/%zz.png)` }, [post], P), ['u1/c.webp']));
+});
+
+describe('articleBanner (only author and admins ever load an unpublished article)', () => {
+  test('published: none', () => assert.equal(articleBanner({ status: 'approved' }), null));
+  test('pending', () => assert.deepEqual(articleBanner({ status: 'pending' }),
+    { kind: 'warning', text: 'Bu yazı onay bekliyor. Şu an sadece yazarı ve adminler görebilir.' }));
+  test('rejected with reason', () => assert.deepEqual(articleBanner({ status: 'rejected', reject_reason: 'Kaynak yok.' }),
+    { kind: 'error', text: 'Bu yazı reddedildi. Sebep: Kaynak yok.' }));
+});
+
+describe('canDeleteComment', () => {
+  const c = { author_id: 'u1' };
+  test('own comment', () => assert.equal(canDeleteComment(c, { id: 'u1', role: 'member' }), true));
+  test('other member', () => assert.equal(canDeleteComment(c, { id: 'u2', role: 'member' }), false));
+  test('admin', () => assert.equal(canDeleteComment(c, { id: 'u2', role: 'admin' }), true));
+  test('visitor', () => assert.equal(canDeleteComment(c, null), false));
+});
+
+describe('articleDate', () => {
+  test('publication date when published', () => assert.equal(articleDate({ approved_at: '2026-11-22T10:00:00Z', created_at: '2026-11-20T10:00:00Z' }), '22 Kasım 2026'));
+  test('writing date otherwise', () => assert.equal(articleDate({ approved_at: null, created_at: '2026-11-20T10:00:00Z' }), '20 Kasım 2026'));
+});
+
+describe('sanitizer settings', () => {
+  test('HTML only (no SVG or MathML)', () => assert.deepEqual(PURIFY_CONFIG.USE_PROFILES, { html: true }));
+  test('no class, id or name: article text cannot borrow the site\'s own styles', () => {
+    for (const a of ['class', 'id', 'name', 'style', 'popover', 'popovertarget']) assert.ok(PURIFY_CONFIG.FORBID_ATTR.includes(a), a);
+  });
+  test('no players or dialogs', () => {
+    for (const t of ['video', 'audio', 'dialog', 'object', 'embed']) assert.ok(PURIFY_CONFIG.FORBID_TAGS.includes(t), t);
+  });
+  test('no data attributes', () => assert.equal(PURIFY_CONFIG.ALLOW_DATA_ATTR, false));
 });

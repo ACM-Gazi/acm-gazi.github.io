@@ -1,9 +1,10 @@
 // /forum/yeni/ — write a new article or edit one of your own (?id=<uuid>).
 import { getClient, requireUser, publicUrl } from './client.js';
 import { renderMarkdown, showError } from './render.js';
+import { openArticlePreview } from './article.js';
 import {
   validatePost, validateImageFile, getIdParam, charCount, draftKey, imageObjectPath,
-  translateAuthError, LIMITS, coverCropRect, validateCoverFile,
+  translateAuthError, LIMITS, coverCropRect, validateCoverFile, formatDate,
 } from './lib.js';
 
 const $ = (sel, root = document) => root.querySelector(sel);
@@ -36,7 +37,7 @@ async function loadOwnPost(userId) {
 }
 
 async function start() {
-  const { session } = await requireUser();
+  const { session, profile } = await requireUser();
   const userId = session.user.id;
 
   let post = null;
@@ -260,6 +261,15 @@ async function start() {
   window.addEventListener('beforeunload', (e) => {
     if (isDirty()) { e.preventDefault(); e.returnValue = ''; }
   });
+
+  // ---------- Full article preview (nothing is saved) ----------
+  $('#preview-article').addEventListener('click', () => openArticlePreview({
+    title: titleInput.value.trim() || 'Başlıksız yazı',
+    body: editor.value(),
+    coverUrl: coverPath ? publicUrl('forum-images', coverPath) : null,
+    date: formatDate(new Date().toISOString()),
+    author: profile,
+  }));
 
   // ---------- Submit ----------
   form.addEventListener('submit', async (e) => {

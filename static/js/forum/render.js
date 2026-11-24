@@ -1,9 +1,11 @@
 // Markdown -> safe HTML, plus small shared DOM helpers.
 
 export const PURIFY_CONFIG = {
-  USE_PROFILE: { html: true },
-  FORBID_TAGS: ['style', 'iframe', 'form', 'input', 'textarea', 'button', 'select', 'object', 'embed'],
-  FORBID_ATTR: ['style'],
+  USE_PROFILES: { html: true },
+  ALLOW_DATA_ATTR: false,
+  FORBID_TAGS: ['style', 'iframe', 'form', 'input', 'textarea', 'button', 'select', 'object', 'embed', 'video', 'audio', 'dialog'],
+  // class/id/name: otherwise article text could borrow the site's own styles (e.g. a full-screen overlay).
+  FORBID_ATTR: ['style', 'class', 'id', 'name', 'popover', 'popovertarget', 'background', 'autofocus', 'tabindex'],
 };
 
 let hookInstalled = false;
