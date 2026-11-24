@@ -91,28 +91,43 @@
       </div>
     {{ end }}
 
-    {{/* HABERLER BÖLÜMÜ*/}}
-    {{ $haberler_name := "haberler" }}
-    {{ $haberler := where $.Site.RegularPages "Section" $haberler_name }}
-    {{ $haberler_count := len $haberler }}
-
-    {{ if ge $haberler_count 1 }}
-      <div class="post-section-wrapper">
-        {{ with $.Site.GetPage "section" $haberler_name }}
-            <h1 class="post-section-header">
-              Haberler
-            </h1>
-          {{ end }}
-        {{ $n_haberler_posts := $.Param "recent_posts_number" | default 3 }}
+    {{/* SON YAZILAR (forum) + HABERLER */}}
+    <div id="home-split">
+      <div class="post-section-wrapper" id="son-yazilar" hidden>
+        <h1 class="post-section-header">
+          Son Yazılar
+        </h1>
         <section class="post-section">
-          {{ range (first $n_haberler_posts $haberler) }}
-            <div class="w-100 mb4 glass-card">
-              {{ .Render "summary-with-image" }}
-            </div>
-          {{ end }}
+          <ul class="forum-cards" id="son-yazilar-list"></ul>
+          <div class="forum-more"><a class="forum-btn forum-btn-ghost" href="/forum/">Tüm yazılar</a></div>
         </section>
       </div>
-    {{ end }}
+
+      {{/* HABERLER BÖLÜMÜ*/}}
+      {{ $haberler_name := "haberler" }}
+      {{ $haberler := where $.Site.RegularPages "Section" $haberler_name }}
+      {{ $haberler_count := len $haberler }}
+
+      {{ if ge $haberler_count 1 }}
+        <div class="post-section-wrapper">
+          {{ with $.Site.GetPage "section" $haberler_name }}
+              <h1 class="post-section-header">
+                Haberler
+              </h1>
+            {{ end }}
+          {{ $n_haberler_posts := $.Param "recent_posts_number" | default 3 }}
+          <section class="post-section">
+            {{ range (first $n_haberler_posts $haberler) }}
+              <div class="w-100 mb4 glass-card">
+                {{ .Render "summary-with-image" }}
+              </div>
+            {{ end }}
+          </section>
+        </div>
+      {{ end }}
+    </div>
+    {{ partial "forum-config.html" . }}
+    <script type="module" src="/js/forum/son-yazilar.js"></script>
 
     {{/* MERAKLISINA BÖLÜMÜ*/}}
     {{ $meraklisina_name := "meraklisina" }}
@@ -263,6 +278,32 @@
     .post-section-header {
       text-align: center;
       font-size: 48px;
+    }
+
+    #son-yazilar[hidden] {
+      display: none;
+    }
+
+    #son-yazilar .forum-cards {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    @media only screen and (min-width: 1001px) {
+      #home-split.has-posts {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 40px;
+        width: 80%;
+        margin: 0 auto;
+      }
+
+      #home-split.has-posts .post-section-wrapper {
+        min-width: 0;
+      }
+
+      #home-split.has-posts .post-section {
+        width: 100%;
+      }
     }
 
     @media only screen and (max-width: 1000px) {

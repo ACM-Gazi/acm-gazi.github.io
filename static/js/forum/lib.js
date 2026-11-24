@@ -360,3 +360,12 @@ export function validateName(name) {
   const n = len(name);
   return n < LIMITS.nameMin || n > LIMITS.nameMax ? `Ad soyad ${LIMITS.nameMin} ile ${LIMITS.nameMax} karakter arasında olmalı.` : null;
 }
+
+/** Columns an article card needs. */
+export const CARD_COLUMNS = 'id,title,body_md,cover_path,approved_at,created_at,author:profiles!posts_author_id_fkey(full_name,major,major2,year,avatar_path)';
+
+/** Address of the newest published articles (the home page asks without the Supabase library). */
+export function latestPostsUrl(baseUrl, count) {
+  const q = new URLSearchParams({ select: CARD_COLUMNS, status: 'eq.approved', order: 'approved_at.desc,id.desc', limit: String(count) });
+  return `${baseUrl}/rest/v1/posts?${q}`;
+}

@@ -11,15 +11,20 @@
 
 .forum-wrap *,
 .forum-wrap *::before,
-.forum-wrap *::after {
+.forum-wrap *::after,
+.forum-cards,
+.forum-cards *,
+.forum-more,
+.forum-more * {
   box-sizing: border-box;
 }
 
 /* The theme underlines every link with a::after; forum buttons and cards opt out. */
 .forum-wrap a.forum-btn::after,
+.forum-more a.forum-btn::after,
 .forum-wrap .forum-bar-title::after,
 .forum-wrap .forum-menu a::after,
-.forum-wrap a.forum-card::after {
+.forum-cards a.forum-card::after {
   display: none;
 }
 
@@ -1396,7 +1401,7 @@
   list-style: none;
 }
 
-.forum-wrap a.forum-card {
+.forum-cards a.forum-card {
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -1406,13 +1411,13 @@
   transition: transform 200ms ease, box-shadow 200ms ease;
 }
 
-.forum-wrap a.forum-card:hover,
-.forum-wrap a.forum-card:focus-visible {
+.forum-cards a.forum-card:hover,
+.forum-cards a.forum-card:focus-visible {
   transform: translateY(-4px);
   box-shadow: 0 10px 50px rgba(13, 138, 255, 0.35);
 }
 
-.forum-wrap a.forum-card:focus-visible {
+.forum-cards a.forum-card:focus-visible {
   outline: 2px solid var(--foreground-link);
   outline-offset: 3px;
 }
@@ -1503,8 +1508,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .forum-wrap a.forum-card:hover,
-  .forum-wrap a.forum-card:focus-visible {
+  .forum-cards a.forum-card:hover,
+  .forum-cards a.forum-card:focus-visible {
     transform: none;
   }
 }

@@ -4,7 +4,7 @@ import {
   isAllowedEmail, YEAR_OPTIONS, formatByline, validatePost, validateComment,
   validateSignup, validateImageFile, excerpt, firstImageUrl, getIdParam,
   formatDate, translateAuthError, storagePathsFromMarkdown, formatMajors, validateProfile,
-  validateAvatarFile, safeNext, parseAuthHash, parseVerifyParams, charCount, draftKey, imageObjectPath, coverCropRect, validateCoverFile, summarizePosts, postStatusInfo, removablePostFiles, articleBanner, canDeleteComment, articleDate, olderThanFilter, takePage, avatarCropRect, validatePasswordChange, isOwnFile, isUploadedImage, hasExternalImage, adminError, filterMembers, validateRejectReason, validateName,
+  validateAvatarFile, safeNext, parseAuthHash, parseVerifyParams, charCount, draftKey, imageObjectPath, coverCropRect, validateCoverFile, summarizePosts, postStatusInfo, removablePostFiles, articleBanner, canDeleteComment, articleDate, olderThanFilter, takePage, avatarCropRect, validatePasswordChange, isOwnFile, isUploadedImage, hasExternalImage, adminError, filterMembers, validateRejectReason, validateName, latestPostsUrl,
 } from '../../static/js/forum/lib.js';
 import { renderMarkdown, PURIFY_CONFIG } from '../../static/js/forum/render.js';
 
@@ -415,5 +415,16 @@ describe('sanitizer: no other way to load pictures', () => {
   test('tags and attributes', () => {
     for (const t of ['picture', 'source']) assert.ok(PURIFY_CONFIG.FORBID_TAGS.includes(t));
     for (const a of ['srcset', 'sizes']) assert.ok(PURIFY_CONFIG.FORBID_ATTR.includes(a));
+  });
+});
+
+describe('latestPostsUrl (home page)', () => {
+  test('published only, newest first, limited', () => {
+    const u = new URL(latestPostsUrl('https://x.supabase.co', 3));
+    assert.equal(u.origin + u.pathname, 'https://x.supabase.co/rest/v1/posts');
+    assert.equal(u.searchParams.get('status'), 'eq.approved');
+    assert.equal(u.searchParams.get('order'), 'approved_at.desc,id.desc');
+    assert.equal(u.searchParams.get('limit'), '3');
+    assert.ok(!u.searchParams.get('select').includes('email'));
   });
 });
