@@ -1,7 +1,8 @@
 // /forum/makalelerim/ — the member's own articles with their review status.
-import { getClient, requireUser, publicUrl, imagesPrefix } from './client.js';
+import { getClient, requireUser, publicUrl } from './client.js';
+import { deletePost } from './posts.js';
 import { el, showLoading, showError, showEmpty, confirmDialog } from './render.js';
-import { summarizePosts, postStatusInfo, removablePostFiles } from './lib.js';
+import { summarizePosts, postStatusInfo } from './lib.js';
 
 const root = document.getElementById('my-posts');
 const FILTERS = [['all', 'Tümü'], ['approved', 'Yayında'], ['pending', 'Beklemede'], ['rejected', 'Reddedildi']];
@@ -70,20 +71,8 @@ async function remove(post, button) {
   notice('');
   button.disabled = true;
   button.textContent = 'Siliniyor…';
-  const client = getClient();
   try {
-    const { data: full, error: readError } = await client.from('posts')
-      .select('id,author_id,cover_path,body_md').eq('author_id', userId);
-    if (readError) throw readError;
-    const { data, error } = await client.from('posts').delete().eq('id', post.id).select('id');
-    if (error) throw error;
-    if (!data.length) throw new Error('not_deleted');
-    // Files go after the article, so a failure can never leave an article with missing images.
-    const target = full.find((p) => p.id === post.id);
-    const files = target ? removablePostFiles(target, full, imagesPrefix()) : [];
-    if (files.length) {
-      try { await client.storage.from('forum-images').remove(files); } catch { /* a leftover file is harmless */ }
-    }
+    await deletePost({ id: post.id, author_id: userId });
     posts = posts.filter((p) => p.id !== post.id);
     if (filter !== 'all' && !posts.some((p) => p.status === filter)) filter = 'all';
     render();

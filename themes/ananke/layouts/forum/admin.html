@@ -1,0 +1,23 @@
+{{ define "header" }}{{ partial "page-header.html" . }}{{ end }}
+
+{{ define "main" }}
+  {{ partial "forum-head.html" . }}
+  <div class="forum-wrap fade-in settle-up">
+    {{ partial "forum-bar.html" . }}
+    <div class="forum-panel glass-card" id="admin-root">
+      <div class="forum-state forum-loading" role="status"><span class="forum-spinner" aria-hidden="true"></span><span>Yükleniyor…</span></div>
+    </div>
+    <template id="admin-template">
+      <h1 class="forum-page-title">Admin paneli</h1>
+      <div class="forum-filters forum-admin-tabs" role="tablist" aria-label="Admin paneli bölümleri">
+        <button type="button" class="forum-filter" role="tab" id="tab-pending" aria-controls="admin-panel" data-tab="pending">Onay bekleyenler</button>
+        <button type="button" class="forum-filter" role="tab" id="tab-posts" aria-controls="admin-panel" data-tab="posts">Tüm yazılar</button>
+        <button type="button" class="forum-filter" role="tab" id="tab-members" aria-controls="admin-panel" data-tab="members">Üyeler</button>
+      </div>
+      <div id="admin-notice" class="forum-notice" role="status" hidden></div>
+      <div id="admin-panel" role="tabpanel" tabindex="-1"></div>
+    </template>
+    <noscript><p>Admin paneli için tarayıcında JavaScript&#39;i etkinleştir.</p></noscript>
+  </div>
+  <script type="module" src="/js/forum/admin.js"></script>
+{{ end }}

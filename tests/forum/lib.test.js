@@ -4,7 +4,7 @@ import {
   isAllowedEmail, YEAR_OPTIONS, formatByline, validatePost, validateComment,
   validateSignup, validateImageFile, excerpt, firstImageUrl, getIdParam,
   formatDate, translateAuthError, storagePathsFromMarkdown, formatMajors, validateProfile,
-  validateAvatarFile, safeNext, parseAuthHash, parseVerifyParams, charCount, draftKey, imageObjectPath, coverCropRect, validateCoverFile, summarizePosts, postStatusInfo, removablePostFiles, articleBanner, canDeleteComment, articleDate, olderThanFilter, takePage, avatarCropRect, validatePasswordChange, isOwnFile,
+  validateAvatarFile, safeNext, parseAuthHash, parseVerifyParams, charCount, draftKey, imageObjectPath, coverCropRect, validateCoverFile, summarizePosts, postStatusInfo, removablePostFiles, articleBanner, canDeleteComment, articleDate, olderThanFilter, takePage, avatarCropRect, validatePasswordChange, isOwnFile, isUploadedImage, hasExternalImage, adminError, filterMembers, validateRejectReason, validateName,
 } from '../../static/js/forum/lib.js';
 import { renderMarkdown, PURIFY_CONFIG } from '../../static/js/forum/render.js';
 
@@ -370,4 +370,50 @@ describe('validatePasswordChange', () => {
 describe('isOwnFile', () => {
   test('own folder', () => assert.equal(isOwnFile('u1/a.webp', 'u1'), true));
   test('other folder, traversal, empty', () => { for (const x of ['u2/a.webp', 'u1/../u2/a', 'u1/', '', null]) assert.equal(isOwnFile(x, 'u1'), false); });
+});
+
+describe('isUploadedImage (only files from our own storage, plain names)', () => {
+  const B = 'https://x.supabase.co', P = B + '/storage/v1/object/public/forum-images/';
+  const U = '3f2504e0-4f89-11d3-9a0c-0305e82c3301';
+  test('uploaded file', () => assert.equal(isUploadedImage(`${P}${U}/a-1_b.webp`, B), true));
+  test('everything else', () => {
+    for (const x of ['https://evil.example/a.png', `${P}${U}/%61.png`, `${P}${U}/../x/a.png`, `${P}${U}/a.png?x=1`, `${P}${U}/a.png#x`,
+      `${B}/storage/v1/object/public/avatars/${U}/a.png`, `${P}abc/a.png`, 'x', '', null, `http://x.supabase.co/storage/v1/object/public/forum-images/${U}/a.png`])
+      assert.equal(isUploadedImage(x, B), false, String(x));
+  });
+});
+
+describe('hasExternalImage', () => {
+  const B = 'https://x.supabase.co', OK = `${B}/storage/v1/object/public/forum-images/3f2504e0-4f89-11d3-9a0c-0305e82c3301/a.png`;
+  test('uploaded only', () => assert.equal(hasExternalImage(`metin ![a](${OK}) <img src="${OK}">`, B), false));
+  test('markdown link image', () => assert.equal(hasExternalImage('![a](https://evil.example/a.png "x")', B), true));
+  test('html image', () => { assert.equal(hasExternalImage("<img alt='x' src='https://evil.example/a.png'>", B), true); assert.equal(hasExternalImage('<IMG SRC=https://evil.example/a.png>', B), true); });
+  test('code examples do not count', () => assert.equal(hasExternalImage('```\n![a](https://e.example/a.png)\n```\n`![a](https://e.example/b.png)`', B), false));
+  test('normal links do not count', () => assert.equal(hasExternalImage('[a](https://e.example/a.png)', B), false));
+});
+
+describe('admin helpers', () => {
+  test('errors in Turkish', () => {
+    assert.match(adminError('version_changed'), /sen incelerken değişti/);
+    assert.equal(adminError('last_admin'), 'Son admin adminlikten çıkarılamaz.');
+    assert.equal(adminError('forbidden'), 'Bu işlem için admin yetkin yok.');
+    assert.equal(adminError('not_found'), 'Bu kayıt artık yok.');
+    assert.match(adminError('x'), /tekrar dene/);
+  });
+  const M = [{ full_name: 'İrem Işık', email: 'irem@gazi.edu.tr' }, { full_name: 'Ali Kaya', email: 'ali.k@gazi.edu.tr' }];
+  test('search by Turkish name, any case', () => assert.deepEqual(filterMembers(M, ' irem IŞIK '), [M[0]]));
+  test('search by e-mail', () => assert.deepEqual(filterMembers(M, 'ALI.K@'), [M[1]]));
+  test('empty search shows all', () => assert.equal(filterMembers(M, '  ').length, 2));
+  test('reject reason 3–500', () => {
+    assert.ok(validateRejectReason('  ab ')); assert.ok(validateRejectReason('a'.repeat(501)));
+    assert.equal(validateRejectReason('abc'), null); assert.equal(validateRejectReason('a'.repeat(500)), null);
+  });
+  test('name 3–100', () => { assert.ok(validateName('Al')); assert.ok(validateName('a'.repeat(101))); assert.equal(validateName('Ayşe Yılmaz'), null); });
+});
+
+describe('sanitizer: no other way to load pictures', () => {
+  test('tags and attributes', () => {
+    for (const t of ['picture', 'source']) assert.ok(PURIFY_CONFIG.FORBID_TAGS.includes(t));
+    for (const a of ['srcset', 'sizes']) assert.ok(PURIFY_CONFIG.FORBID_ATTR.includes(a));
+  });
 });

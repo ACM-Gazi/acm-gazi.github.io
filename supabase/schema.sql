@@ -45,7 +45,8 @@ update public.posts set cover_path = author_id::text || '/no-cover' where cover_
 alter table public.posts alter column cover_path set not null;
 alter table public.posts drop constraint if exists posts_cover_in_author_folder;
 alter table public.posts add constraint posts_cover_in_author_folder
-  check (char_length(cover_path) <= 200 and split_part(cover_path, '/', 1) = author_id::text);
+  check (cover_path ~ '^[0-9a-f-]{36}/[A-Za-z0-9._-]{1,120}$'
+         and split_part(cover_path, '/', 1) = author_id::text);
 create index if not exists posts_status_approved_idx on public.posts (status, approved_at desc);
 create index if not exists posts_author_idx on public.posts (author_id, created_at desc);
 
@@ -261,14 +262,21 @@ revoke execute on function public.my_profile() from public, anon;
 grant execute on function public.my_profile() to authenticated;
 
 -- ---------- Admin functions ----------
-create or replace function public.approve_post(p_id uuid)
+drop function if exists public.approve_post(uuid);
+
+create or replace function public.approve_post(p_id uuid, p_version timestamptz)
 returns void language plpgsql security definer set search_path = '' as $$
 begin
   if not public.is_admin() then raise exception 'forbidden' using errcode = '42501'; end if;
   update public.posts
      set status = 'approved', reject_reason = null, approved_at = now(), approved_by = auth.uid()
-   where id = p_id;
-  if not found then raise exception 'not_found' using errcode = 'P0002'; end if;
+   where id = p_id and updated_at = p_version;
+  if not found then
+    if exists (select 1 from public.posts where id = p_id) then
+      raise exception 'version_changed' using errcode = '22023';
+    end if;
+    raise exception 'not_found' using errcode = 'P0002';
+  end if;
 end $$;
 
 create or replace function public.reject_post(p_id uuid, p_reason text)
@@ -324,10 +332,10 @@ begin
   if not found then raise exception 'not_found' using errcode = 'P0002'; end if;
 end $$;
 
-revoke execute on function public.approve_post(uuid), public.reject_post(uuid, text),
+revoke execute on function public.approve_post(uuid, timestamptz), public.reject_post(uuid, text),
   public.admin_list_members(), public.set_member_role(uuid, public.user_role),
   public.admin_set_name(uuid, text) from public, anon;
-grant execute on function public.approve_post(uuid), public.reject_post(uuid, text),
+grant execute on function public.approve_post(uuid, timestamptz), public.reject_post(uuid, text),
   public.admin_list_members(), public.set_member_role(uuid, public.user_role),
   public.admin_set_name(uuid, text) to authenticated;
 grant execute on function public.is_admin(), public.is_api_request() to anon, authenticated;
@@ -362,10 +370,19 @@ on conflict (id) do update
       file_size_limit = excluded.file_size_limit,
       allowed_mime_types = excluded.allowed_mime_types;
 
+create or replace function public.is_image_in_use(p_name text)
+returns boolean language sql stable security definer set search_path = '' as $$
+  select exists (select 1 from public.posts p
+                  where p.cover_path = p_name or position(p_name in p.body_md) > 0);
+$$;
+revoke execute on function public.is_image_in_use(text) from public, anon;
+grant execute on function public.is_image_in_use(text) to authenticated;
+
 drop policy if exists forum_storage_insert on storage.objects;
 create policy forum_storage_insert on storage.objects for insert to authenticated
   with check (bucket_id in ('forum-images', 'avatars')
-              and (storage.foldername(name))[1] = auth.uid()::text);
+              and (storage.foldername(name))[1] = auth.uid()::text
+              and name ~ '^[0-9a-f-]{36}/[A-Za-z0-9._-]{1,120}$');
 
 drop policy if exists forum_storage_select on storage.objects;
 create policy forum_storage_select on storage.objects for select to authenticated
@@ -375,4 +392,6 @@ create policy forum_storage_select on storage.objects for select to authenticate
 drop policy if exists forum_storage_delete on storage.objects;
 create policy forum_storage_delete on storage.objects for delete to authenticated
   using (bucket_id in ('forum-images', 'avatars')
-         and ((storage.foldername(name))[1] = auth.uid()::text or public.is_admin()));
+         and (public.is_admin()
+              or ((storage.foldername(name))[1] = auth.uid()::text
+                  and (bucket_id = 'avatars' or not public.is_image_in_use(name)))));

@@ -42,6 +42,12 @@ async function newPost(as, extra = {}) {
   return r.data[0];
 }
 
+/** Approves the version that is stored right now, like an admin who has just read it. */
+async function approve(id) {
+  const [p] = (await rest(`posts?id=eq.${id}&select=updated_at`, { as: admin })).data;
+  return rpc('approve_post', { p_id: id, p_version: p.updated_at }, admin);
+}
+
 async function upload(as, bucket, path, type = 'image/png') {
   const png = Buffer.from('89504e470d0a1a0a0000000d4948445200000001000000010806000000' +
     '1f15c4890000000d4944415478da63f8ffff3f0005fe02fea7d6a5a30000000049454e44ae426082', 'hex');
@@ -106,7 +112,7 @@ describe('posts', () => {
 
   test('4. editing an approved post sends it back to review', async () => {
     const p = await newPost(member);
-    assert.ok((await rpc('approve_post', { p_id: p.id }, admin)).ok);
+    assert.ok((await approve(p.id)).ok);
     const u = await rest(`posts?id=eq.${p.id}`, { as: member, method: 'PATCH', prefer: ret, body: { title: 'Düzenlenmiş başlık' } });
     assert.equal(u.data[0].status, 'pending');
     assert.equal(u.data[0].approved_at, null);
@@ -114,7 +120,7 @@ describe('posts', () => {
 
   test('6. member cannot call admin functions', async () => {
     const p = await newPost(member);
-    for (const [fn, args] of [['approve_post', { p_id: p.id }], ['reject_post', { p_id: p.id, p_reason: 'neden' }],
+    for (const [fn, args] of [['approve_post', { p_id: p.id, p_version: p.updated_at }], ['reject_post', { p_id: p.id, p_reason: 'neden' }],
       ['admin_list_members', {}], ['set_member_role', { p_user: member.id, p_role: 'admin' }]]) {
       const r = await rpc(fn, args, member);
       assert.ok(!r.ok, `${fn} should fail`);
@@ -124,7 +130,7 @@ describe('posts', () => {
 
   test('7. admin approves (anon then sees it); reject needs a reason', async () => {
     const p = await newPost(member);
-    assert.ok((await rpc('approve_post', { p_id: p.id }, admin)).ok);
+    assert.ok((await approve(p.id)).ok);
     assert.equal((await rest(`posts?id=eq.${p.id}&select=id`)).data.length, 1);
     const bad = await rpc('reject_post', { p_id: p.id, p_reason: '  ' }, admin);
     assert.ok(!bad.ok);
@@ -132,6 +138,31 @@ describe('posts', () => {
     assert.equal((await rest(`posts?id=eq.${p.id}&select=id`)).data.length, 0);
     const mine = await rest(`posts?id=eq.${p.id}&select=status,reject_reason`, { as: member });
     assert.deepEqual(mine.data[0], { status: 'rejected', reject_reason: 'Konu uygun değil.' });
+  });
+
+  test('approval is refused when the author changed the text after the admin read it', async () => {
+    const p = await newPost(member);
+    const read = (await rest(`posts?id=eq.${p.id}&select=updated_at`, { as: admin })).data[0].updated_at;
+    await rest(`posts?id=eq.${p.id}`, { as: member, method: 'PATCH', body: { body_md: 'Gizlice değişen metin. '.repeat(5) } });
+    const r = await rpc('approve_post', { p_id: p.id, p_version: read }, admin);
+    assert.ok(!r.ok);
+    assert.match(JSON.stringify(r.data), /version_changed/);
+    assert.equal((await rest(`posts?id=eq.${p.id}&select=status`, { as: member })).data[0].status, 'pending');
+    assert.ok((await approve(p.id)).ok);
+  });
+
+  test('the old approval without a version is gone', async () => {
+    const p = await newPost(member);
+    assert.ok(!(await rpc('approve_post', { p_id: p.id }, admin)).ok);
+    assert.equal((await rest(`posts?id=eq.${p.id}&select=status`, { as: member })).data[0].status, 'pending');
+  });
+
+  test('odd cover names are refused', async () => {
+    for (const c of [`${member.id}/a b.webp`, `${member.id}/x/../y.webp`, `${member.id}/%61.webp`, `${member.id}/`]) {
+      const r = await rest('posts', { as: member, method: 'POST', prefer: ret, body: { title: 'Tuhaf kapak adı', body_md: BODY, cover_path: c } });
+      if (r.ok) created.posts.push(r.data[0].id);
+      assert.ok(!r.ok, c);
+    }
   });
 
   test('cover image is required', async () => {
@@ -223,7 +254,7 @@ describe('profiles', () => {
     const q = `profiles?id=eq.${member2.id}&select=full_name`;
     const p = await newPost(member2);
     assert.deepEqual((await rest(q)).data, [], 'pending must not reveal the author');
-    assert.ok((await rpc('approve_post', { p_id: p.id }, admin)).ok);
+    assert.ok((await approve(p.id)).ok);
     const row = (await rest(`posts?id=eq.${p.id}&select=id,author:profiles!posts_author_id_fkey(full_name,major,year)`)).data[0];
     assert.ok(row.author?.full_name);
     await rest(`posts?id=eq.${p.id}`, { as: admin, method: 'DELETE' });
@@ -232,7 +263,7 @@ describe('profiles', () => {
 
   test('a commenter on an approved article is visible to readers', async () => {
     const p = await newPost(member);
-    await rpc('approve_post', { p_id: p.id }, admin);
+    await approve(p.id);
     const c = await rest('comments', { as: member2, method: 'POST', prefer: ret, body: { post_id: p.id, body: 'Merhaba' } });
     assert.equal(c.status, 201, JSON.stringify(c.data));
     assert.equal((await rest(`profiles?id=eq.${member2.id}&select=id`)).data.length, 1);
@@ -252,7 +283,7 @@ describe('comments', () => {
   let approved;
   before(async () => {
     approved = await newPost(member);
-    await rpc('approve_post', { p_id: approved.id }, admin);
+    await approve(approved.id);
   });
 
   test('9. cannot comment as someone else or on a pending post', async () => {
@@ -294,6 +325,46 @@ describe('sign-up restriction', () => {
 });
 
 describe('storage', () => {
+  const del = async (as, path) => {
+    const r = await fetch(`${BASE}/storage/v1/object/forum-images`, { method: 'DELETE',
+      headers: { apikey: KEY, Authorization: `Bearer ${as.token}`, 'content-type': 'application/json' }, body: JSON.stringify({ prefixes: [path] }) });
+    return r.ok ? (await r.json()).length : 0;
+  };
+
+  test('a file used by an article cannot be deleted or replaced by its owner', async () => {
+    const cov = `${member.id}/rls-cov-${Date.now()}.png`, img = `${member.id}/rls-img-${Date.now()}.png`;
+    assert.equal(await upload(member, 'forum-images', cov), 200);
+    assert.equal(await upload(member, 'forum-images', img), 200);
+    const p = await newPost(member, { cover_path: cov, body_md: `${BODY} ![a](${BASE}/storage/v1/object/public/forum-images/${img})` });
+    for (const f of [cov, img]) {
+      assert.equal(await del(member, f), 0, 'pending: must stay');
+      assert.ok((await upload(member, 'forum-images', f)) >= 400, 'must not be overwritten');
+    }
+    assert.ok((await approve(p.id)).ok);
+    for (const f of [cov, img]) assert.equal(await del(member, f), 0, 'published: must stay');
+    await rest(`posts?id=eq.${p.id}`, { as: member, method: 'DELETE' });
+    for (const f of [cov, img]) assert.equal(await del(member, f), 1, 'unused: may go');
+  });
+
+  test('another member\'s article also protects the file', async () => {
+    const img = `${member.id}/rls-shared-${Date.now()}.png`;
+    assert.equal(await upload(member, 'forum-images', img), 200);
+    const p = await newPost(member2, { body_md: `${BODY} ${BASE}/storage/v1/object/public/forum-images/${img}` });
+    assert.equal(await del(member, img), 0);
+    await rest(`posts?id=eq.${p.id}`, { as: admin, method: 'DELETE' });
+    assert.equal(await del(member, img), 1);
+  });
+
+  test('admins may delete a used file; odd file names are refused', async () => {
+    const img = `${member.id}/rls-adm-${Date.now()}.png`;
+    assert.equal(await upload(member, 'forum-images', img), 200);
+    const p = await newPost(member, { cover_path: img });
+    assert.equal(await del(admin, img), 1);
+    await rest(`posts?id=eq.${p.id}`, { as: admin, method: 'DELETE' });
+    assert.ok((await upload(member, 'forum-images', `${member.id}/a%20b.png`)) >= 400);
+    assert.ok((await upload(member, 'forum-images', `${member.id}/sub/a.png`)) >= 400);
+  });
+
   test('12. uploads only into own folder, images only', async () => {
     assert.ok((await upload(member, 'forum-images', `${member2.id}/rls-${Date.now()}.png`)) >= 400);
     assert.equal(await upload(member, 'forum-images', `${member.id}/rls-${Date.now()}.png`), 200);

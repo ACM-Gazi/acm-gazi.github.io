@@ -315,3 +315,48 @@ export function validatePasswordChange({ current, password, password2 } = {}) {
   else if (password !== password2) errors.password2 = 'Şifreler eşleşmiyor.';
   return { ok: Object.keys(errors).length === 0, errors };
 }
+
+const UPLOADED_PATH = /^\/storage\/v1\/object\/public\/forum-images\/[0-9a-f-]{36}\/[A-Za-z0-9._-]{1,120}$/;
+
+/** Articles show only pictures from our own storage: anything else could be swapped after approval. */
+export function isUploadedImage(src, baseUrl) {
+  const s = String(src ?? '');
+  return !!baseUrl && s.startsWith(`${baseUrl}/`) && UPLOADED_PATH.test(s.slice(baseUrl.length));
+}
+
+export function hasExternalImage(markdown, baseUrl) {
+  const text = String(markdown ?? '').replace(/```[\s\S]*?(```|$)/g, ' ').replace(/`[^`\n]*`/g, ' ');
+  const urls = [
+    ...[...text.matchAll(/!\[[^\]]*\]\(\s*<?([^)\s>]+)/g)].map((m) => m[1]),
+    ...[...text.matchAll(/<img\b[^>]*?\bsrc\s*=\s*["']?([^"'\s>]+)/gi)].map((m) => m[1]),
+  ];
+  return urls.some((u) => !isUploadedImage(u, baseUrl));
+}
+
+export function adminError(message) {
+  const m = String(message ?? '');
+  if (m.includes('version_changed')) return 'Yazı sen incelerken değişti. Güncel hali yüklendi, lütfen tekrar incele.';
+  if (m.includes('last_admin')) return 'Son admin adminlikten çıkarılamaz.';
+  if (m.includes('forbidden')) return 'Bu işlem için admin yetkin yok.';
+  if (m.includes('not_found')) return 'Bu kayıt artık yok.';
+  return 'İşlem tamamlanamadı. İnternet bağlantını kontrol edip tekrar dene.';
+}
+
+const fold = (s) => String(s ?? '').trim().toLocaleLowerCase('tr-TR');
+
+export function filterMembers(members, query) {
+  const name = fold(query);
+  const mail = String(query ?? '').trim().toLowerCase();
+  if (!name) return members;
+  return members.filter((m) => fold(m.full_name).includes(name) || String(m.email ?? '').toLowerCase().includes(mail));
+}
+
+export function validateRejectReason(reason) {
+  const n = len(reason);
+  return n < 3 || n > 500 ? 'Sebep 3 ile 500 karakter arasında olmalı.' : null;
+}
+
+export function validateName(name) {
+  const n = len(name);
+  return n < LIMITS.nameMin || n > LIMITS.nameMax ? `Ad soyad ${LIMITS.nameMin} ile ${LIMITS.nameMax} karakter arasında olmalı.` : null;
+}

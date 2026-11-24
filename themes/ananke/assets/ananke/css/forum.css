@@ -987,7 +987,8 @@
   border-color: var(--foreground-primary);
 }
 
-.forum-filter[aria-pressed="true"] {
+.forum-filter[aria-pressed="true"],
+.forum-filter[aria-selected="true"] {
   background-color: var(--foreground-primary);
   color: var(--background-primary);
 }
@@ -1601,4 +1602,90 @@
     align-items: center;
     align-self: stretch;
   }
+}
+
+/* ---------- Admin panel ---------- */
+.forum-admin-tabs {
+  margin-bottom: 24px;
+}
+
+.forum-admin-search {
+  margin-bottom: 18px;
+}
+
+.forum-row-avatar {
+  flex-shrink: 0;
+}
+
+.forum-row-name {
+  margin: 0;
+  font-size: 18px;
+  font-weight: normal;
+  overflow-wrap: anywhere;
+}
+
+.forum-row-actions {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.forum-badge-admin { color: #8fc4ff; background-color: rgba(48, 129, 216, 0.15); }
+
+.forum-review-foot {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  padding: 12px 24px;
+  background-color: var(--background-primary);
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.forum-review-foot .forum-actions {
+  max-width: 860px;
+  margin: 0 auto;
+}
+
+.forum-review-foot .forum-form-error {
+  max-width: 860px;
+  margin: 0 auto 10px;
+}
+
+.forum-review-foot .forum-actions > :first-child {
+  margin-right: auto;
+}
+
+.forum-prose img:not([src]) {
+  display: none;
+}
+
+@media only screen and (max-width: 1000px) {
+  .forum-row-person {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: flex-start;
+  }
+
+  .forum-row-person .forum-row-actions {
+    width: 100%;
+  }
+
+  .forum-review-foot {
+    padding: 10px 16px;
+  }
+
+  .forum-review-foot .forum-actions {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .forum-review-foot .forum-btn {
+    flex: 1 1 90px;
+    width: auto;
+    padding: 8px 12px;
+  }
+}
+
+.forum-hint {
+  max-width: 100%;
+  overflow-wrap: anywhere;
 }

@@ -5,7 +5,7 @@ import { openArticlePreview } from './article.js';
 import { cropToBlob } from './image.js';
 import {
   validatePost, validateImageFile, getIdParam, charCount, draftKey, imageObjectPath,
-  translateAuthError, LIMITS, coverCropRect, validateCoverFile, formatDate,
+  translateAuthError, LIMITS, coverCropRect, validateCoverFile, formatDate, hasExternalImage,
 } from './lib.js';
 
 const $ = (sel, root = document) => root.querySelector(sel);
@@ -270,6 +270,9 @@ async function start() {
     const title = titleInput.value.trim();
     const body = editor.value().trim();
     const { errors } = validatePost({ title, body });
+    if (!errors.body && hasExternalImage(body, window.FORUM_CONFIG.url)) {
+      errors.body = 'Başka sitelerden bağlanan görseller gösterilmez. Görselleri "Görsel ekle" ile yükle.';
+    }
     if (coverBusy) errors.cover = 'Kapak görseli yükleniyor. Bitmesini bekle.';
     else if (!coverPath) errors.cover = 'Kapak görseli ekle.';
     if (Object.keys(errors).length) {
