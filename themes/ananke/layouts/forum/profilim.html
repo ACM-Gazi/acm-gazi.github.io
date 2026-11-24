@@ -1,0 +1,89 @@
+{{ define "header" }}{{ partial "page-header.html" . }}{{ end }}
+
+{{ define "main" }}
+  {{ partial "forum-head.html" . }}
+  <div class="forum-wrap fade-in settle-up">
+    {{ partial "forum-bar.html" . }}
+
+    <div id="profile-root" class="forum-panel forum-profile glass-card">
+      <div class="forum-state forum-loading" role="status"><span class="forum-spinner" aria-hidden="true"></span><span>Yükleniyor…</span></div>
+    </div>
+
+    <template id="profile-template">
+      <h1 class="forum-page-title">Profilim</h1>
+      <div id="profile-notice" class="forum-notice" role="status" hidden></div>
+
+      <div class="forum-profile-head">
+        <div class="forum-profile-photo">
+          <div id="profile-avatar"></div>
+          <div class="forum-profile-busy" id="photo-busy" hidden><span class="forum-spinner" aria-hidden="true"></span></div>
+        </div>
+        <div class="forum-profile-id">
+          <h2 class="forum-profile-name" id="profile-name"></h2>
+          <span id="profile-email"></span>
+          <span class="forum-hint">E-postanı sadece sen ve adminler görebilir. Adın yanlışsa bir admine yaz.</span>
+          <div class="forum-profile-photo-actions">
+            <button type="button" class="forum-btn forum-btn-ghost forum-btn-small" id="photo-change">Fotoğraf seç</button>
+            <button type="button" class="forum-btn forum-btn-ghost forum-btn-small" id="photo-remove" hidden>Fotoğrafı kaldır</button>
+          </div>
+          <input type="file" id="photo-input" accept="image/jpeg,image/png,image/webp" hidden>
+          <p class="forum-field-error" id="photo-error" role="alert"></p>
+        </div>
+      </div>
+
+      <section class="forum-section" aria-labelledby="info-title">
+        <h2 class="forum-section-title" id="info-title">Bilgilerim</h2>
+        <form id="info-form" class="forum-form" novalidate>
+          <div class="forum-field">
+            <label for="pf-major">Bölüm</label>
+            <input id="pf-major" name="major" list="gazi-majors" maxlength="100" required>
+          </div>
+          <div class="forum-field">
+            <label for="pf-major2">İkinci bölüm <span class="forum-optional">(Çift Anadal, isteğe bağlı)</span></label>
+            <input id="pf-major2" name="major2" list="gazi-majors" maxlength="100">
+          </div>
+          <div class="forum-field">
+            <label for="pf-year">Sınıf</label>
+            <select id="pf-year" name="year" required>
+              <option value="">Seç…</option>
+            </select>
+          </div>
+          <p class="forum-form-error" role="alert" hidden></p>
+          <div class="forum-actions"><button type="submit" class="forum-btn forum-btn-primary">Kaydet</button></div>
+        </form>
+      </section>
+
+      <section class="forum-section" aria-labelledby="password-title">
+        <h2 class="forum-section-title" id="password-title">Şifre değiştir</h2>
+        <form id="password-form" class="forum-form" novalidate>
+          <input class="forum-sr-only" id="pw-user" type="text" autocomplete="username" tabindex="-1" aria-hidden="true" readonly>
+          <div class="forum-field">
+            <label for="pw-current">Mevcut şifre</label>
+            <div class="forum-password">
+              <input id="pw-current" name="current" type="password" autocomplete="current-password" required>
+              <button type="button" class="forum-eye" aria-label="Şifreyi göster" aria-pressed="false">👁</button>
+            </div>
+          </div>
+          <div class="forum-field">
+            <label for="pw-new">Yeni şifre <span class="forum-optional">(en az 8 karakter)</span></label>
+            <div class="forum-password">
+              <input id="pw-new" name="password" type="password" autocomplete="new-password" required>
+              <button type="button" class="forum-eye" aria-label="Şifreyi göster" aria-pressed="false">👁</button>
+            </div>
+          </div>
+          <div class="forum-field">
+            <label for="pw-new2">Yeni şifre tekrar</label>
+            <input id="pw-new2" name="password2" type="password" autocomplete="new-password" required>
+          </div>
+          <p class="forum-hint">Şifren değişince diğer cihazlardaki oturumların kapatılır.</p>
+          <p class="forum-form-error" role="alert" hidden></p>
+          <div class="forum-actions"><button type="submit" class="forum-btn forum-btn-primary">Şifreyi değiştir</button></div>
+        </form>
+      </section>
+    </template>
+
+    {{ partial "forum-majors.html" . }}
+    <noscript><p>Profilini görmek için tarayıcında JavaScript&#39;i etkinleştir.</p></noscript>
+  </div>
+  <script type="module" src="/js/forum/profilim.js"></script>
+{{ end }}

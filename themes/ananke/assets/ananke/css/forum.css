@@ -1511,3 +1511,94 @@
 .forum-editor .cm-s-easymde .cm-quote { color: rgba(255, 255, 255, 0.75); }
 .forum-editor .cm-s-easymde .cm-link { color: #8fc4ff; }
 .forum-editor .cm-s-easymde .cm-url { color: #8fc4ff; }
+
+/* ---------- Profilim ---------- */
+.forum-profile {
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.forum-profile-head {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  margin-top: 8px;
+}
+
+.forum-profile-photo {
+  position: relative;
+  flex-shrink: 0;
+  width: 120px;
+  height: 120px;
+}
+
+.forum-profile-photo .forum-avatar {
+  font-size: 38px;
+}
+
+.forum-profile-busy {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background-color: rgba(0, 18, 33, 0.75);
+}
+
+.forum-profile-busy[hidden],
+.forum-profile-photo-actions [hidden] {
+  display: none;
+}
+
+.forum-profile-id {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.forum-profile-name {
+  margin: 0;
+  font-size: 24px;
+  font-weight: normal;
+}
+
+.forum-profile-photo-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.forum-section {
+  margin-top: 30px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.forum-section-title {
+  margin: 0 0 16px;
+  font-size: 21px;
+  font-weight: normal;
+}
+
+@media only screen and (max-width: 1000px) {
+  .forum-profile-head {
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    text-align: center;
+  }
+
+  .forum-profile-photo-actions {
+    flex-direction: column;
+    align-self: stretch;
+  }
+
+  .forum-profile-id {
+    align-items: center;
+    align-self: stretch;
+  }
+}

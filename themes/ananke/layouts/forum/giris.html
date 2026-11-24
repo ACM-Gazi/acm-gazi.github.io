@@ -130,22 +130,7 @@
       <noscript><p>Giriş yapmak için tarayıcında JavaScript'i etkinleştir.</p></noscript>
     </div>
 
-    <datalist id="gazi-majors">
-      <option value="Bilgisayar Mühendisliği">
-      <option value="Yazılım Mühendisliği">
-      <option value="Elektrik-Elektronik Mühendisliği">
-      <option value="Endüstri Mühendisliği">
-      <option value="Makine Mühendisliği">
-      <option value="İnşaat Mühendisliği">
-      <option value="Kimya Mühendisliği">
-      <option value="Enerji Sistemleri Mühendisliği">
-      <option value="Metalurji ve Malzeme Mühendisliği">
-      <option value="Otomotiv Mühendisliği">
-      <option value="Mimarlık">
-      <option value="Matematik">
-      <option value="Fizik">
-      <option value="İstatistik">
-    </datalist>
+    {{ partial "forum-majors.html" . }}
   </div>
   <script type="module" src="/js/forum/giris.js"></script>
 {{ end }}

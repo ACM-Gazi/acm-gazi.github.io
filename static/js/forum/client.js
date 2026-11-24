@@ -34,6 +34,12 @@ export function getMyProfile() {
   return profilePromise;
 }
 
+/** Reloads the cached profile and the top bar after a change. */
+export async function refreshProfile() {
+  profilePromise = null;
+  await mountForumBar();
+}
+
 export function publicUrl(bucket, path) {
   return `${window.FORUM_CONFIG.url}/storage/v1/object/public/${bucket}/${path.split('/').map(encodeURIComponent).join('/')}`;
 }

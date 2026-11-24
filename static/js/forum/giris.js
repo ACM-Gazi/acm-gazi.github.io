@@ -1,5 +1,6 @@
 // /forum/giris/ — log in, sign up, forgot password, set new password.
 import { getClient, getSession } from './client.js';
+import { clearErrors, formError, showFieldErrors, busy, values, initPasswordToggles } from './forms.js';
 import { YEAR_OPTIONS, validateSignup, translateAuthError, safeNext, parseAuthHash, parseVerifyParams, isAllowedEmail, LIMITS } from './lib.js';
 
 const $ = (sel, root = document) => root.querySelector(sel);
@@ -27,44 +28,6 @@ function notice(text, kind = 'info') {
   n.hidden = !text;
 }
 
-// ---------- Field errors ----------
-function clearErrors(form) {
-  form.querySelectorAll('.forum-field-error').forEach((e) => e.remove());
-  form.querySelectorAll('[aria-invalid]').forEach((i) => { i.removeAttribute('aria-invalid'); i.removeAttribute('aria-errormessage'); });
-  const fe = $('.forum-form-error', form);
-  fe.hidden = true; fe.textContent = '';
-}
-
-function fieldError(form, name, text) {
-  const input = form.elements[name];
-  if (!input) return;
-  const id = `${input.id}-err`;
-  const p = document.createElement('p');
-  p.className = 'forum-field-error'; p.id = id; p.textContent = text;
-  input.closest('.forum-field').append(p);
-  input.setAttribute('aria-invalid', 'true');
-  input.setAttribute('aria-errormessage', id);
-}
-
-function formError(form, text) {
-  const fe = $('.forum-form-error', form);
-  fe.textContent = text; fe.hidden = false;
-}
-
-function showFieldErrors(form, errors) {
-  for (const [name, text] of Object.entries(errors)) fieldError(form, name, text);
-  form.querySelector('[aria-invalid="true"]')?.focus();
-}
-
-async function busy(form, fn) {
-  const btn = form.querySelector('button[type="submit"]');
-  const label = btn.textContent;
-  btn.disabled = true; btn.textContent = 'Lütfen bekle…';
-  try { await fn(); } finally { btn.disabled = false; btn.textContent = label; }
-}
-
-const values = (form) => Object.fromEntries(new FormData(form).entries());
-
 // ---------- Tabs ----------
 const tabs = [$('#tab-login'), $('#tab-signup')];
 function selectTab(tab, focus = false) {
@@ -84,13 +47,7 @@ tabs.forEach((t, i) => {
 });
 
 // ---------- Show / hide password ----------
-document.querySelectorAll('.forum-eye').forEach((btn) => btn.addEventListener('click', () => {
-  const input = btn.previousElementSibling;
-  const showing = input.type === 'text';
-  input.type = showing ? 'password' : 'text';
-  btn.setAttribute('aria-pressed', String(!showing));
-  btn.setAttribute('aria-label', showing ? 'Şifreyi göster' : 'Şifreyi gizle');
-}));
+initPasswordToggles();
 
 // ---------- Year select ----------
 const yearSelect = $('#su-year');

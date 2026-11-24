@@ -4,7 +4,7 @@ import {
   isAllowedEmail, YEAR_OPTIONS, formatByline, validatePost, validateComment,
   validateSignup, validateImageFile, excerpt, firstImageUrl, getIdParam,
   formatDate, translateAuthError, storagePathsFromMarkdown, formatMajors, validateProfile,
-  validateAvatarFile, safeNext, parseAuthHash, parseVerifyParams, charCount, draftKey, imageObjectPath, coverCropRect, validateCoverFile, summarizePosts, postStatusInfo, removablePostFiles, articleBanner, canDeleteComment, articleDate, olderThanFilter, takePage,
+  validateAvatarFile, safeNext, parseAuthHash, parseVerifyParams, charCount, draftKey, imageObjectPath, coverCropRect, validateCoverFile, summarizePosts, postStatusInfo, removablePostFiles, articleBanner, canDeleteComment, articleDate, olderThanFilter, takePage, avatarCropRect, validatePasswordChange, isOwnFile,
 } from '../../static/js/forum/lib.js';
 import { renderMarkdown, PURIFY_CONFIG } from '../../static/js/forum/render.js';
 
@@ -350,4 +350,24 @@ describe('takePage (one extra row tells whether there is more)', () => {
   test('more', () => assert.deepEqual(takePage([1, 2, 3], 2), { items: [1, 2], more: true }));
   test('exactly full: no empty next page', () => assert.deepEqual(takePage([1, 2], 2), { items: [1, 2], more: false }));
   test('empty', () => assert.deepEqual(takePage([], 2), { items: [], more: false }));
+});
+
+describe('avatarCropRect (centre square, 256px, never enlarged)', () => {
+  test('wide', () => assert.deepEqual(avatarCropRect(4000, 1000), { sx: 1500, sy: 0, sw: 1000, sh: 1000, dw: 256, dh: 256 }));
+  test('tall', () => assert.deepEqual(avatarCropRect(1000, 3000), { sx: 0, sy: 1000, sw: 1000, sh: 1000, dw: 256, dh: 256 }));
+  test('small', () => assert.deepEqual(avatarCropRect(100, 80), { sx: 10, sy: 0, sw: 80, sh: 80, dw: 80, dh: 80 }));
+});
+
+describe('validatePasswordChange', () => {
+  const good = { current: 'eski-sifre', password: 'yeni-sifre', password2: 'yeni-sifre' };
+  test('valid', () => assert.deepEqual(validatePasswordChange(good), { ok: true, errors: {} }));
+  test('current missing', () => assert.equal(validatePasswordChange({ ...good, current: '' }).errors.current, 'Mevcut şifreni yaz.'));
+  test('too short', () => assert.ok(validatePasswordChange({ ...good, password: '1234567', password2: '1234567' }).errors.password));
+  test('mismatch', () => assert.equal(validatePasswordChange({ ...good, password2: 'x' }).errors.password2, 'Şifreler eşleşmiyor.'));
+  test('same as current', () => assert.equal(validatePasswordChange({ current: 'aynisifre', password: 'aynisifre', password2: 'aynisifre' }).errors.password, 'Yeni şifre eskisinden farklı olmalı.'));
+});
+
+describe('isOwnFile', () => {
+  test('own folder', () => assert.equal(isOwnFile('u1/a.webp', 'u1'), true));
+  test('other folder, traversal, empty', () => { for (const x of ['u2/a.webp', 'u1/../u2/a', 'u1/', '', null]) assert.equal(isOwnFile(x, 'u1'), false); });
 });

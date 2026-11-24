@@ -2,6 +2,7 @@
 import { getClient, requireUser, publicUrl } from './client.js';
 import { renderMarkdown, showError } from './render.js';
 import { openArticlePreview } from './article.js';
+import { cropToBlob } from './image.js';
 import {
   validatePost, validateImageFile, getIdParam, charCount, draftKey, imageObjectPath,
   translateAuthError, LIMITS, coverCropRect, validateCoverFile, formatDate,
@@ -158,18 +159,6 @@ async function start() {
     if (path) { img.src = publicUrl('forum-images', path); img.alt = 'Kapak görseli'; }
   }
 
-  async function makeCover(file) {
-    const bmp = await createImageBitmap(file);
-    const r = coverCropRect(bmp.width, bmp.height);
-    const canvas = document.createElement('canvas');
-    canvas.width = r.dw; canvas.height = r.dh;
-    canvas.getContext('2d').drawImage(bmp, r.sx, r.sy, r.sw, r.sh, 0, 0, r.dw, r.dh);
-    bmp.close?.();
-    const toBlob = (type) => new Promise((res) => canvas.toBlob(res, type, 0.85));
-    const webp = await toBlob('image/webp');
-    return webp?.type === 'image/webp' ? webp : toBlob('image/jpeg'); // Safari cannot encode WEBP
-  }
-
   async function setCoverFromFile(file) {
     const status = $('#cover-status');
     status.textContent = '';
@@ -180,7 +169,7 @@ async function start() {
     coverBusy = true;
     $('#cover-busy').hidden = false;
     try {
-      const blob = await makeCover(file);
+      const blob = await cropToBlob(file, coverCropRect);
       const path = imageObjectPath(userId, blob);
       const { error } = await getClient().storage.from('forum-images')
         .upload(path, blob, { contentType: blob.type, cacheControl: '31536000', upsert: false });

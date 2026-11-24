@@ -263,8 +263,7 @@ export function removablePostFiles(post, authorPosts, bucketPublicPrefix) {
   const others = authorPosts.filter((p) => p.id !== post.id);
   const stillUsed = (path) => others.some((p) => p.cover_path === path || String(p.body_md ?? '').includes(path));
   return [...new Set([post.cover_path, ...storagePathsFromMarkdown(post.body_md, bucketPublicPrefix)])].filter((path) => {
-    const parts = String(path ?? '').split('/');
-    return parts.length === 2 && parts[0] === post.author_id && parts[1] && parts[1] !== 'no-cover' && !stillUsed(path);
+    return isOwnFile(path, post.author_id) && !path.endsWith('/no-cover') && !stillUsed(path);
   });
 }
 
@@ -291,4 +290,28 @@ export function olderThanFilter({ approved_at, id }) {
 /** Splits a result fetched with one extra row into the page and whether more rows exist. */
 export function takePage(rows, size) {
   return { items: rows.slice(0, size), more: rows.length > size };
+}
+
+/** True for "<userId>/<file>" only. */
+export function isOwnFile(path, userId) {
+  const parts = String(path ?? '').split('/');
+  return parts.length === 2 && parts[0] === userId && parts[1] !== '';
+}
+
+const AVATAR_SIZE = 256;
+
+/** Centre square of a w×h photo and its output size (never enlarged). */
+export function avatarCropRect(w, h) {
+  const side = Math.min(w, h);
+  const size = Math.min(AVATAR_SIZE, side);
+  return { sx: Math.round((w - side) / 2), sy: Math.round((h - side) / 2), sw: side, sh: side, dw: size, dh: size };
+}
+
+export function validatePasswordChange({ current, password, password2 } = {}) {
+  const errors = {};
+  if (!current) errors.current = 'Mevcut şifreni yaz.';
+  if (String(password ?? '').length < LIMITS.passwordMin) errors.password = `Şifre en az ${LIMITS.passwordMin} karakter olmalı.`;
+  else if (password === current) errors.password = 'Yeni şifre eskisinden farklı olmalı.';
+  else if (password !== password2) errors.password2 = 'Şifreler eşleşmiyor.';
+  return { ok: Object.keys(errors).length === 0, errors };
 }
