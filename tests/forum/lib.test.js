@@ -4,7 +4,7 @@ import {
   isAllowedEmail, YEAR_OPTIONS, formatByline, validatePost, validateComment,
   validateSignup, validateImageFile, excerpt, firstImageUrl, getIdParam,
   formatDate, translateAuthError, storagePathsFromMarkdown, formatMajors, validateProfile,
-  validateAvatarFile, safeNext, parseAuthHash, parseVerifyParams, charCount, draftKey, imageObjectPath, coverCropRect, validateCoverFile, summarizePosts, postStatusInfo, removablePostFiles, articleBanner, canDeleteComment, articleDate,
+  validateAvatarFile, safeNext, parseAuthHash, parseVerifyParams, charCount, draftKey, imageObjectPath, coverCropRect, validateCoverFile, summarizePosts, postStatusInfo, removablePostFiles, articleBanner, canDeleteComment, articleDate, olderThanFilter, takePage,
 } from '../../static/js/forum/lib.js';
 import { renderMarkdown, PURIFY_CONFIG } from '../../static/js/forum/render.js';
 
@@ -338,4 +338,16 @@ describe('sanitizer settings', () => {
     for (const t of ['video', 'audio', 'dialog', 'object', 'embed']) assert.ok(PURIFY_CONFIG.FORBID_TAGS.includes(t), t);
   });
   test('no data attributes', () => assert.equal(PURIFY_CONFIG.ALLOW_DATA_ATTR, false));
+});
+
+describe('olderThanFilter (next page starts after the last article shown)', () => {
+  test('date, then id for equal dates', () => assert.equal(
+    olderThanFilter({ approved_at: '2026-11-25T10:00:00.5+00:00', id: 'abc' }),
+    'approved_at.lt."2026-11-25T10:00:00.5+00:00",and(approved_at.eq."2026-11-25T10:00:00.5+00:00",id.lt."abc")'));
+});
+
+describe('takePage (one extra row tells whether there is more)', () => {
+  test('more', () => assert.deepEqual(takePage([1, 2, 3], 2), { items: [1, 2], more: true }));
+  test('exactly full: no empty next page', () => assert.deepEqual(takePage([1, 2], 2), { items: [1, 2], more: false }));
+  test('empty', () => assert.deepEqual(takePage([], 2), { items: [], more: false }));
 });

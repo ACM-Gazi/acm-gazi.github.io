@@ -4,6 +4,11 @@
   {{ partial "forum-head.html" . }}
   <div class="forum-wrap fade-in settle-up">
     {{ partial "forum-bar.html" . }}
-    <div id="forum-content"></div>
+    <h1 class="forum-sr-only">ACM Forum</h1>
+    <div id="forum-content">
+      <div class="forum-state forum-loading" role="status"><span class="forum-spinner" aria-hidden="true"></span><span>Yükleniyor…</span></div>
+    </div>
+    <noscript><p>Yazıları görmek için tarayıcında JavaScript&#39;i etkinleştir.</p></noscript>
   </div>
+  <script type="module" src="/js/forum/liste.js"></script>
 {{ end }}

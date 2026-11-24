@@ -282,3 +282,13 @@ export function canDeleteComment(comment, me) {
 export function articleDate(post) {
   return formatDate(post.approved_at ?? post.created_at);
 }
+
+/** PostgREST filter: articles published before the given one (same date: lower id). */
+export function olderThanFilter({ approved_at, id }) {
+  return `approved_at.lt."${approved_at}",and(approved_at.eq."${approved_at}",id.lt."${id}")`;
+}
+
+/** Splits a result fetched with one extra row into the page and whether more rows exist. */
+export function takePage(rows, size) {
+  return { items: rows.slice(0, size), more: rows.length > size };
+}
