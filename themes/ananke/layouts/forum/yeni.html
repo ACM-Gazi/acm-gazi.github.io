@@ -1,0 +1,65 @@
+{{ define "header" }}{{ partial "page-header.html" . }}{{ end }}
+
+{{ define "main" }}
+  {{ partial "forum-head.html" . }}
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde@2.18.0/dist/easymde.min.css" integrity="sha384-uqD/OYCNfagd1EgXMgl5QedTD5K+B3e9b8GYo/41t7+Serf7CBxvl+tU1gHd+qd1" crossorigin="anonymous">
+  <script defer src="https://cdn.jsdelivr.net/npm/easymde@2.18.0/dist/easymde.min.js" integrity="sha384-KtB38COewxfrhJxoN2d+olxJAeT08LF8cVZ6DQ8Poqu89zIptqO6zAXoIxpGNWYE" crossorigin="anonymous"></script>
+
+  <div class="forum-wrap fade-in settle-up">
+    {{ partial "forum-bar.html" . }}
+
+    <div id="editor-root" class="forum-editor glass-card">
+      <div class="forum-state forum-loading" role="status"><span class="forum-spinner" aria-hidden="true"></span><span>Yükleniyor…</span></div>
+    </div>
+
+    <template id="editor-template">
+      <form class="forum-form" id="post-form" novalidate>
+        <h1 class="forum-page-title" id="editor-title">Yeni yazı</h1>
+        <div id="editor-notice" class="forum-notice" role="status" hidden></div>
+
+        <div class="forum-field" id="cover-field">
+          <span class="forum-label" id="cover-label">Kapak görseli</span>
+          <button type="button" class="forum-cover" id="cover-box" aria-labelledby="cover-label cover-empty-text">
+            <img id="cover-preview" alt="" hidden>
+            <span class="forum-cover-empty" id="cover-empty">
+              <span class="forum-cover-icon" aria-hidden="true">🖼</span>
+              <span id="cover-empty-text">Yazına dikkat çekecek bir kapak görseli seç</span>
+              <span class="forum-hint">JPG, PNG veya WEBP · en fazla 10 MB · 16:9 olarak kırpılır</span>
+            </span>
+            <span class="forum-cover-busy" id="cover-busy" hidden><span class="forum-spinner" aria-hidden="true"></span> Yükleniyor…</span>
+          </button>
+          <input type="file" id="cover-input" accept="image/jpeg,image/png,image/webp" hidden>
+          <button type="button" class="forum-link-btn forum-cover-change" id="cover-change" hidden>Kapak görselini değiştir</button>
+          <p class="forum-hint" id="cover-status" aria-live="polite"></p>
+        </div>
+
+        <div class="forum-field">
+          <div class="forum-label-row">
+            <label for="post-title">Başlık</label>
+            <span class="forum-counter" id="title-count" aria-live="off">0 / 150</span>
+          </div>
+          <input id="post-title" name="title" maxlength="150" autocomplete="off" required>
+        </div>
+
+        <div class="forum-field">
+          <label for="post-body" id="post-body-label">Yazı</label>
+          <textarea id="post-body" name="body"></textarea>
+          <div class="forum-editor-meta">
+            <span class="forum-counter" id="body-count">0 / 50.000 karakter</span>
+            <span class="forum-counter" id="draft-status" aria-live="polite"></span>
+          </div>
+          <p class="forum-hint" id="upload-status" aria-live="polite"></p>
+        </div>
+
+        <p class="forum-info">ℹ Yazın admin onayından sonra yayınlanır.</p>
+        <p class="forum-form-error" role="alert" hidden></p>
+
+        <div class="forum-actions">
+          <a class="forum-btn forum-btn-ghost" id="cancel-btn" href="/forum/">Vazgeç</a>
+          <button type="submit" class="forum-btn forum-btn-primary" id="submit-btn">Onaya gönder</button>
+        </div>
+      </form>
+    </template>
+  </div>
+  <script type="module" src="/js/forum/yeni.js"></script>
+{{ end }}

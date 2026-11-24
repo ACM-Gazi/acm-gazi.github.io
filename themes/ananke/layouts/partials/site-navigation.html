@@ -8,6 +8,7 @@
         <li><a href="/etkinlikler">Etkinlikler</a></li>
         <li><a href="/haberler">Haberler</a></li>
         <li><a href="/sponsorlar">Sponsorlar</a></li>
+        <li><a href="/forum/">ACM Forum</a></li>
         <li><a href="/hakkimizda">Hakkımızda</a></li>
         <li><a href="/iletisim">İletişim</a></li>
       </ul>
@@ -33,6 +34,7 @@
         <li><a href="/etkinlikler">Etkinlikler</a></li>
         <li><a href="/haberler">Haberler</a></li>
         <li><a href="/sponsorlar">Sponsorlar</a></li>
+        <li><a href="/forum/">ACM Forum</a></li>
         <li><a href="/hakkimizda">Hakkımızda</a></li>
         <li><a href="/iletisim">İletişim</a></li>
       </ul>
@@ -114,6 +116,7 @@
       display: block;
       position: relative;
       font-size: 18px;
+      white-space: nowrap;
       text-decoration: none;
       color: var(--foreground-primary);
       transition: 250ms;
@@ -227,6 +230,30 @@
 
     #nav-menu-socials-div a {
       padding: 15px;
+    }
+
+    /* Six links: tighten spacing on narrow laptops so they don't touch the logo or social icons. */
+    @media only screen and (min-width: 1001px) and (max-width: 1360px) {
+      #nav-links-ul {
+        padding: 0;
+      }
+
+      #nav-links-ul li {
+        margin: 0 7px;
+      }
+
+      #nav-socials-ul li {
+        margin: 0 6px;
+      }
+
+      #nav-socials-ul li a img {
+        width: 32px;
+        height: 32px;
+      }
+
+      #nav-links-ul li a {
+        font-size: 16px;
+      }
     }
 
     @media only screen and (max-width: 1000px) {

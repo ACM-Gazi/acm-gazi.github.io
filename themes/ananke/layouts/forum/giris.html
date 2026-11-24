@@ -1,0 +1,151 @@
+{{ define "header" }}{{ partial "page-header.html" . }}{{ end }}
+
+{{ define "main" }}
+  {{/* Capture e-mail link parameters before the Supabase client consumes them. */}}
+  <script>window.__authHash = location.hash; window.__authSearch = location.search;</script>
+  {{ partial "forum-head.html" . }}
+  <div class="forum-wrap fade-in settle-up">
+    {{ partial "forum-bar.html" . }}
+
+    <div class="forum-auth glass-card" id="auth-root">
+      <div id="auth-notice" class="forum-notice" role="status" hidden></div>
+
+      {{/* ---------- Login / sign-up tabs ---------- */}}
+      <div id="auth-main">
+        <div class="forum-tabs" role="tablist" aria-label="Giriş veya kayıt">
+          <button type="button" role="tab" id="tab-login" aria-controls="panel-login" aria-selected="true">Giriş yap</button>
+          <button type="button" role="tab" id="tab-signup" aria-controls="panel-signup" aria-selected="false" tabindex="-1">Kayıt ol</button>
+        </div>
+
+        <form id="panel-login" role="tabpanel" aria-labelledby="tab-login" class="forum-form" novalidate>
+          <div class="forum-field">
+            <label for="login-email">E-posta</label>
+            <input id="login-email" name="email" type="email" autocomplete="email" inputmode="email" required>
+          </div>
+          <div class="forum-field">
+            <label for="login-password">Şifre</label>
+            <div class="forum-password">
+              <input id="login-password" name="password" type="password" autocomplete="current-password" required>
+              <button type="button" class="forum-eye" aria-label="Şifreyi göster" aria-pressed="false">👁</button>
+            </div>
+          </div>
+          <div class="forum-form-row-end">
+            <button type="button" class="forum-link-btn" id="show-forgot">Şifremi unuttum</button>
+          </div>
+          <p class="forum-form-error" role="alert" hidden></p>
+          <button type="submit" class="forum-btn forum-btn-primary forum-btn-block">Giriş yap</button>
+        </form>
+
+        <form id="panel-signup" role="tabpanel" aria-labelledby="tab-signup" class="forum-form" novalidate hidden>
+          <div class="forum-field">
+            <label for="su-name">Ad Soyad</label>
+            <input id="su-name" name="full_name" autocomplete="name" maxlength="100" required>
+          </div>
+          <div class="forum-field">
+            <label for="su-major">Bölüm</label>
+            <input id="su-major" name="major" list="gazi-majors" maxlength="100" required>
+          </div>
+          <div class="forum-field">
+            <label for="su-major2">İkinci bölüm <span class="forum-optional">(Çift Anadal, isteğe bağlı)</span></label>
+            <input id="su-major2" name="major2" list="gazi-majors" maxlength="100">
+          </div>
+          <div class="forum-field">
+            <label for="su-year">Sınıf</label>
+            <select id="su-year" name="year" required>
+              <option value="">Seç…</option>
+            </select>
+          </div>
+          <div class="forum-field">
+            <label for="su-email">E-posta</label>
+            <input id="su-email" name="email" type="email" autocomplete="email" inputmode="email" required aria-describedby="su-email-hint">
+            <p class="forum-hint" id="su-email-hint">Sadece @gazi.edu.tr uzantılı adreslerle kayıt olunabilir.</p>
+          </div>
+          <div class="forum-field">
+            <label for="su-password">Şifre <span class="forum-optional">(en az 8 karakter)</span></label>
+            <div class="forum-password">
+              <input id="su-password" name="password" type="password" autocomplete="new-password" minlength="8" required>
+              <button type="button" class="forum-eye" aria-label="Şifreyi göster" aria-pressed="false">👁</button>
+            </div>
+          </div>
+          <div class="forum-field">
+            <label for="su-password2">Şifre tekrar</label>
+            <input id="su-password2" name="password2" type="password" autocomplete="new-password" required>
+          </div>
+          <p class="forum-form-error" role="alert" hidden></p>
+          <button type="submit" class="forum-btn forum-btn-primary forum-btn-block">Kayıt ol</button>
+        </form>
+      </div>
+
+      {{/* ---------- Forgot password ---------- */}}
+      <form id="panel-forgot" class="forum-form" novalidate hidden>
+        <h2 class="forum-auth-title">Şifremi unuttum</h2>
+        <p class="forum-muted">E-posta adresini yaz, sana şifre yenileme bağlantısı gönderelim.</p>
+        <div class="forum-field">
+          <label for="fg-email">E-posta</label>
+          <input id="fg-email" name="email" type="email" autocomplete="email" inputmode="email" required>
+        </div>
+        <p class="forum-form-error" role="alert" hidden></p>
+        <button type="submit" class="forum-btn forum-btn-primary forum-btn-block">Bağlantı gönder</button>
+        <button type="button" class="forum-link-btn forum-back" data-back>← Girişe dön</button>
+      </form>
+
+      {{/* ---------- New password (from e-mail link) ---------- */}}
+      <form id="panel-recovery" class="forum-form" novalidate hidden>
+        <h2 class="forum-auth-title">Yeni şifre belirle</h2>
+        <div class="forum-field">
+          <label for="rc-password">Yeni şifre <span class="forum-optional">(en az 8 karakter)</span></label>
+          <div class="forum-password">
+            <input id="rc-password" name="password" type="password" autocomplete="new-password" required>
+            <button type="button" class="forum-eye" aria-label="Şifreyi göster" aria-pressed="false">👁</button>
+          </div>
+        </div>
+        <div class="forum-field">
+          <label for="rc-password2">Yeni şifre tekrar</label>
+          <input id="rc-password2" name="password2" type="password" autocomplete="new-password" required>
+        </div>
+        <p class="forum-form-error" role="alert" hidden></p>
+        <button type="submit" class="forum-btn forum-btn-primary forum-btn-block">Şifreyi kaydet</button>
+      </form>
+
+      {{/* ---------- Confirm link from e-mail (needs a button press, so mail scanners can't use it up) ---------- */}}
+      <div id="panel-verify" class="forum-sent" hidden>
+        <div class="forum-sent-icon" aria-hidden="true">✓</div>
+        <h2 class="forum-auth-title" id="verify-title">E-postanı doğrula</h2>
+        <p class="forum-muted" id="verify-text">Hesabını etkinleştirmek için aşağıdaki butona bas.</p>
+        <p class="forum-form-error" role="alert" hidden></p>
+        <button type="button" id="verify-btn" class="forum-btn forum-btn-primary forum-btn-block">Hesabımı doğrula</button>
+        <button type="button" class="forum-link-btn forum-back" data-back>← Girişe dön</button>
+      </div>
+
+      {{/* ---------- E-mail sent ---------- */}}
+      <div id="panel-sent" class="forum-sent" hidden>
+        <div class="forum-sent-icon" aria-hidden="true">✉</div>
+        <h2 class="forum-auth-title" id="sent-title">Doğrulama e-postası gönderildi</h2>
+        <p class="forum-muted" id="sent-text"></p>
+        <p class="forum-hint">E-posta birkaç dakika içinde gelmezse "Gereksiz" (spam) klasörüne de bak.</p>
+        <button type="button" class="forum-btn forum-btn-ghost forum-btn-block" id="resend-btn" hidden>Tekrar gönder</button>
+        <button type="button" class="forum-link-btn forum-back" data-back>← Girişe dön</button>
+      </div>
+
+      <noscript><p>Giriş yapmak için tarayıcında JavaScript'i etkinleştir.</p></noscript>
+    </div>
+
+    <datalist id="gazi-majors">
+      <option value="Bilgisayar Mühendisliği">
+      <option value="Yazılım Mühendisliği">
+      <option value="Elektrik-Elektronik Mühendisliği">
+      <option value="Endüstri Mühendisliği">
+      <option value="Makine Mühendisliği">
+      <option value="İnşaat Mühendisliği">
+      <option value="Kimya Mühendisliği">
+      <option value="Enerji Sistemleri Mühendisliği">
+      <option value="Metalurji ve Malzeme Mühendisliği">
+      <option value="Otomotiv Mühendisliği">
+      <option value="Mimarlık">
+      <option value="Matematik">
+      <option value="Fizik">
+      <option value="İstatistik">
+    </datalist>
+  </div>
+  <script type="module" src="/js/forum/giris.js"></script>
+{{ end }}

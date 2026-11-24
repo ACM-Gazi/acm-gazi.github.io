@@ -1,0 +1,9 @@
+{{ define "header" }}{{ partial "page-header.html" . }}{{ end }}
+
+{{ define "main" }}
+  {{ partial "forum-head.html" . }}
+  <div class="forum-wrap fade-in settle-up">
+    {{ partial "forum-bar.html" . }}
+    <div id="forum-content"></div>
+  </div>
+{{ end }}

@@ -1,0 +1,7 @@
+{{/* Forum: config, pinned libraries (with integrity hashes) and forum styles. Include once per forum page. */}}
+{{ $css := resources.Get "ananke/css/forum.css" | minify | fingerprint }}
+<link rel="stylesheet" href="{{ $css.RelPermalink }}" integrity="{{ $css.Data.Integrity }}">
+<script>window.FORUM_CONFIG = {{ dict "url" site.Params.forum.supabaseUrl "key" site.Params.forum.supabaseKey | jsonify | safeJS }};</script>
+<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js" integrity="sha384-0w2KAL2YHP6wKOkUDzkCDGgVvfmHnj02DHeQ6XcHOgTfFsGyonKOpShMH1x6nk9o" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/marked@14.1.2/marked.min.js" integrity="sha384-dAw12gnWShdrRMCwiNUvPHQ5IWS3uZwljXl3x7qNqvn+5gD/O/DXFCnR29GdXgOk" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/dompurify@3.1.7/dist/purify.min.js" integrity="sha384-XQqX/4yiUGu+oyr87jvWzRuqBUK/adrY0DunhL+tID9m/9dwSpV8h9Fk/Sg6ifVQ" crossorigin="anonymous"></script>

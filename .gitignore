@@ -1,2 +1,5 @@
 .directory
 public/
+.superpowers/
+.env.test
+.playwright-mcp/
