@@ -135,7 +135,8 @@ describe('posts', () => {
   });
 
   test('cover image is required', async () => {
-    const r = await rest('posts', { as: member, method: 'POST', body: { title: 'Kapaksız yazı', body_md: BODY } });
+    const r = await rest('posts', { as: member, method: 'POST', prefer: ret, body: { title: 'Kapaksız yazı', body_md: BODY } });
+    if (r.ok) created.posts.push(r.data[0].id); // never leave it behind when the rule is missing
     assert.ok(!r.ok, 'post without cover must be refused');
   });
 

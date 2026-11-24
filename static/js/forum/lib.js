@@ -163,7 +163,8 @@ export function storagePathsFromMarkdown(markdown, bucketPublicPrefix) {
   const out = new Set();
   const re = /!\[[^\]]*\]\(\s*<?([^)\s>]+)>?/g;
   for (const m of String(markdown ?? '').matchAll(re)) {
-    if (m[1].startsWith(bucketPublicPrefix)) out.add(decodeURIComponent(m[1].slice(bucketPublicPrefix.length)));
+    if (!m[1].startsWith(bucketPublicPrefix)) continue;
+    try { out.add(decodeURIComponent(m[1].slice(bucketPublicPrefix.length))); } catch { /* not a valid path */ }
   }
   return [...out];
 }
@@ -233,4 +234,36 @@ export function validateCoverFile(file) {
   if (!AVATAR_TYPES.includes(file.type)) return 'Kapak görseli JPG, PNG veya WEBP olmalı.';
   if (!(file.size <= LIMITS.avatarSourceMaxBytes)) return 'Kapak görseli en fazla 10 MB olabilir.';
   return null;
+}
+
+export const STATUS_LABELS = { approved: 'Yayında', pending: 'Beklemede', rejected: 'Reddedildi' };
+
+export function summarizePosts(posts) {
+  const count = (status) => posts.filter((p) => p.status === status).length;
+  const r = { all: posts.length, approved: count('approved'), pending: count('pending'), rejected: count('rejected') };
+  const groups = ['approved', 'pending', 'rejected'].filter((k) => r[k])
+    .map((k) => `${r[k]} ${STATUS_LABELS[k].toLocaleLowerCase('tr-TR')}`);
+  r.text = r.all ? `${r.all} makale: ${groups.join(' · ')}` : 'Henüz yazın yok.';
+  return r;
+}
+
+export function postStatusInfo(post) {
+  const [verb, iso] = {
+    approved: ['Yayınlandı', post.approved_at],
+    rejected: ['Reddedildi', post.updated_at],
+  }[post.status] ?? ['Gönderildi', post.updated_at];
+  return { label: STATUS_LABELS[post.status] ?? '', date: `${verb}: ${formatDate(iso)}` };
+}
+
+/**
+ * Storage files that may be deleted together with an article: only files directly in the
+ * author's own folder, and only if none of the author's other articles uses them.
+ */
+export function removablePostFiles(post, authorPosts, bucketPublicPrefix) {
+  const others = authorPosts.filter((p) => p.id !== post.id);
+  const stillUsed = (path) => others.some((p) => p.cover_path === path || String(p.body_md ?? '').includes(path));
+  return [...new Set([post.cover_path, ...storagePathsFromMarkdown(post.body_md, bucketPublicPrefix)])].filter((path) => {
+    const parts = String(path ?? '').split('/');
+    return parts.length === 2 && parts[0] === post.author_id && parts[1] && parts[1] !== 'no-cover' && !stillUsed(path);
+  });
 }

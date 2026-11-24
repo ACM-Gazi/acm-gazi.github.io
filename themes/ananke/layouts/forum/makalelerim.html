@@ -1,0 +1,20 @@
+{{ define "header" }}{{ partial "page-header.html" . }}{{ end }}
+
+{{ define "main" }}
+  {{ partial "forum-head.html" . }}
+  <div class="forum-wrap fade-in settle-up">
+    {{ partial "forum-bar.html" . }}
+    <div class="forum-panel glass-card">
+      <div class="forum-panel-head">
+        <h1 class="forum-page-title">Makalelerim</h1>
+        <a class="forum-btn forum-btn-primary" href="/forum/yeni/"><span aria-hidden="true">✎</span><span>Yazı yaz</span></a>
+      </div>
+      <div id="my-notice" class="forum-notice" role="status" hidden></div>
+      <div id="my-posts">
+        <div class="forum-state forum-loading" role="status"><span class="forum-spinner" aria-hidden="true"></span><span>Yükleniyor…</span></div>
+      </div>
+      <noscript><p>Makalelerini görmek için tarayıcında JavaScript'i etkinleştir.</p></noscript>
+    </div>
+  </div>
+  <script type="module" src="/js/forum/makalelerim.js"></script>
+{{ end }}

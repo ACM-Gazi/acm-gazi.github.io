@@ -4,7 +4,7 @@ import {
   isAllowedEmail, YEAR_OPTIONS, formatByline, validatePost, validateComment,
   validateSignup, validateImageFile, excerpt, firstImageUrl, getIdParam,
   formatDate, translateAuthError, storagePathsFromMarkdown, formatMajors, validateProfile,
-  validateAvatarFile, safeNext, parseAuthHash, parseVerifyParams, charCount, draftKey, imageObjectPath, coverCropRect, validateCoverFile,
+  validateAvatarFile, safeNext, parseAuthHash, parseVerifyParams, charCount, draftKey, imageObjectPath, coverCropRect, validateCoverFile, summarizePosts, postStatusInfo, removablePostFiles,
 } from '../../static/js/forum/lib.js';
 import { renderMarkdown, PURIFY_CONFIG } from '../../static/js/forum/render.js';
 
@@ -275,4 +275,35 @@ describe('validateCoverFile', () => {
   test('gif refused', () => assert.match(validateCoverFile({ type: 'image/gif', size: 10 }), /Kapak/));
   test('over 10 MB refused', () => assert.ok(validateCoverFile({ type: 'image/png', size: 10485761 })));
   test('missing file', () => assert.equal(validateCoverFile(null), 'Kapak görseli ekle.'));
+});
+
+describe('summarizePosts', () => {
+  const p = (status) => ({ status });
+  test('counts and sentence', () => assert.deepEqual(
+    summarizePosts([p('approved'), p('approved'), p('pending'), p('rejected')]),
+    { all: 4, approved: 2, pending: 1, rejected: 1, text: '4 makale: 2 yayında · 1 beklemede · 1 reddedildi' }));
+  test('leaves out zero groups', () => assert.equal(summarizePosts([p('pending')]).text, '1 makale: 1 beklemede'));
+  test('empty', () => assert.equal(summarizePosts([]).text, 'Henüz yazın yok.'));
+});
+
+describe('postStatusInfo', () => {
+  const base = { created_at: '2026-11-20T10:00:00Z', updated_at: '2026-11-21T10:00:00Z', approved_at: '2026-11-22T10:00:00Z' };
+  test('pending', () => assert.deepEqual(postStatusInfo({ ...base, status: 'pending', approved_at: null }), { label: 'Beklemede', date: 'Gönderildi: 21 Kasım 2026' }));
+  test('approved', () => assert.deepEqual(postStatusInfo({ ...base, status: 'approved' }), { label: 'Yayında', date: 'Yayınlandı: 22 Kasım 2026' }));
+  test('rejected', () => assert.deepEqual(postStatusInfo({ ...base, status: 'rejected' }), { label: 'Reddedildi', date: 'Reddedildi: 21 Kasım 2026' }));
+});
+
+describe('removablePostFiles', () => {
+  const P = 'https://x.supabase.co/storage/v1/object/public/forum-images/';
+  const post = { id: 'p1', author_id: 'u1', cover_path: 'u1/c.webp', body_md: `![a](${P}u1/a.png) ![b](${P}u1/b.png)` };
+  test('cover and own images', () => assert.deepEqual(removablePostFiles(post, [post], P).sort(), ['u1/a.png', 'u1/b.png', 'u1/c.webp']));
+  test('never another member\'s file', () => assert.deepEqual(
+    removablePostFiles({ ...post, body_md: `![x](${P}u2/secret.png) ![y](${P}u1/../u2/z.png)` }, [post], P), ['u1/c.webp']));
+  test('keeps files another article still uses', () => assert.deepEqual(
+    removablePostFiles(post, [post, { id: 'p2', author_id: 'u1', cover_path: 'u1/b.png', body_md: `![a](${P}u1/a.png)` }], P), ['u1/c.webp']));
+  test('keeps a file another article shows through an HTML tag', () => assert.deepEqual(
+    removablePostFiles(post, [post, { id: 'p2', author_id: 'u1', cover_path: 'u1/z.webp', body_md: `<img src="${P}u1/a.png">` }], P).sort(),
+    ['u1/b.png', 'u1/c.webp']));
+  test('placeholder cover is not a file', () => assert.deepEqual(removablePostFiles({ ...post, cover_path: 'u1/no-cover', body_md: '' }, [], P), []));
+  test('broken percent code does not crash', () => assert.deepEqual(removablePostFiles({ ...post, body_md: `![a](${P}u1/%zz.png)` }, [post], P), ['u1/c.webp']));
 });

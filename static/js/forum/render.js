@@ -52,3 +52,22 @@ export function showError(container, text, onRetry) {
 export function showEmpty(container, text, action) {
   container.replaceChildren(el('div', { class: 'forum-state forum-empty' }, el('p', { text }), action ?? null));
 }
+
+/** Styled yes/no question. Resolves to true only when the confirm button is pressed. */
+export function confirmDialog({ title, text, confirmLabel, cancelLabel = 'Vazgeç' }) {
+  return new Promise((resolve) => {
+    const cancel = el('button', { class: 'forum-btn forum-btn-ghost', type: 'button', text: cancelLabel });
+    const ok = el('button', { class: 'forum-btn forum-btn-danger', type: 'button', text: confirmLabel });
+    const dialog = el('dialog', { class: 'forum-dialog', 'aria-labelledby': 'forum-dialog-title', 'aria-describedby': 'forum-dialog-text' },
+      el('h2', { id: 'forum-dialog-title', class: 'forum-auth-title', text: title }),
+      el('p', { id: 'forum-dialog-text', class: 'forum-muted', text }),
+      el('div', { class: 'forum-actions' }, cancel, ok));
+    let answer = false;
+    cancel.addEventListener('click', () => dialog.close());
+    ok.addEventListener('click', () => { answer = true; dialog.close(); });
+    dialog.addEventListener('close', () => { dialog.remove(); resolve(answer); });
+    document.querySelector('.forum-wrap').append(dialog);
+    dialog.showModal();
+    cancel.focus();
+  });
+}
