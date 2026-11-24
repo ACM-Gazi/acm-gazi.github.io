@@ -185,6 +185,7 @@
       top: 0;
       background-color: var(--background-primary);
       z-index: 9999;
+      overflow-y: auto;
       opacity: 1;
       transition: 250ms;
       transition-timing-function: ease-out;
@@ -193,6 +194,8 @@
     .nav-menu-hidden {
       transform: translateY(-100vh);
       opacity: 0 !important;
+      visibility: hidden; /* on short screens the closed menu reached into the page and blocked clicks */
+      pointer-events: none;
     }
 
     #nav-menu-header {

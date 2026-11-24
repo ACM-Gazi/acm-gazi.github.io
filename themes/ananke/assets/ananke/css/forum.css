@@ -1,6 +1,8 @@
 /* ACM Forum styles. Only theme variables from _styles.css are used for colours. */
 
 .forum-wrap {
+  position: relative;
+  z-index: 1; /* the open user menu must lie above the page footer */
   width: 80%; /* same width as the site nav, so edges line up */
   margin: 24px auto 60px;
   box-sizing: border-box;
@@ -23,6 +25,8 @@
 
 /* ---------- Top bar ---------- */
 .forum-bar {
+  position: relative;
+  z-index: 20; /* the open user menu must lie above the glass cards below */
   display: flex;
   align-items: center;
   justify-content: space-between;
