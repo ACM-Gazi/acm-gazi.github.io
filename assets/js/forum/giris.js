@@ -196,7 +196,12 @@ function setupVerify({ token_hash, type }) {
   btn.addEventListener('click', async () => {
     const label = btn.textContent;
     btn.disabled = true; btn.textContent = 'Lütfen bekle…'; err.hidden = true;
-    const { error } = await getClient().auth.verifyOtp({ token_hash, type });
+    let error;
+    try {
+      ({ error } = await getClient().auth.verifyOtp({ token_hash, type }));
+    } catch {
+      error = { message: 'failed to fetch' };
+    }
     btn.disabled = false; btn.textContent = label;
     if (error) { err.textContent = translateAuthError(error.message); err.hidden = false; return; }
     history.replaceState(null, '', location.pathname);
@@ -215,6 +220,5 @@ function setupVerify({ token_hash, type }) {
     return;
   }
   const session = await getSession();
-  if (linkResult.type === 'recovery' && session) return show('recovery');
   if (session) location.replace(target); // already logged in (also right after the confirm link)
 })();

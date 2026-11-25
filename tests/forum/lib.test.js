@@ -4,7 +4,7 @@ import {
   isAllowedEmail, YEAR_OPTIONS, formatByline, validatePost, validateComment,
   validateSignup, validateImageFile, excerpt, firstImageUrl, getIdParam,
   formatDate, translateAuthError, storagePathsFromMarkdown, formatMajors, validateProfile,
-  validateAvatarFile, safeNext, parseAuthHash, parseVerifyParams, charCount, draftKey, imageObjectPath, coverCropRect, validateCoverFile, summarizePosts, postStatusInfo, removablePostFiles, articleBanner, canDeleteComment, articleDate, olderThanFilter, takePage, avatarCropRect, validatePasswordChange, isOwnFile, isUploadedImage, hasExternalImage, adminError, filterMembers, validateRejectReason, validateName, latestPostsUrl, banMessage, memberActions, takeMath, takeMathBlock, alignLines, alignmentAt, takeAlignMark,
+  validateAvatarFile, safeNext, parseAuthHash, parseVerifyParams, charCount, draftKey, imageObjectPath, coverCropRect, validateCoverFile, summarizePosts, postStatusInfo, removablePostFiles, articleBanner, canDeleteComment, articleDate, olderThanFilter, takePage, avatarCropRect, validatePasswordChange, isOwnFile, isUploadedImage, hasExternalImage, adminError, filterMembers, validateRejectReason, validateName, latestPostsUrl, banMessage, memberActions, takeMath, takeMathBlock, alignLines, alignmentAt, takeAlignMark, isTooComplex, definesCommands,
 } from '../../assets/js/forum/lib.js';
 import { renderMarkdown, PURIFY_CONFIG } from '../../assets/js/forum/render.js';
 
@@ -490,9 +490,30 @@ describe('formulas', () => {
   });
   test('reserved marker characters never reach the parser', () => {
     let seen;
-    renderMarkdown('a0b', { marked: { parse: (x) => { seen = x; return x; } }, DOMPurify: { sanitize: (x) => x } });
+    renderMarkdown('a\uE0000\uE001b', { marked: { parse: (x) => { seen = x; return x; } }, DOMPurify: { sanitize: (x) => x } });
     assert.equal(seen, 'a0b');
   });
+});
+
+describe('hostile texts', () => {
+  test('sign floods and deep quotes are shown as plain text', () => {
+    assert.ok(isTooComplex('*a_'.repeat(3000)));
+    assert.ok(isTooComplex('metin\n' + '>'.repeat(50)));
+    assert.ok(isTooComplex('> '.repeat(30)));
+    assert.ok(!isTooComplex(('Normal **kalın** ve *italik* metin.\n\n* madde\n\n> > alıntı\n\n').repeat(300)));
+  });
+  test('formulas that define commands', () => {
+    for (const t of [String.raw`\def\a{x}`, String.raw`\gdef\a1`, String.raw`\newcommand{\a}{x}`, String.raw`\let\a=b`, String.raw`\global\def`]) assert.ok(definesCommands(t), t);
+    for (const t of [String.raw`\left[\frac{a}{b}\right]`, String.raw`\longrightarrow`, String.raw`\deg x`, String.raw`\text{let}`]) assert.ok(!definesCommands(t), t);
+  });
+  const deps = (parse) => ({ marked: { parse }, DOMPurify: { sanitize: (x) => x } });
+  test('a parser crash shows the text', () => assert.equal(renderMarkdown('a < b & c', deps(() => { throw new Error('stack'); })), '<pre>a &lt; b &amp; c</pre>'));
+  test('a too complex text never reaches the parser', () => assert.match(renderMarkdown('*a_'.repeat(3000), deps(() => assert.fail())), /^<pre>/));
+});
+
+describe('messages', () => {
+  test('expired session is not called a used link', () => assert.match(translateAuthError('JWT expired'), /Oturumun sona erdi/));
+  test('limits', () => { assert.match(translateAuthError('too_many_posts'), /yazın var/); assert.match(translateAuthError('too_many_comments'), /yorum/); });
 });
 
 describe('text alignment', () => {

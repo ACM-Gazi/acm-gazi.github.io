@@ -115,6 +115,9 @@ function review(id) {
       if (!data) { post = null; showError(body, 'Bu yazı artık yok.'); return; }
       post = data;
       label.textContent = `İnceleme · ${postStatusInfo(post).label}`;
+      reject.disabled = post.status === 'rejected'; // possible even if the text is slow to draw
+      await new Promise((resolve) => { setTimeout(resolve, 30); });
+      if (!dialog.isConnected) return;
       body.replaceChildren(renderArticle({
         title: post.title, body: post.body_md, coverUrl: publicUrl('forum-images', post.cover_path), date: articleDate(post), author: post.author,
       }));
@@ -147,7 +150,7 @@ function review(id) {
       title: post.status === 'approved' ? 'Yayından kaldır' : 'Yazıyı reddet',
       label: 'Sebep (yazar bunu görür)', confirmLabel: 'Reddet', multiline: true, validate: validateRejectReason,
     });
-    if (reason) act(() => rpc('reject_post', { p_id: post.id, p_reason: reason }), 'Yazı reddedildi.');
+    if (reason) act(() => rpc('reject_post', { p_id: post.id, p_reason: reason, p_version: post.updated_at }), 'Yazı reddedildi.');
   });
   close.addEventListener('click', () => dialog.close());
   dialog.addEventListener('close', () => dialog.remove());
@@ -299,7 +302,13 @@ async function changeRole(member) {
 }
 
 async function loadMembers(panel, current) {
-  const members = await rpc('admin_list_members');
+  const members = [];
+  for (;;) { // the database answers at most 1000 rows at a time
+    const { data, error } = await getClient().rpc('admin_list_members').range(members.length, members.length + 999);
+    if (error) throw error;
+    members.push(...data);
+    if (data.length < 1000) break;
+  }
   if (current !== loadId) return;
   const list = el('ul', { class: 'forum-rows', id: 'member-list' });
   const search = el('input', { id: 'member-search', type: 'search', autocomplete: 'off', placeholder: 'Ad ya da e-posta' });

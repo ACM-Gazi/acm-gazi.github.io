@@ -120,7 +120,7 @@ describe('posts', () => {
 
   test('6. member cannot call admin functions', async () => {
     const p = await newPost(member);
-    for (const [fn, args] of [['approve_post', { p_id: p.id, p_version: p.updated_at }], ['reject_post', { p_id: p.id, p_reason: 'neden' }],
+    for (const [fn, args] of [['approve_post', { p_id: p.id, p_version: p.updated_at }], ['reject_post', { p_id: p.id, p_reason: 'neden', p_version: p.updated_at }],
       ['admin_list_members', {}], ['set_member_role', { p_user: member.id, p_role: 'admin' }]]) {
       const r = await rpc(fn, args, member);
       assert.ok(!r.ok, `${fn} should fail`);
@@ -132,9 +132,10 @@ describe('posts', () => {
     const p = await newPost(member);
     assert.ok((await approve(p.id)).ok);
     assert.equal((await rest(`posts?id=eq.${p.id}&select=id`)).data.length, 1);
-    const bad = await rpc('reject_post', { p_id: p.id, p_reason: '  ' }, admin);
+    const bad = await rpc('reject_post', { p_id: p.id, p_reason: '  ', p_version: p.updated_at }, admin);
     assert.ok(!bad.ok);
-    assert.ok((await rpc('reject_post', { p_id: p.id, p_reason: 'Konu uygun değil.' }, admin)).ok);
+    const [now] = (await rest(`posts?id=eq.${p.id}&select=updated_at`, { as: admin })).data;
+    assert.ok((await rpc('reject_post', { p_id: p.id, p_reason: 'Konu uygun değil.', p_version: now.updated_at }, admin)).ok);
     assert.equal((await rest(`posts?id=eq.${p.id}&select=id`)).data.length, 0);
     const mine = await rest(`posts?id=eq.${p.id}&select=status,reject_reason`, { as: member });
     assert.deepEqual(mine.data[0], { status: 'rejected', reject_reason: 'Konu uygun değil.' });
@@ -149,6 +150,14 @@ describe('posts', () => {
     assert.match(JSON.stringify(r.data), /version_changed/);
     assert.equal((await rest(`posts?id=eq.${p.id}&select=status`, { as: member })).data[0].status, 'pending');
     assert.ok((await approve(p.id)).ok);
+  });
+
+  test('rejection is refused when the author changed the text after the admin read it', async () => {
+    const p = await newPost(member);
+    await rest(`posts?id=eq.${p.id}`, { as: member, method: 'PATCH', body: { title: 'Yeni başlık burada' } });
+    const r = await rpc('reject_post', { p_id: p.id, p_reason: 'Konu uygun değil.', p_version: p.updated_at }, admin);
+    assert.match(JSON.stringify(r.data), /version_changed/);
+    assert.ok(!(await rpc('reject_post', { p_id: p.id, p_reason: 'Konu uygun değil.' }, admin)).ok, 'old call without a version');
   });
 
   test('the old approval without a version is gone', async () => {
@@ -478,6 +487,21 @@ describe('storage', () => {
     await rest(`posts?id=eq.${p.id}`, { as: admin, method: 'DELETE' });
     assert.ok((await upload(member, 'forum-images', `${member.id}/a%20b.png`)) >= 400);
     assert.ok((await upload(member, 'forum-images', `${member.id}/sub/a.png`)) >= 400);
+  });
+
+  test('nobody can search other people\'s unpublished text through the image check', async () => {
+    await newPost(member, { body_md: `${BODY} gizli-cümle-${member.id}` });
+    for (const as of [member2, member]) for (const text of [`gizli-cümle-${member.id}`, 'Bu bir test', 'a', '']) {
+      assert.equal((await rpc('is_image_in_use', { p_name: text }, as)).data, false, text);
+    }
+  });
+
+  test('a name that an article already uses cannot be uploaded later', async () => {
+    const asCover = `${member.id}/sonradan-kapak-${Date.now()}.png`;
+    const inText = `${member.id}/sonradan-metin-${Date.now()}.png`;
+    await newPost(member, { cover_path: asCover, body_md: `${BODY} ![x](${BASE}/storage/v1/object/public/forum-images/${inText})` });
+    for (const name of [asCover, inText]) assert.ok((await upload(member, 'forum-images', name)) >= 400, name);
+    assert.equal(await upload(member, 'forum-images', `${member.id}/serbest-${Date.now()}.png`), 200);
   });
 
   test('12. uploads only into own folder, images only', async () => {

@@ -13,7 +13,13 @@ export async function deletePost(post) {
   // Files go after the article, so a failure can never leave an article with missing images.
   const target = own.find((p) => p.id === post.id);
   const files = target ? removablePostFiles(target, own, imagesPrefix()) : [];
-  if (files.length) {
-    try { await client.storage.from('forum-images').remove(files); } catch { /* a leftover file is harmless */ }
+  // Another author may show the same picture; the database stops members from deleting it, but not admins.
+  const unused = [];
+  for (const path of files) {
+    const { data: others, error: e } = await client.from('posts').select('id').like('body_md', `%${path}%`).limit(1);
+    if (!e && !others.length) unused.push(path);
+  }
+  if (unused.length) {
+    try { await client.storage.from('forum-images').remove(unused); } catch { /* a leftover file is harmless */ }
   }
 }

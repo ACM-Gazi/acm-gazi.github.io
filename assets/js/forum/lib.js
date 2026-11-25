@@ -151,7 +151,7 @@ const UNDERLINE = /^[ \t>]*(?:=+|-+)[ \t]*$/;
 const TABLE_RULE = /^[ \t>]*\|?[ \t]*:?-+:?[ \t]*(?:\|[ \t]*:?-+:?[ \t]*)*\|?[ \t]*$/;
 
 /** Every text block as { start, end, at }: first and last line, and the place in the first line where its text begins. */
-function textBlocks(lines) {
+export function textBlocks(lines) {
   const blocks = [];
   let fence = null; // closing sign of an open code block
   let math = false;
@@ -255,6 +255,9 @@ export function formatDate(iso) {
 export function translateAuthError(message) {
   const m = String(message ?? '');
   const l = m.toLowerCase();
+  if (l.includes('jwt')) return 'Oturumun sona erdi. Sayfayı yenileyip tekrar giriş yap.';
+  if (l.includes('too_many_posts')) return 'Yayınlanmamış çok fazla yazın var. Önce bazılarını sil ya da onaylanmalarını bekle.';
+  if (l.includes('too_many_comments')) return 'Kısa sürede çok fazla yorum yaptın. Birkaç dakika sonra tekrar dene.';
   if (l.includes('expired') || (l.includes('invalid') && l.includes('link'))) return LINK_USED_MSG;
   if (l.includes('invalid login credentials')) return 'E-posta veya şifre hatalı.';
   if (l.includes('email not confirmed')) return 'E-posta adresin henüz doğrulanmadı. Gelen kutunu kontrol et.';
@@ -434,6 +437,15 @@ export function isUploadedImage(src, baseUrl) {
   const s = String(src ?? '');
   return !!baseUrl && s.startsWith(`${baseUrl}/`) && UPLOADED_PATH.test(s.slice(baseUrl.length));
 }
+
+/** Text that would keep the browser busy for seconds or crash the Markdown parser; shown as plain text instead. */
+export function isTooComplex(markdown) {
+  const text = String(markdown ?? '');
+  return (text.match(/[*_~]/g) ?? []).length > 4000 || /^(?:[ \t]*>){20}/m.test(text);
+}
+
+/** Formulas that define their own commands can grow without limit; they are shown as text. */
+export const definesCommands = (tex) => /\\(?:[egx]?def|(?:re|provide)?newcommand|providecommand|renewcommand|let|futurelet|global|long)(?![a-zA-Z])/.test(tex);
 
 export function hasExternalImage(markdown, baseUrl) {
   const text = String(markdown ?? '').replace(/```[\s\S]*?(```|$)/g, ' ').replace(/`[^`\n]*`/g, ' ');

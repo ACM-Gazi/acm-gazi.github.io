@@ -34,7 +34,14 @@ export async function busy(form, fn) {
   const btn = form.querySelector('button[type="submit"]');
   const label = btn.textContent;
   btn.disabled = true; btn.textContent = 'Lütfen bekle…';
-  try { await fn(); } finally { btn.disabled = false; btn.textContent = label; }
+  try {
+    await fn();
+  } catch {
+    formError(form, 'Sunucuya ulaşılamadı. İnternet bağlantını kontrol edip sayfayı yenile.');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = label;
+  }
 }
 
 export const values = (form) => Object.fromEntries(new FormData(form).entries());

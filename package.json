@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node --test tests/forum/lib.test.js",
+    "test": "node --test tests/forum/lib.test.js tests/forum/format.test.js",
     "test:rls": "node --env-file=.env.test --test tests/forum/rls.test.js"
   }
 }

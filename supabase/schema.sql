@@ -173,6 +173,10 @@ begin
     new.approved_by := null;
     new.created_at := now();
     new.updated_at := now();
+    if not public.is_admin()
+       and (select count(*) from public.posts where author_id = new.author_id and status <> 'approved') >= 50 then
+      raise exception 'too_many_posts' using errcode = '22023';
+    end if;
   end if;
   return new;
 end $$;
@@ -208,6 +212,11 @@ begin
   if public.is_api_request() then
     new.author_id := auth.uid();
     new.created_at := now();
+    if not public.is_admin()
+       and (select count(*) from public.comments
+             where author_id = new.author_id and created_at > now() - interval '10 minutes') >= 30 then
+      raise exception 'too_many_comments' using errcode = '22023';
+    end if;
   end if;
   return new;
 end $$;
@@ -321,7 +330,8 @@ begin
   end if;
 end $$;
 
-create or replace function public.reject_post(p_id uuid, p_reason text)
+drop function if exists public.reject_post(uuid, text);
+create or replace function public.reject_post(p_id uuid, p_reason text, p_version timestamptz)
 returns void language plpgsql security definer set search_path = '' as $$
 begin
   if not public.is_admin() then raise exception 'forbidden' using errcode = '42501'; end if;
@@ -330,8 +340,13 @@ begin
   end if;
   update public.posts
      set status = 'rejected', reject_reason = btrim(p_reason), approved_at = null, approved_by = null
-   where id = p_id;
-  if not found then raise exception 'not_found' using errcode = 'P0002'; end if;
+   where id = p_id and updated_at = p_version;
+  if not found then
+    if exists (select 1 from public.posts where id = p_id) then
+      raise exception 'version_changed' using errcode = '22023';
+    end if;
+    raise exception 'not_found' using errcode = 'P0002';
+  end if;
 end $$;
 
 drop function if exists public.admin_list_members();
@@ -348,12 +363,14 @@ begin
            (select count(*) from public.posts x where x.author_id = p.id),
            p.banned_at, p.ban_reason
       from public.profiles p join auth.users u on u.id = p.id
-     order by p.created_at desc;
+     order by p.created_at desc, p.id;
 end $$;
 create or replace function public.set_member_role(p_user uuid, p_role public.user_role)
 returns void language plpgsql security definer set search_path = '' as $$
 begin
   if not public.is_admin() then raise exception 'forbidden' using errcode = '42501'; end if;
+  perform pg_advisory_xact_lock(hashtext('forum_admin_roles'));
+  if not public.is_admin() then raise exception 'forbidden' using errcode = '42501'; end if; -- demoted while waiting
   if p_role = 'admin' and public.is_banned(p_user) then
     raise exception 'member_banned' using errcode = '22023';
   end if;
@@ -378,10 +395,10 @@ begin
   if not found then raise exception 'not_found' using errcode = 'P0002'; end if;
 end $$;
 
-revoke execute on function public.approve_post(uuid, timestamptz), public.reject_post(uuid, text),
+revoke execute on function public.approve_post(uuid, timestamptz), public.reject_post(uuid, text, timestamptz),
   public.admin_list_members(), public.set_member_role(uuid, public.user_role),
   public.admin_set_name(uuid, text) from public, anon;
-grant execute on function public.approve_post(uuid, timestamptz), public.reject_post(uuid, text),
+grant execute on function public.approve_post(uuid, timestamptz), public.reject_post(uuid, text, timestamptz),
   public.admin_list_members(), public.set_member_role(uuid, public.user_role),
   public.admin_set_name(uuid, text) to authenticated;
 grant execute on function public.is_admin(), public.is_api_request() to anon, authenticated;
@@ -455,18 +472,32 @@ on conflict (id) do update
 
 create or replace function public.is_image_in_use(p_name text)
 returns boolean language sql stable security definer set search_path = '' as $$
-  select exists (select 1 from public.posts p
+  select p_name ~ '^[0-9a-f-]{36}/[A-Za-z0-9._-]{1,120}$'
+     and split_part(p_name, '/', 1) = auth.uid()::text
+     and exists (select 1 from public.posts p
                   where p.cover_path = p_name or position(p_name in p.body_md) > 0);
 $$;
 revoke execute on function public.is_image_in_use(text) from public, anon;
 grant execute on function public.is_image_in_use(text) to authenticated;
+
+create or replace function public.has_storage_room()
+returns boolean language sql stable security definer set search_path = '' as $$
+  select public.is_admin()
+      or coalesce((select sum((o.metadata->>'size')::bigint) from storage.objects o
+                    where o.bucket_id in ('forum-images', 'avatars')
+                      and (storage.foldername(o.name))[1] = auth.uid()::text), 0) < 100 * 1024 * 1024;
+$$;
+revoke execute on function public.has_storage_room() from public, anon;
+grant execute on function public.has_storage_room() to authenticated;
 
 drop policy if exists forum_storage_insert on storage.objects;
 create policy forum_storage_insert on storage.objects for insert to authenticated
   with check (bucket_id in ('forum-images', 'avatars')
               and not public.is_banned(auth.uid())
               and (storage.foldername(name))[1] = auth.uid()::text
-              and name ~ '^[0-9a-f-]{36}/[A-Za-z0-9._-]{1,120}$');
+              and name ~ '^[0-9a-f-]{36}/[A-Za-z0-9._-]{1,120}$'
+              and (bucket_id = 'avatars' or not public.is_image_in_use(name))
+              and public.has_storage_room());
 
 drop policy if exists forum_storage_select on storage.objects;
 create policy forum_storage_select on storage.objects for select to authenticated

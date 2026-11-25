@@ -10,7 +10,8 @@ export function getClient() {
   if (!client) {
     const { url, key } = window.FORUM_CONFIG;
     client = window.supabase.createClient(url, key, {
-      auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true },
+      // Our mails use token_hash links; a session in the address could sign a visitor into somebody else's account.
+      auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false },
     });
   }
   return client;
@@ -87,6 +88,7 @@ export function avatarEl(profile, size = 32) {
 const never = () => new Promise(() => {});
 
 export async function requireUser() {
+  if (!window.supabase) throw new Error('library_missing'); // not the same as being logged out
   const session = await getSession();
   if (!session) {
     // Logged-out visitors of members-only pages go to the forum home (user decision).

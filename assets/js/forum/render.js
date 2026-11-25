@@ -1,5 +1,5 @@
 // Markdown -> safe HTML, plus small shared DOM helpers.
-import { isUploadedImage, takeMath, takeMathBlock, takeAlignMark } from './lib.js';
+import { isUploadedImage, takeMath, takeMathBlock, takeAlignMark, isTooComplex, definesCommands } from './lib.js';
 
 export const PURIFY_CONFIG = {
   USE_PROFILES: { html: true },
@@ -10,6 +10,7 @@ export const PURIFY_CONFIG = {
 };
 
 let hookInstalled = false;
+let source = ''; // the Markdown being shown
 
 function installLinkHook(DOMPurify) {
   if (hookInstalled || typeof DOMPurify.addHook !== 'function') return;
@@ -19,7 +20,9 @@ function installLinkHook(DOMPurify) {
       node.setAttribute('rel', 'noopener noreferrer');
     }
     if (node.tagName === 'IMG') {
-      if (!isUploadedImage(node.getAttribute('src'), globalThis.FORUM_CONFIG?.url)) node.removeAttribute('src');
+      // The file must be written out in the text: the database protects exactly those names from being replaced.
+      const src = node.getAttribute('src') ?? '';
+      if (!isUploadedImage(src, globalThis.FORUM_CONFIG?.url) || !source.includes(src.split('/').slice(-2).join('/'))) node.removeAttribute('src');
       node.setAttribute('loading', 'lazy');
     }
   });
@@ -29,13 +32,13 @@ function installLinkHook(DOMPurify) {
 // ---------- Formulas ----------
 // marked leaves a marker (two private-use characters around a number) for every formula. After sanitizing, the markers
 // in the page's text become KaTeX output, so nothing the author writes ever skips the sanitizer.
-const MARKER = /(\d+)/;
+const MARKER = /\uE000(\d+)\uE001/;
 let formulas = [];
 let mathInstalled = false;
 
 function installMath(marked) {
   if (mathInstalled || typeof marked.use !== 'function') return;
-  const mark = (token) => `${formulas.push(token) - 1}`;
+  const mark = (token) => `\uE000${formulas.push(token) - 1}\uE001`;
   const tokenizer = (take, type) => (src) => {
     const found = take(src);
     return found && { type, ...found };
@@ -53,7 +56,18 @@ export function renderMarkdown(md, { marked, DOMPurify } = globalThis) {
   installLinkHook(DOMPurify);
   installMath(marked);
   formulas = [];
-  return DOMPurify.sanitize(marked.parse(String(md ?? '').replace(/[]/g, '')), PURIFY_CONFIG);
+  source = String(md ?? '').replace(/[\uE000\uE001]/g, '');
+  let html;
+  try {
+    html = isTooComplex(source) ? null : marked.parse(source);
+  } catch {
+    html = null; // nested too deeply for the parser
+  }
+  if (html === null) {
+    formulas = [];
+    html = `<pre>${source.replace(/&/g, '&amp;').replace(/</g, '&lt;')}</pre>`;
+  }
+  return DOMPurify.sanitize(html, PURIFY_CONFIG);
 }
 
 const KATEX = 'https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min';
@@ -73,7 +87,9 @@ function loadKatex() {
 }
 
 function drawFormulas(spans) {
+  const started = performance.now();
   for (const { node, tex, display } of spans) {
+    if (definesCommands(tex) || performance.now() - started > 1500) continue; // the source stays visible
     try {
       katex.render(tex, node, { displayMode: display, throwOnError: false, errorColor: '#ff9d9d', strict: 'ignore', trust: false, maxSize: 20, maxExpand: 500 });
     } catch { /* the source stays visible */ }
@@ -105,7 +121,10 @@ export function renderInto(node, md) {
   for (const text of texts) {
     text.replaceWith(...text.data.split(MARKER).map((part, i) => {
       if (i % 2 === 0) return part;
-      const { raw, tex, display } = found[part];
+      const formula = found[part];
+      if (!formula) return ''; // a marker somebody typed
+      found[part] = null;
+      const { raw, tex, display } = formula;
       const span = el('span', { class: display ? 'forum-math forum-math-block' : 'forum-math', text: raw.trim() });
       spans.push({ node: span, tex, display });
       return span;

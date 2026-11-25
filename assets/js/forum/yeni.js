@@ -7,6 +7,7 @@ import {
   validatePost, validateImageFile, getIdParam, charCount, draftKey, imageObjectPath,
   translateAuthError, LIMITS, coverCropRect, validateCoverFile, formatDate, hasExternalImage, alignLines, alignmentAt,
 } from './lib.js';
+import { toggleInline, toggleLines, toggleCode, toggleLink } from './format.js';
 
 mountForumBar();
 
@@ -28,25 +29,50 @@ function alignIcon(align) {
   return `<svg aria-hidden="true" width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="${path}"/></svg>`;
 }
 
-/** Aligns the selected paragraphs (or the one with the cursor). */
-function alignSelection(cm, align) {
-  const lines = cm.getValue().split('\n');
-  const [from, to] = [cm.getCursor('from'), cm.getCursor('to')];
-  const last = to.line > from.line && to.ch === 0 ? to.line - 1 : to.line;
-  const out = alignLines(lines, from.line, last, align);
+/** Applies a change of { lines, from, to } to the editor as one step for undo. */
+function applyChange(cm, change) {
+  if (cm.isReadOnly()) return;
+  const before = cm.getValue();
+  const result = change({ lines: before.split('\n'), from: cm.getCursor('from'), to: cm.getCursor('to') });
+  const after = result.lines.join('\n');
+  let start = 0;
+  const max = Math.min(before.length, after.length);
+  while (start < max && before[start] === after[start]) start += 1;
+  let end = 0;
+  while (end < max - start && before[before.length - 1 - end] === after[after.length - 1 - end]) end += 1;
   cm.operation(() => {
-    out.forEach((text, i) => {
-      if (text === lines[i]) return;
-      // Only the changed part is replaced, so the cursor and the selection stay where they are.
-      let start = 0;
-      while (start < Math.min(text.length, lines[i].length) && text[start] === lines[i][start]) start += 1;
-      let end = 0;
-      while (end < Math.min(text.length, lines[i].length) - start && text[text.length - 1 - end] === lines[i][lines[i].length - 1 - end]) end += 1;
-      cm.replaceRange(text.slice(start, text.length - end), { line: i, ch: start }, { line: i, ch: lines[i].length - end });
-    });
+    if (before !== after) cm.replaceRange(after.slice(start, after.length - end), cm.posFromIndex(start), cm.posFromIndex(before.length - end));
+    cm.setSelection(result.from, result.to);
   });
   cm.focus();
 }
+
+/** Aligns the selected paragraphs (or the one with the cursor). */
+const alignChange = (align) => ({ lines, from, to }) => {
+  const last = to.line > from.line && to.ch === 0 ? to.line - 1 : to.line;
+  const out = alignLines(lines, from.line, last, align);
+  const move = (p) => ({ line: p.line, ch: p.ch + (p.ch >= firstDifference(lines[p.line], out[p.line]) ? out[p.line].length - lines[p.line].length : 0) });
+  const whole = from.line === 0 && from.ch === 0;
+  return { lines: out, from: whole ? from : clamp(move(from), out), to: clamp(move(to), out) };
+};
+function firstDifference(a, b) {
+  let i = 0;
+  while (i < a.length && i < b.length && a[i] === b[i]) i += 1;
+  return a === b ? Infinity : i;
+}
+const clamp = (p, lines) => ({ line: p.line, ch: Math.max(0, Math.min(p.ch, lines[p.line].length)) });
+
+// The toolbar's and the keyboard's formatting: a second press takes back the first one.
+const FORMAT = {
+  bold: (state) => toggleInline(state, '**'),
+  italic: (state) => toggleInline(state, '*'),
+  quote: (state) => toggleLines(state, 'quote'),
+  'unordered-list': (state) => toggleLines(state, 'ul'),
+  'ordered-list': (state) => toggleLines(state, 'ol'),
+  link: toggleLink,
+  code: toggleCode,
+};
+const KEYS = { B: 'bold', I: 'italic', K: 'link', "'": 'quote', L: 'unordered-list', 'Alt-L': 'ordered-list', 'Alt-C': 'code' };
 
 const storage = {
   get(key) { try { return JSON.parse(localStorage.getItem(key)); } catch { return null; } },
@@ -137,6 +163,7 @@ async function start() {
       .finally(() => { uploads -= 1; });
   }
 
+  const format = (name) => (ed) => applyChange(ed.codemirror, FORMAT[name]);
   const label = (icon, text) => `<span aria-hidden="true">${icon}</span><span class="tb-label">${text}</span>`;
   const editor = new EasyMDE({
     element: $('#post-body'),
@@ -155,6 +182,7 @@ async function start() {
     imageMaxSize: LIMITS.imageMaxBytes,
     imageAccept: 'image/jpeg, image/png, image/webp, image/gif',
     imageUploadFunction: uploadImage,
+    shortcuts: { toggleBold: null, toggleItalic: null, drawLink: null, toggleBlockquote: null, toggleUnorderedList: null, toggleOrderedList: null, toggleCodeBlock: null, toggleFullScreen: null },
     insertTexts: { link: ['[', '](https://)'], uploadedImage: ['![görsel](#url#)', ''] },
     imageTexts: {
       sbInit: 'Görsel eklemek için sürükleyip bırakabilir ya da yapıştırabilirsin.',
@@ -172,24 +200,34 @@ async function start() {
     },
     errorCallback: (msg) => { $('#upload-status').textContent = msg; },
     toolbar: [
-      { name: 'bold', action: EasyMDE.toggleBold, icon: '<b aria-hidden="true">B</b>', title: 'Kalın' },
-      { name: 'italic', action: EasyMDE.toggleItalic, icon: '<i aria-hidden="true">I</i>', title: 'İtalik' },
+      { name: 'bold', action: format('bold'), icon: '<b aria-hidden="true">B</b>', title: 'Kalın' },
+      { name: 'italic', action: format('italic'), icon: '<i aria-hidden="true">I</i>', title: 'İtalik' },
       { name: 'heading', action: EasyMDE.toggleHeadingSmaller, icon: '<span aria-hidden="true">H</span>', title: 'Başlık' },
       '|',
-      { name: 'quote', action: EasyMDE.toggleBlockquote, icon: '<span aria-hidden="true">❝</span>', title: 'Alıntı' },
-      { name: 'unordered-list', action: EasyMDE.toggleUnorderedList, icon: '<span aria-hidden="true">•</span>', title: 'Madde listesi' },
-      { name: 'ordered-list', action: EasyMDE.toggleOrderedList, icon: '<span aria-hidden="true">1.</span>', title: 'Numaralı liste' },
-      { name: 'link', action: EasyMDE.drawLink, icon: '<span aria-hidden="true">🔗</span>', title: 'Bağlantı ekle' },
-      { name: 'code', action: EasyMDE.toggleCodeBlock, icon: '<span aria-hidden="true">&lt;/&gt;</span>', title: 'Kod' },
+      { name: 'quote', action: format('quote'), icon: '<span aria-hidden="true">❝</span>', title: 'Alıntı' },
+      { name: 'unordered-list', action: format('unordered-list'), icon: '<span aria-hidden="true">•</span>', title: 'Madde listesi' },
+      { name: 'ordered-list', action: format('ordered-list'), icon: '<span aria-hidden="true">1.</span>', title: 'Numaralı liste' },
+      { name: 'link', action: format('link'), icon: '<span aria-hidden="true">🔗</span>', title: 'Bağlantı ekle' },
+      { name: 'code', action: format('code'), icon: '<span aria-hidden="true">&lt;/&gt;</span>', title: 'Kod' },
       '|',
       ...Object.entries(ALIGN).map(([align, [title]]) => (
-        { name: `align-${align}`, action: (ed) => alignSelection(ed.codemirror, align), icon: alignIcon(align), title })),
+        { name: `align-${align}`, action: (ed) => applyChange(ed.codemirror, alignChange(align)), icon: alignIcon(align), title })),
       '|',
       { name: 'upload-image', action: () => imageInput.click(), icon: label('🖼', 'Görsel ekle'), title: 'Görsel ekle' },
       { name: 'preview', action: EasyMDE.togglePreview, icon: label('👁', 'Önizle'), title: 'Önizle', noDisable: true },
       { name: 'side-by-side', action: EasyMDE.toggleSideBySide, icon: label('⇆', 'Yan yana'), title: 'Yan yana göster', noDisable: true, noMobile: true },
     ],
   });
+  const keys = {};
+  for (const [key, name] of Object.entries(KEYS)) {
+    const run = (cm) => applyChange(cm, FORMAT[name]);
+    const alt = key.startsWith('Alt-');
+    const letter = key.replace('Alt-', '');
+    keys[alt ? `Ctrl-Alt-${letter}` : `Ctrl-${letter}`] = run;
+    keys[alt ? `Cmd-Alt-${letter}` : `Cmd-${letter}`] = run;
+  }
+  editor.codemirror.addKeyMap(keys);
+
   // Alignment words are shown small and dim; the button of the current paragraph's alignment is lit.
   editor.codemirror.addOverlay({
     token(stream) {
@@ -340,8 +378,29 @@ async function start() {
   }));
 
   // ---------- Submit ----------
+  /** Another tab with the same draft may have deleted the picture. Unknown (no connection) counts as there. */
+  async function coverExists() {
+    if (coverPath === post?.cover_path) return true;
+    const name = coverPath.split('/')[1];
+    try {
+      const { data, error } = await getClient().storage.from('forum-images').list(userId, { search: name, limit: 10 });
+      return !!error || data.some((f) => f.name === name);
+    } catch {
+      return true;
+    }
+  }
+
+  let unanswered = false; // a first attempt whose answer never came may have been saved
+  let sending = false;
+  const lock = (on) => {
+    sending = on;
+    titleInput.readOnly = on;
+    editor.codemirror.setOption('readOnly', on);
+    $('#cover-box').disabled = $('#cover-change').disabled = on;
+  };
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
+    if (sending) return;
     form.querySelectorAll('.forum-field-error').forEach((n) => n.remove());
     titleInput.removeAttribute('aria-invalid');
     formError.hidden = true;
@@ -367,11 +426,27 @@ async function start() {
     const btn = $('#submit-btn');
     const text = btn.textContent;
     btn.disabled = true; btn.textContent = 'Gönderiliyor…';
+    lock(true);
     try {
       const posts = getClient().from('posts');
+      if (!(await coverExists())) {
+        fieldError($('#cover-box'), 'Kapak görseli artık yok (başka bir sekmede silinmiş olabilir). Yeniden ekle.');
+        coverPath = null;
+        showCover(null);
+        $('#cover-box').focus();
+        btn.disabled = false; btn.textContent = text;
+        lock(false);
+        return;
+      }
+      if (!post && unanswered) {
+        const { data: earlier } = await getClient().from('posts').select('id').eq('author_id', userId).eq('cover_path', coverPath).limit(1);
+        if (earlier?.length) [post] = earlier;
+      }
+      unanswered = true;
       const { data, error } = post
         ? await posts.update({ title, body_md: body, cover_path: coverPath }).eq('id', post.id).select('id')
         : await posts.insert({ title, body_md: body, cover_path: coverPath }).select('id');
+      if (error?.code) unanswered = false; // the database answered: nothing was saved
       if (error || !data?.length) throw error ?? new Error('not_saved');
       storage.remove(key);
       const replaced = saved.cover && saved.cover !== coverPath ? [saved.cover] : [];
@@ -382,6 +457,7 @@ async function start() {
       formError.textContent = await writeProblem(translateAuthError(err?.message));
       formError.hidden = false;
       btn.disabled = false; btn.textContent = text;
+      lock(false);
     }
   });
 }

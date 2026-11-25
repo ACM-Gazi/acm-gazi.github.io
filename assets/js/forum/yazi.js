@@ -2,7 +2,7 @@
 import { getClient, getSession, getMyProfile, publicUrl, avatarEl, writeProblem, mountForumBar } from './client.js';
 import { el, showLoading, showError, showEmpty, confirmDialog } from './render.js';
 import { renderArticle, authorInfo } from './article.js';
-import { getIdParam, articleBanner, articleDate, canDeleteComment, validateComment, charCount, formatDate, LIMITS } from './lib.js';
+import { translateAuthError, getIdParam, articleBanner, articleDate, canDeleteComment, validateComment, charCount, formatDate, LIMITS } from './lib.js';
 
 mountForumBar();
 
@@ -118,8 +118,9 @@ function commentForm() {
       box.dispatchEvent(new Event('input'));
       renderComments();
       document.getElementById('comment-list').lastElementChild.scrollIntoView({ block: 'nearest' });
-    } catch {
-      commentError(await writeProblem('Yorum gönderilemedi. İnternet bağlantını kontrol edip tekrar dene.'));
+    } catch (err) {
+      commentError(await writeProblem(err?.message?.includes('too_many_comments') ? translateAuthError(err.message)
+        : 'Yorum gönderilemedi. İnternet bağlantını kontrol edip tekrar dene.'));
     } finally {
       send.disabled = false;
       send.textContent = 'Yorum yap';
