@@ -129,7 +129,7 @@ function commentForm() {
 function commentsSection() {
   return el('section', { class: 'forum-comments glass-card', 'aria-labelledby': 'comments-title' },
     el('h2', { class: 'forum-comments-title', id: 'comments-title', tabindex: '-1' }),
-    me ? commentForm()
+    me?.banned_at ? el('p', { class: 'forum-muted', text: 'Hesabın engelli olduğu için yorum yapamazsın.' }) : me ? commentForm()
       : el('a', { class: 'forum-btn forum-btn-ghost', href: '/forum/giris/', text: 'Yorum yapmak için giriş yap' }),
     el('p', { class: 'forum-form-error', id: 'comment-error', role: 'alert', hidden: true }),
     el('ul', { class: 'forum-comment-list', id: 'comment-list' }));

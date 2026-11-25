@@ -1,5 +1,6 @@
 // Supabase client, session helpers and the forum top bar.
 import { el } from './render.js';
+import { banMessage } from './lib.js';
 
 let client = null;
 let profilePromise = null;
@@ -103,7 +104,7 @@ function userMenu(profile, name, isAdmin) {
   el('span', { class: 'forum-caret', 'aria-hidden': 'true', text: '▾' }));
 
   const menu = el('div', { id: menuId, class: 'forum-menu', role: 'menu', hidden: true },
-    el('a', { href: '/forum/yeni/', role: 'menuitem', class: 'forum-menu-only-phone', text: '✎ Yazı yaz' }),
+    profile?.banned_at ? null : el('a', { href: '/forum/yeni/', role: 'menuitem', class: 'forum-menu-only-phone', text: '✎ Yazı yaz' }),
     el('a', { href: '/forum/makalelerim/', role: 'menuitem', text: 'Makalelerim' }),
     el('a', { href: '/forum/profilim/', role: 'menuitem', text: 'Profilim' }),
     isAdmin ? el('a', { href: '/forum/admin/', role: 'menuitem', text: 'Admin paneli' }) : null,
@@ -134,9 +135,12 @@ export async function mountForumBar() {
   let profile = null;
   try { profile = await getMyProfile(); } catch { /* show name from session below */ }
   const name = profile?.full_name || session.user.user_metadata?.full_name || session.user.email.split('@')[0];
-  slot.replaceChildren(
+  const banned = banMessage(profile);
+  document.getElementById('forum-ban')?.remove();
+  if (banned) document.getElementById('forum-bar').after(el('div', { id: 'forum-ban', class: 'forum-notice forum-notice-error', role: 'status', text: banned }));
+  slot.replaceChildren(...(banned ? [] : [
     el('a', { class: 'forum-btn forum-btn-primary forum-write-btn', href: '/forum/yeni/', 'aria-label': 'Yazı yaz' },
       el('span', { class: 'forum-write-icon', 'aria-hidden': 'true', text: '✎' }),
-      el('span', { class: 'forum-btn-label', text: 'Yazı yaz' })),
+      el('span', { class: 'forum-btn-label', text: 'Yazı yaz' }))]),
     userMenu(profile, name, profile?.role === 'admin'));
 }

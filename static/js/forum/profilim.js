@@ -35,6 +35,7 @@ async function saveProfile(changes) {
 // ---------- Photo ----------
 function showPhoto() {
   $('#profile-avatar').replaceChildren(avatarEl(profile, 120));
+  if (profile.banned_at) return;
   $('#photo-change').textContent = profile.avatar_path ? 'Fotoğrafı değiştir' : 'Fotoğraf seç';
   $('#photo-remove').hidden = !profile.avatar_path;
 }
@@ -158,8 +159,14 @@ async function start() {
   $('#pf-major2').value = profile.major2 ?? '';
   $('#pf-year').value = profile.year ?? '';
   showPhoto();
+  if (profile.banned_at) { // only the password can still be changed
+    $('.forum-profile-photo-actions').remove();
+    $('#info-form').closest('section').remove();
+  }
   initPasswordToggles(root);
 
+  $('#password-form').addEventListener('submit', submitPassword);
+  if (profile.banned_at) return;
   const input = $('#photo-input');
   $('#photo-change').addEventListener('click', () => input.click());
   input.addEventListener('change', () => {
@@ -169,7 +176,6 @@ async function start() {
   });
   $('#photo-remove').addEventListener('click', clearPhoto);
   $('#info-form').addEventListener('submit', submitInfo);
-  $('#password-form').addEventListener('submit', submitPassword);
 }
 
 start().catch(() => showError(root, 'Profilin yüklenemedi. İnternet bağlantını kontrol edip tekrar dene.', () => location.reload()));

@@ -1698,3 +1698,12 @@
   max-width: 100%;
   overflow-wrap: anywhere;
 }
+
+/* "hidden" always wins, also over display rules such as .forum-btn. */
+.forum-wrap [hidden] {
+  display: none !important;
+}
+
+#forum-ban {
+  overflow-wrap: anywhere;
+}

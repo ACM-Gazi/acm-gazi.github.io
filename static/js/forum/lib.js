@@ -275,7 +275,7 @@ export function articleBanner(post) {
 }
 
 export function canDeleteComment(comment, me) {
-  return !!me && (me.role === 'admin' || me.id === comment.author_id);
+  return !!me && !me.banned_at && (me.role === 'admin' || me.id === comment.author_id);
 }
 
 export function articleDate(post) {
@@ -337,6 +337,11 @@ export function adminError(message) {
   const m = String(message ?? '');
   if (m.includes('version_changed')) return 'Yazı sen incelerken değişti. Güncel hali yüklendi, lütfen tekrar incele.';
   if (m.includes('last_admin')) return 'Son admin adminlikten çıkarılamaz.';
+  if (m.includes('cannot_ban_admin')) return 'Adminler engellenemez. Önce adminlikten çıkar.';
+  if (m.includes('cannot_ban_self')) return 'Kendini engelleyemezsin.';
+  if (m.includes('member_banned')) return 'Engelli bir üye admin yapılamaz. Önce engelini kaldır.';
+  if (m.includes('author_banned')) return 'Bu yazının yazarı engelli. Önce engelini kaldır.';
+  if (m.includes('reason_required')) return 'Sebep 3 ile 500 karakter arasında olmalı.';
   if (m.includes('forbidden')) return 'Bu işlem için admin yetkin yok.';
   if (m.includes('not_found')) return 'Bu kayıt artık yok.';
   return 'İşlem tamamlanamadı. İnternet bağlantını kontrol edip tekrar dene.';
@@ -368,4 +373,15 @@ export const CARD_COLUMNS = 'id,title,body_md,cover_path,approved_at,created_at,
 export function latestPostsUrl(baseUrl, count) {
   const q = new URLSearchParams({ select: CARD_COLUMNS, status: 'eq.approved', order: 'approved_at.desc,id.desc', limit: String(count) });
   return `${baseUrl}/rest/v1/posts?${q}`;
+}
+
+/** Text shown to a banned member, or null. */
+export function banMessage(profile) {
+  return profile?.banned_at ? `Hesabın engellendi. Sebep: ${profile.ban_reason ?? ''}`.trim() : null;
+}
+
+/** Which buttons an admin sees for a member. */
+export function memberActions(member, myId) {
+  if (member.role === 'admin') return ['name', ...(member.avatar_path && member.id !== myId ? ['photo'] : []), 'demote'];
+  return ['name', ...(member.avatar_path ? ['photo'] : []), ...(member.banned_at ? ['unban'] : ['promote', 'ban'])];
 }

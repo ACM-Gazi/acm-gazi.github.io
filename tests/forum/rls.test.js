@@ -1,6 +1,6 @@
 // Live security-rule tests against the Supabase project.
 // Run: npm run test:rls   (needs .env.test — see .env.test.example and docs/forum-supabase-setup.md)
-import { test, describe, before, after } from 'node:test';
+import { test, describe, before, after, afterEach } from 'node:test';
 import assert from 'node:assert/strict';
 
 const BASE = process.env.SUPABASE_URL;
@@ -307,6 +307,121 @@ describe('comments', () => {
   test('anon can read comments on approved posts', async () => {
     const r = await rest(`comments?post_id=eq.${approved.id}&select=id`);
     assert.equal(r.status, 200);
+  });
+});
+
+describe('banning', () => {
+  const REASON = 'Kurallara aykırı içerik.';
+  let shown, own;
+
+  before(async () => {
+    shown = await newPost(member);
+    await approve(shown.id);
+    own = await newPost(member2);
+    await approve(own.id);
+  });
+  afterEach(async () => { await rpc('unban_member', { p_user: member2.id }, admin); });
+
+  test('members cannot ban or unban', async () => {
+    for (const [fn, args] of [['ban_member', { p_user: member2.id, p_reason: REASON }], ['unban_member', { p_user: member2.id }]]) {
+      const r = await rpc(fn, args, member);
+      assert.ok(!r.ok);
+      assert.match(JSON.stringify(r.data), /forbidden/);
+      assert.ok(!(await rpc(fn, args)).ok, 'visitor');
+    }
+  });
+
+  test('a reason is needed; no banning of oneself', async () => {
+    assert.match(JSON.stringify((await rpc('ban_member', { p_user: member2.id, p_reason: ' a ' }, admin)).data), /reason_required/);
+    assert.match(JSON.stringify((await rpc('ban_member', { p_user: admin.id, p_reason: REASON }, admin)).data), /cannot_ban_self/);
+  });
+
+  test('admins cannot be banned, banned members cannot become admin', async () => {
+    assert.ok((await rpc('set_member_role', { p_user: member2.id, p_role: 'admin' }, admin)).ok);
+    try {
+      assert.match(JSON.stringify((await rpc('ban_member', { p_user: member2.id, p_reason: REASON }, admin)).data), /cannot_ban_admin/);
+    } finally {
+      assert.ok((await rpc('set_member_role', { p_user: member2.id, p_role: 'member' }, admin)).ok);
+    }
+    assert.ok((await rpc('ban_member', { p_user: member2.id, p_reason: REASON }, admin)).ok);
+    assert.match(JSON.stringify((await rpc('set_member_role', { p_user: member2.id, p_role: 'admin' }, admin)).data), /member_banned/);
+  });
+
+  test('a banned member can read but not write anything', async () => {
+    const c = (await rest('comments', { as: member2, method: 'POST', prefer: ret, body: { post_id: shown.id, body: 'önce' } })).data[0];
+    const name = `${member2.id}/rls-ban-${Date.now()}.png`;
+    assert.equal(await upload(member2, 'forum-images', name), 200);
+    assert.ok((await rpc('ban_member', { p_user: member2.id, p_reason: REASON }, admin)).ok);
+    const me = (await rpc('my_profile', {}, member2)).data[0];
+    assert.equal(me.ban_reason, REASON);
+    assert.ok(me.banned_at);
+    assert.equal((await rest(`posts?id=eq.${shown.id}&select=id`, { as: member2 })).data.length, 1, 'reading works');
+    assert.equal((await rest(`posts?id=eq.${own.id}&select=id`, { as: member2 })).data.length, 1, 'own article visible to self');
+    assert.ok(!(await rest('posts', { as: member2, method: 'POST', body: { title: 'Engelli yazısı', body_md: BODY, cover_path: cover(member2) } })).ok);
+    assert.deepEqual((await rest(`posts?id=eq.${own.id}`, { as: member2, method: 'PATCH', prefer: ret, body: { title: 'Değişti mi' } })).data, []);
+    assert.deepEqual((await rest(`posts?id=eq.${own.id}`, { as: member2, method: 'DELETE', prefer: ret })).data, []);
+    assert.ok(!(await rest('comments', { as: member2, method: 'POST', body: { post_id: shown.id, body: 'sonra' } })).ok);
+    assert.deepEqual((await rest(`comments?id=eq.${c.id}`, { as: member2, method: 'DELETE', prefer: ret })).data, []);
+    assert.deepEqual((await rest(`profiles?id=eq.${member2.id}&select=id`, { as: member2, method: 'PATCH', prefer: ret, body: { year: '4' } })).data, []);
+    for (const b of ['forum-images', 'avatars']) assert.ok((await upload(member2, b, `${member2.id}/rls-ban2-${Date.now()}.png`)) >= 400, b);
+    assert.ok(!(await rest(`profiles?id=eq.${member2.id}`, { as: member2, method: 'PATCH', body: { banned_at: null, ban_reason: null } })).ok);
+    assert.ok((await rpc('my_profile', {}, member2)).data[0].banned_at, 'still banned');
+    await rest(`comments?id=eq.${c.id}`, { as: admin, method: 'DELETE' });
+  });
+
+  test('articles and comments disappear for others and come back', async () => {
+    const c = (await rest('comments', { as: member2, method: 'POST', prefer: ret, body: { post_id: shown.id, body: 'gizlenecek' } })).data[0];
+    const sees = async (as) => [
+      (await rest(`posts?id=eq.${own.id}&select=id`, { as })).data.length,
+      (await rest(`comments?id=eq.${c.id}&select=id`, { as })).data.length,
+      (await rest(`profiles?id=eq.${member2.id}&select=id`, { as })).data.length];
+    assert.deepEqual(await sees(), [1, 1, 1]);
+    assert.ok((await rpc('ban_member', { p_user: member2.id, p_reason: REASON }, admin)).ok);
+    assert.deepEqual(await sees(), [0, 0, 0], 'visitor');
+    assert.deepEqual(await sees(member), [0, 0, 0], 'member');
+    assert.deepEqual(await sees(admin), [1, 1, 1], 'admin');
+    assert.ok(!(await rest('comments', { as: member, method: 'POST', body: { post_id: own.id, body: 'gizli yazıya yorum' } })).ok);
+    assert.equal((await rest(`posts?id=eq.${own.id}&select=author_banned`, { as: admin })).data[0].author_banned, true);
+    assert.ok((await rpc('unban_member', { p_user: member2.id }, admin)).ok);
+    assert.deepEqual(await sees(), [1, 1, 1], 'back again');
+    await rest(`comments?id=eq.${c.id}`, { as: admin, method: 'DELETE' });
+  });
+
+  test('ban details are private', async () => {
+    assert.ok((await rpc('ban_member', { p_user: member2.id, p_reason: REASON }, admin)).ok);
+    for (const as of [undefined, member, member2]) for (const col of ['banned_at', 'ban_reason']) {
+      assert.ok(!(await rest(`profiles?select=${col}`, { as })).ok, col);
+    }
+    const row = (await rpc('admin_list_members', {}, admin)).data.find((m) => m.id === member2.id);
+    assert.equal(row.ban_reason, REASON);
+  });
+
+  test('an article of a banned author cannot be approved', async () => {
+    const p = await newPost(member2);
+    assert.ok((await rpc('ban_member', { p_user: member2.id, p_reason: REASON }, admin)).ok);
+    const r = await approve(p.id);
+    assert.ok(!r.ok);
+    assert.match(JSON.stringify(r.data), /author_banned/);
+  });
+
+  test('an admin can remove a profile photo', async () => {
+    const path = `${member2.id}/rls-photo-${Date.now()}.png`;
+    assert.equal(await upload(member2, 'avatars', path), 200);
+    assert.ok((await rest(`profiles?id=eq.${member2.id}`, { as: member2, method: 'PATCH', body: { avatar_path: path } })).ok);
+    assert.deepEqual((await rest(`profiles?id=eq.${member2.id}&select=id`, { as: member, method: 'PATCH', prefer: ret, body: { avatar_path: null } })).data, []);
+    assert.equal((await rest(`profiles?id=eq.${member2.id}&select=avatar_path`, { as: admin, method: 'PATCH', prefer: ret, body: { avatar_path: null } })).data[0].avatar_path, null);
+    const r = await fetch(`${BASE}/storage/v1/object/avatars`, { method: 'DELETE',
+      headers: { apikey: KEY, Authorization: `Bearer ${admin.token}`, 'content-type': 'application/json' }, body: JSON.stringify({ prefixes: [path] }) });
+    assert.equal((await r.json()).length, 1);
+  });
+
+  test('a + address cannot be used for a second account', async () => {
+    // Without migration 005 this would create a real account and send a mail, so it only runs when 005 is installed.
+    assert.ok('banned_at' in (await rpc('my_profile', {}, member)).data[0], 'migration 005 is missing');
+    const r = await fetch(`${BASE}/auth/v1/signup`, { method: 'POST', headers: { apikey: KEY, 'content-type': 'application/json' },
+      body: JSON.stringify({ email: 'forum-test-uye1+2@gazi.edu.tr', password: 'Test-12345678' }) });
+    assert.ok(r.status >= 400);
+    assert.match(JSON.stringify(await r.json()), /gazi\.edu\.tr/);
   });
 });
 

@@ -3,12 +3,12 @@ import { getClient, requireAdmin, publicUrl, avatarEl } from './client.js';
 import { el, showLoading, showError, confirmDialog, inputDialog } from './render.js';
 import { renderArticle, authorInfo } from './article.js';
 import { deletePost } from './posts.js';
-import { postStatusInfo, articleDate, adminError, filterMembers, validateRejectReason, validateName, formatByline } from './lib.js';
+import { postStatusInfo, articleDate, adminError, filterMembers, validateRejectReason, validateName, formatByline, formatDate, memberActions, isOwnFile } from './lib.js';
 
 const $ = (sel) => document.querySelector(sel);
 const root = $('#admin-root');
 const AUTHOR = 'full_name,major,major2,year,avatar_path';
-const ROW = `id,title,status,reject_reason,cover_path,created_at,updated_at,approved_at,author_id,author:profiles!posts_author_id_fkey(${AUTHOR})`;
+const ROW = `id,title,status,reject_reason,cover_path,created_at,updated_at,approved_at,author_id,author_banned,author:profiles!posts_author_id_fkey(${AUTHOR})`;
 const PAGE = 30;
 const STATUSES = [['all', 'Tümü'], ['approved', 'Yayında'], ['pending', 'Beklemede'], ['rejected', 'Reddedildi']];
 
@@ -55,6 +55,7 @@ function postRow(post) {
       el('span', { class: `forum-badge forum-badge-${post.status}`, text: info.label }),
       el('p', { class: 'forum-hint', text: formatByline(post.author) }),
       el('p', { class: 'forum-hint', text: info.date }),
+      post.author_banned ? el('p', { class: 'forum-reason', text: 'Yazar engelli: yazı şu an gizli.' }) : null,
       post.reject_reason ? el('p', { class: 'forum-reason' }, el('strong', { text: 'Sebep: ' }), post.reject_reason) : null),
     el('div', { class: 'forum-row-actions' },
       smallButton('İncele', post.title, () => review(post.id)),
@@ -99,7 +100,7 @@ function review(id) {
   const showProblem = (text) => { error.textContent = text; error.hidden = !text; };
   const setReady = (ready) => {
     reject.disabled = !ready || post?.status === 'rejected';
-    approve.disabled = !ready;
+    approve.disabled = !ready || !!post?.author_banned;
     approve.hidden = post?.status === 'approved';
   };
 
@@ -198,6 +199,15 @@ async function loadPosts(panel, current) {
     el('div', { class: 'forum-more' }, problem, more));
 }
 
+const ACTIONS = {
+  name: ['Adı düzelt', (m) => fixName(m)],
+  photo: ['Fotoğrafı kaldır', (m) => removePhoto(m)],
+  promote: ['Admin yap', (m) => changeRole(m)],
+  demote: ['Adminlikten çıkar', (m) => changeRole(m)],
+  ban: ['Engelle', (m) => ban(m)],
+  unban: ['Engeli kaldır', (m) => unban(m)],
+};
+
 function memberRow(member) {
   const isAdmin = member.role === 'admin';
   return el('li', { class: 'forum-row forum-row-person' },
@@ -207,10 +217,52 @@ function memberRow(member) {
       el('span', { class: 'forum-hint', text: member.email }),
       el('span', { class: 'forum-hint', text: authorInfo(member) }),
       el('span', { class: 'forum-hint', text: `${member.post_count} makale` }),
-      el('span', { class: `forum-badge ${isAdmin ? 'forum-badge-admin' : ''}`, text: isAdmin ? 'Admin' : 'Üye' })),
+      el('span', { class: `forum-badge ${isAdmin ? 'forum-badge-admin' : member.banned_at ? 'forum-badge-rejected' : ''}`,
+        text: isAdmin ? 'Admin' : member.banned_at ? 'Engelli' : 'Üye' }),
+      member.banned_at ? el('p', { class: 'forum-reason' }, el('strong', { text: 'Sebep: ' }), member.ban_reason) : null,
+      member.banned_at ? el('span', { class: 'forum-hint', text: formatDate(member.banned_at) }) : null),
     el('div', { class: 'forum-row-actions' },
-      smallButton('Adı düzelt', member.full_name, () => fixName(member)),
-      smallButton(isAdmin ? 'Adminlikten çıkar' : 'Admin yap', member.full_name, () => changeRole(member))));
+      memberActions(member, me.id).map((key) => smallButton(ACTIONS[key][0], member.full_name, () => ACTIONS[key][1](member)))));
+}
+
+async function ban(member) {
+  const reason = await inputDialog({
+    title: `Engelle: ${member.full_name}`, label: 'Sebep (üye bunu görür)', confirmLabel: 'Engelle', multiline: true, validate: validateRejectReason,
+  });
+  if (!reason) return;
+  try {
+    await rpc('ban_member', { p_user: member.id, p_reason: reason });
+    await done('Üye engellendi. Yazıları ve yorumları gizlendi.');
+  } catch (err) {
+    notice(adminError(err?.message), 'error');
+  }
+}
+
+async function unban(member) {
+  const yes = await confirmDialog({ title: 'Engeli kaldır', text: `${member.full_name} (${member.email}) tekrar yazabilecek. Yazıları ve yorumları yeniden görünecek.`, confirmLabel: 'Engeli kaldır' });
+  if (!yes) return;
+  try {
+    await rpc('unban_member', { p_user: member.id });
+    await done('Engel kaldırıldı.');
+  } catch (err) {
+    notice(adminError(err?.message), 'error');
+  }
+}
+
+async function removePhoto(member) {
+  const yes = await confirmDialog({ title: 'Fotoğrafı kaldır', text: `${member.full_name} adlı üyenin profil fotoğrafı kalıcı olarak silinecek.`, confirmLabel: 'Fotoğrafı kaldır' });
+  if (!yes) return;
+  try {
+    const { data, error } = await getClient().from('profiles').update({ avatar_path: null }).eq('id', member.id).select('id');
+    if (error) throw error;
+    if (!data.length) throw new Error('not_found');
+    if (isOwnFile(member.avatar_path, member.id)) {
+      try { await getClient().storage.from('avatars').remove([member.avatar_path]); } catch { /* a leftover file is harmless */ }
+    }
+    await done('Fotoğraf kaldırıldı.');
+  } catch (err) {
+    notice(adminError(err?.message), 'error');
+  }
 }
 
 async function fixName(member) {

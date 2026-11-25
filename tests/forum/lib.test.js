@@ -4,7 +4,7 @@ import {
   isAllowedEmail, YEAR_OPTIONS, formatByline, validatePost, validateComment,
   validateSignup, validateImageFile, excerpt, firstImageUrl, getIdParam,
   formatDate, translateAuthError, storagePathsFromMarkdown, formatMajors, validateProfile,
-  validateAvatarFile, safeNext, parseAuthHash, parseVerifyParams, charCount, draftKey, imageObjectPath, coverCropRect, validateCoverFile, summarizePosts, postStatusInfo, removablePostFiles, articleBanner, canDeleteComment, articleDate, olderThanFilter, takePage, avatarCropRect, validatePasswordChange, isOwnFile, isUploadedImage, hasExternalImage, adminError, filterMembers, validateRejectReason, validateName, latestPostsUrl,
+  validateAvatarFile, safeNext, parseAuthHash, parseVerifyParams, charCount, draftKey, imageObjectPath, coverCropRect, validateCoverFile, summarizePosts, postStatusInfo, removablePostFiles, articleBanner, canDeleteComment, articleDate, olderThanFilter, takePage, avatarCropRect, validatePasswordChange, isOwnFile, isUploadedImage, hasExternalImage, adminError, filterMembers, validateRejectReason, validateName, latestPostsUrl, banMessage, memberActions,
 } from '../../static/js/forum/lib.js';
 import { renderMarkdown, PURIFY_CONFIG } from '../../static/js/forum/render.js';
 
@@ -427,4 +427,24 @@ describe('latestPostsUrl (home page)', () => {
     assert.equal(u.searchParams.get('limit'), '3');
     assert.ok(!u.searchParams.get('select').includes('email'));
   });
+});
+
+describe('banMessage', () => {
+  test('not banned', () => { assert.equal(banMessage({ banned_at: null }), null); assert.equal(banMessage(null), null); });
+  test('banned', () => assert.equal(banMessage({ banned_at: '2026-11-25T10:00:00Z', ban_reason: 'Spam.' }),
+    'Hesabın engellendi. Sebep: Spam.'));
+});
+
+describe('memberActions (buttons an admin sees for a member)', () => {
+  const m = { id: 'u1', role: 'member', banned_at: null, avatar_path: null };
+  test('member', () => assert.deepEqual(memberActions(m, 'me'), ['name', 'promote', 'ban']));
+  test('with photo', () => assert.deepEqual(memberActions({ ...m, avatar_path: 'u1/a.webp' }, 'me'), ['name', 'photo', 'promote', 'ban']));
+  test('banned: cannot be promoted', () => assert.deepEqual(memberActions({ ...m, banned_at: 'x' }, 'me'), ['name', 'unban']));
+  test('admin: cannot be banned', () => assert.deepEqual(memberActions({ ...m, role: 'admin' }, 'me'), ['name', 'demote']));
+  test('yourself', () => assert.deepEqual(memberActions({ ...m, id: 'me', role: 'admin' }, 'me'), ['name', 'demote']));
+});
+
+describe('ban errors in Turkish', () => {
+  for (const k of ['cannot_ban_admin', 'cannot_ban_self', 'member_banned', 'author_banned', 'reason_required'])
+    test(k, () => assert.doesNotMatch(adminError(k), /tekrar dene/));
 });

@@ -9,6 +9,7 @@ const FILTERS = [['all', 'Tümü'], ['approved', 'Yayında'], ['pending', 'Bekle
 let posts = [];
 let filter = 'all';
 let userId = null;
+let banned = false;
 
 function notice(text, kind = 'success') {
   const n = document.getElementById('my-notice');
@@ -37,7 +38,7 @@ function row(post) {
       el('p', { class: 'forum-hint', text: info.date }),
       post.status === 'rejected' && post.reject_reason
         ? el('p', { class: 'forum-reason' }, el('strong', { text: 'Sebep: ' }), post.reject_reason) : null),
-    el('div', { class: 'forum-row-actions' },
+    banned ? null : el('div', { class: 'forum-row-actions' },
       el('a', { class: 'forum-btn forum-btn-ghost forum-btn-small', href: `/forum/yeni/?id=${post.id}`, 'aria-label': `Düzenle: ${post.title}`, text: 'Düzenle' }),
       del));
 }
@@ -45,7 +46,7 @@ function row(post) {
 function render() {
   const s = summarizePosts(posts);
   if (!s.all) {
-    showEmpty(root, s.text, el('a', { class: 'forum-btn forum-btn-primary', href: '/forum/yeni/', text: 'Yazı yaz' }));
+    showEmpty(root, s.text, banned ? null : el('a', { class: 'forum-btn forum-btn-primary', href: '/forum/yeni/', text: 'Yazı yaz' }));
     return;
   }
   const shown = posts.filter((p) => filter === 'all' || p.status === filter);
@@ -88,7 +89,10 @@ async function remove(post, button) {
 async function load() {
   showLoading(root);
   try {
-    userId ??= (await requireUser()).session.user.id;
+    const { session, profile } = await requireUser();
+    userId = session.user.id;
+    banned = !!profile?.banned_at;
+    document.querySelector('.forum-panel-head .forum-btn').hidden = banned;
     const { data, error } = await getClient().from('posts')
       .select('id,title,status,reject_reason,cover_path,created_at,updated_at,approved_at')
       .eq('author_id', userId).order('created_at', { ascending: false });

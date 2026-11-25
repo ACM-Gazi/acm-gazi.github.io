@@ -40,6 +40,10 @@ async function loadOwnPost(userId) {
 async function start() {
   const { session, profile } = await requireUser();
   const userId = session.user.id;
+  if (profile?.banned_at) {
+    showError(root, 'Hesabın engelli olduğu için yazı yazamazsın.');
+    return;
+  }
 
   let post = null;
   if (new URLSearchParams(location.search).has('id') && !postId) {
