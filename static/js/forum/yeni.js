@@ -1,6 +1,6 @@
 // /forum/yeni/ — write a new article or edit one of your own (?id=<uuid>).
-import { getClient, requireUser, publicUrl, writeProblem } from './client.js';
-import { renderMarkdown, showError } from './render.js';
+import { getClient, getSession, requireUser, publicUrl, writeProblem } from './client.js';
+import { renderInto, showError } from './render.js';
 import { openArticlePreview } from './article.js';
 import { cropToBlob } from './image.js';
 import {
@@ -30,15 +30,17 @@ function waitForEasyMDE() {
   });
 }
 
-async function loadOwnPost(userId) {
+async function loadOwnPost() {
+  const session = await getSession();
+  if (!session) return null; // requireUser() is already leaving the page
   const { data, error } = await getClient().from('posts')
     .select('id,title,body_md,cover_path,status,author_id').eq('id', postId).maybeSingle();
   if (error) throw error;
-  return data && data.author_id === userId ? data : null;
+  return data && data.author_id === session.user.id ? data : null;
 }
 
 async function start() {
-  const { session, profile } = await requireUser();
+  const [{ session, profile }, ownPost] = await Promise.all([requireUser(), postId ? loadOwnPost() : null]);
   const userId = session.user.id;
   if (profile?.banned_at) {
     showError(root, 'Hesabın engelli olduğu için yazı yazamazsın.');
@@ -51,7 +53,7 @@ async function start() {
     return;
   }
   if (postId) {
-    post = await loadOwnPost(userId);
+    post = ownPost;
     if (!post) {
       showError(root, 'Yazı bulunamadı ya da bu yazıyı düzenleme iznin yok.');
       return;
@@ -106,7 +108,7 @@ async function start() {
     sideBySideFullscreen: false, // keep side-by-side inside the card (default is a white fullscreen view)
     maxHeight: '60vh',
     placeholder: 'Projeni ya da araştırmanı anlat… Biçimlendirme için üstteki butonları kullanabilirsin.',
-    previewRender: (md) => renderMarkdown(md),
+    previewRender: (md, box) => { renderInto(box, md); return null; },
     previewClass: ['editor-preview', 'forum-prose'],
     initialValue: saved.body,
     status: ['upload-image'],

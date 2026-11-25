@@ -4,6 +4,7 @@ import { banMessage } from './lib.js';
 
 let client = null;
 let profilePromise = null;
+const PROFILE_KEY = 'acm-forum-profile'; // only for drawing the bar quickly; the database decides what is allowed
 
 export function getClient() {
   if (!client) {
@@ -30,9 +31,21 @@ export function getMyProfile() {
     if (!session) return null;
     const { data, error } = await getClient().rpc('my_profile').maybeSingle();
     if (error) throw error;
+    try { localStorage.setItem(PROFILE_KEY, JSON.stringify(data)); } catch { /* storage not available */ }
     return data;
   })();
-  return profilePromise;
+  const asked = profilePromise;
+  asked.catch(() => { if (profilePromise === asked) profilePromise = null; }); // a failed answer is not kept, so "Tekrar dene" asks again
+  return asked;
+}
+
+function lastKnownProfile(userId) {
+  try {
+    const saved = JSON.parse(localStorage.getItem(PROFILE_KEY));
+    return saved?.id === userId ? saved : null;
+  } catch {
+    return null;
+  }
 }
 
 /** Reloads the cached profile and the top bar after a change. */
@@ -94,6 +107,7 @@ export async function requireAdmin() {
 }
 
 export async function signOut() {
+  try { localStorage.removeItem(PROFILE_KEY); } catch { /* storage not available */ }
   try { await getClient().auth.signOut(); } finally { location.href = '/forum/'; }
 }
 
@@ -142,8 +156,17 @@ export async function mountForumBar() {
     else slot.replaceChildren(el('a', { class: 'forum-btn forum-btn-ghost', href: '/forum/giris/', text: 'Giriş yap' }));
     return;
   }
+  const saved = lastKnownProfile(session.user.id);
+  if (saved && !slot.childElementCount) drawBar(slot, session, saved);
   let profile = null;
-  try { profile = await getMyProfile(); } catch { /* show name from session below */ }
+  try { profile = await getMyProfile(); } catch { if (saved) return; /* else: the name from the session */ }
+  const shown = JSON.stringify(profile);
+  if (slot.dataset.shown === shown && slot.childElementCount) return; // nothing changed: an open menu stays open
+  drawBar(slot, session, profile);
+}
+
+function drawBar(slot, session, profile) {
+  slot.dataset.shown = JSON.stringify(profile);
   const name = profile?.full_name || session.user.user_metadata?.full_name || session.user.email.split('@')[0];
   const banned = banMessage(profile);
   document.getElementById('forum-ban')?.remove();

@@ -156,8 +156,13 @@ function review(id) {
 }
 
 // ---------- Tabs ----------
+const queryPending = () => getClient().from('posts').select(ROW).eq('status', 'pending').order('updated_at').limit(200).then((r) => r);
+let early = null; // the first list, asked for together with the admin's profile
+
 async function loadPending(panel, current) {
-  const { data, error } = await getClient().from('posts').select(ROW).eq('status', 'pending').order('updated_at').limit(200);
+  const answer = early ?? queryPending();
+  early = null;
+  const { data, error } = await answer;
   if (error) throw error;
   if (current !== loadId) return;
   panel.replaceChildren(data.length ? el('ul', { class: 'forum-rows' }, data.map(postRow))
@@ -330,6 +335,8 @@ async function load() {
 }
 
 async function start() {
+  early = queryPending();
+  early.catch(() => {}); // a failure is shown when the list is drawn
   const { profile } = await requireAdmin();
   me = profile;
   root.replaceChildren($('#admin-template').content.cloneNode(true));

@@ -1,4 +1,5 @@
 {{/* Forum styles and public settings, without the libraries. */}}
+<link rel="preconnect" href="{{ site.Params.forum.supabaseUrl }}" crossorigin>
 {{ $css := resources.Get "ananke/css/forum.css" | minify | fingerprint }}
 <link rel="stylesheet" href="{{ $css.RelPermalink }}" integrity="{{ $css.Data.Integrity }}">
 <script>window.FORUM_CONFIG = {{ dict "url" site.Params.forum.supabaseUrl "key" site.Params.forum.supabaseKey | jsonify | safeJS }};</script>

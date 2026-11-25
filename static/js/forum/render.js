@@ -1,5 +1,5 @@
 // Markdown -> safe HTML, plus small shared DOM helpers.
-import { isUploadedImage } from './lib.js';
+import { isUploadedImage, takeMath, takeMathBlock } from './lib.js';
 
 export const PURIFY_CONFIG = {
   USE_PROFILES: { html: true },
@@ -26,9 +26,80 @@ function installLinkHook(DOMPurify) {
   hookInstalled = true;
 }
 
+// ---------- Formulas ----------
+// marked leaves a marker (two private-use characters around a number) for every formula. After sanitizing, the markers
+// in the page's text become KaTeX output, so nothing the author writes ever skips the sanitizer.
+const MARKER = /(\d+)/;
+let formulas = [];
+let mathInstalled = false;
+
+function installMath(marked) {
+  if (mathInstalled || typeof marked.use !== 'function') return;
+  const mark = (token) => `${formulas.push(token) - 1}`;
+  const tokenizer = (take, type) => (src) => {
+    const found = take(src);
+    return found && { type, ...found };
+  };
+  marked.use({ extensions: [
+    { name: 'mathBlock', level: 'block', tokenizer: tokenizer(takeMathBlock, 'mathBlock'), renderer: (t) => `<div>${mark(t)}</div>\n`,
+      start: (src) => { const m = /\n {0,3}\$\$/.exec(src); return m ? m.index + 1 : undefined; } },
+    { name: 'math', level: 'inline', tokenizer: tokenizer(takeMath, 'math'), renderer: mark,
+      start: (src) => { const i = src.indexOf('$'); return i < 0 ? undefined : i; } },
+  ] });
+  mathInstalled = true;
+}
+
 export function renderMarkdown(md, { marked, DOMPurify } = globalThis) {
   installLinkHook(DOMPurify);
-  return DOMPurify.sanitize(marked.parse(String(md ?? '')), PURIFY_CONFIG);
+  installMath(marked);
+  formulas = [];
+  return DOMPurify.sanitize(marked.parse(String(md ?? '').replace(/[]/g, '')), PURIFY_CONFIG);
+}
+
+const KATEX = 'https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min';
+let katexPromise = null;
+let katex = null; // set once both the library and its stylesheet are there
+
+/** Loaded only when an article has a formula. */
+function loadKatex() {
+  katexPromise ??= new Promise((resolve, reject) => {
+    const add = (node) => new Promise((ok, fail) => { node.addEventListener('load', ok); node.addEventListener('error', fail); document.head.append(node); });
+    Promise.all([
+      add(el('link', { rel: 'stylesheet', href: `${KATEX}.css`, crossorigin: 'anonymous', integrity: 'sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+' })),
+      add(el('script', { src: `${KATEX}.js`, crossorigin: 'anonymous', integrity: 'sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg' })),
+    ]).then(() => { katex = globalThis.katex; resolve(); }, reject);
+  }).catch((err) => { katexPromise = null; throw err; });
+  return katexPromise;
+}
+
+function drawFormulas(spans) {
+  for (const { node, tex, display } of spans) {
+    try {
+      katex.render(tex, node, { displayMode: display, throwOnError: false, errorColor: '#ff9d9d', strict: 'ignore', trust: false, maxSize: 20, maxExpand: 500 });
+    } catch { /* the source stays visible */ }
+  }
+}
+
+/** Puts an article text into an element: safe HTML, then formulas. */
+export function renderInto(node, md) {
+  node.innerHTML = renderMarkdown(md); // sanitized by DOMPurify
+  if (!formulas.length) return;
+  const found = formulas;
+  const texts = [];
+  const walker = document.createTreeWalker(node, NodeFilter.SHOW_TEXT);
+  while (walker.nextNode()) if (MARKER.test(walker.currentNode.data)) texts.push(walker.currentNode);
+  const spans = [];
+  for (const text of texts) {
+    text.replaceWith(...text.data.split(MARKER).map((part, i) => {
+      if (i % 2 === 0) return part;
+      const { raw, tex, display } = found[part];
+      const span = el('span', { class: display ? 'forum-math forum-math-block' : 'forum-math', text: raw.trim() });
+      spans.push({ node: span, tex, display });
+      return span;
+    }));
+  }
+  if (katex) drawFormulas(spans);
+  else loadKatex().then(() => drawFormulas(spans), () => { /* offline: the source stays visible */ });
 }
 
 export function el(tag, attrs = {}, ...children) {

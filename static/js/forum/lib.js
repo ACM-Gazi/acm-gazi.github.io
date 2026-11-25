@@ -108,9 +108,35 @@ export function validateImageFile({ type, size } = {}) {
   return null;
 }
 
+const MATH_MAX = 5000;
+
+/** A formula at the start of the text: $$…$$ (own line) or $…$ (inside a sentence). Prices like "$5 ve $10" are not formulas. */
+export function takeMath(src) {
+  if (src.startsWith('$$')) {
+    const end = src.indexOf('$$', 2);
+    const tex = end < 0 || end > MATH_MAX ? '' : src.slice(2, end).trim();
+    if (!tex || /\n[ \t\r]*\n/.test(tex)) return undefined;
+    return { raw: src.slice(0, end + 2), tex, display: true };
+  }
+  const m = /^\$(?![\s$])((?:\\[^\n]|[^\\$\n`]){1,1000})\$(?!\d)/.exec(src);
+  return m && !/\s$/.test(m[1]) ? { raw: m[0], tex: m[1], display: false } : undefined;
+}
+
+/** A $$…$$ formula that fills its own line(s). */
+export function takeMathBlock(src) {
+  const indent = /^ {0,3}(?=\$\$)/.exec(src)?.[0];
+  if (indent === undefined) return undefined;
+  const math = takeMath(src.slice(indent.length));
+  if (!math) return undefined;
+  const rest = /^[ \t]*(?:\r?\n|$)/.exec(src.slice(indent.length + math.raw.length));
+  return rest ? { ...math, raw: indent + math.raw + rest[0] } : undefined;
+}
+
 export function excerpt(markdown, max = 200) {
   const text = String(markdown ?? '')
     .replace(/```[\s\S]*?```/g, ' ')          // code fences
+    .replace(/\$\$[^$]{1,5000}\$\$/g, ' [formül] ') // formulas
+    .replace(/(^|[^\\$])(\$(?![\s$])(?:\\[^\n]|[^\\$\n`]){1,1000}\$)(?!\d)/g, (all, before, math) => (takeMath(math) ? `${before}[formül]` : all))
     .replace(/!\[[^\]]*\]\([^)]*\)/g, ' ')      // images
     .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')    // links -> text
     .replace(/<[^>]*>/g, ' ')                   // html tags

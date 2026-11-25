@@ -1,5 +1,5 @@
 // /forum/makalelerim/ — the member's own articles with their review status.
-import { getClient, requireUser, publicUrl, writeProblem } from './client.js';
+import { getClient, getSession, requireUser, publicUrl, writeProblem } from './client.js';
 import { deletePost } from './posts.js';
 import { el, showLoading, showError, showEmpty, confirmDialog } from './render.js';
 import { summarizePosts, postStatusInfo } from './lib.js';
@@ -86,18 +86,24 @@ async function remove(post, button) {
   }
 }
 
+async function loadOwn() {
+  const session = await getSession();
+  if (!session) return null; // requireUser() is already leaving the page
+  return getClient().from('posts')
+    .select('id,title,status,reject_reason,cover_path,created_at,updated_at,approved_at')
+    .eq('author_id', session.user.id).order('created_at', { ascending: false });
+}
+
 async function load() {
   showLoading(root);
   try {
-    const { session, profile } = await requireUser();
+    // Both questions at once: the database is far away, so asking one after the other is felt.
+    const [{ session, profile }, answer] = await Promise.all([requireUser(), loadOwn()]);
     userId = session.user.id;
     banned = !!profile?.banned_at;
     document.querySelector('.forum-panel-head .forum-btn').hidden = banned;
-    const { data, error } = await getClient().from('posts')
-      .select('id,title,status,reject_reason,cover_path,created_at,updated_at,approved_at')
-      .eq('author_id', userId).order('created_at', { ascending: false });
-    if (error) throw error;
-    posts = data;
+    if (answer.error) throw answer.error;
+    posts = answer.data;
     render();
   } catch {
     showError(root, 'Makalelerin yüklenemedi. İnternet bağlantını kontrol edip tekrar dene.', load);

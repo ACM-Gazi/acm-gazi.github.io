@@ -1,6 +1,6 @@
 // One renderer for an article, used by /forum/yazi/ and by the editor's full preview, so both always look the same.
 import { avatarEl } from './client.js';
-import { el, renderMarkdown } from './render.js';
+import { el, renderInto } from './render.js';
 import { formatByline } from './lib.js';
 
 /** Major(s) and class, without the name. */
@@ -17,7 +17,7 @@ function coverEl(coverUrl) {
 
 export function renderArticle({ title, body, coverUrl, date, author }) {
   const prose = el('div', { class: 'forum-prose' });
-  prose.innerHTML = renderMarkdown(body); // sanitized by DOMPurify
+  renderInto(prose, body);
   return el('article', { class: 'forum-article glass-card' },
     coverEl(coverUrl),
     el('div', { class: 'forum-article-inner' },

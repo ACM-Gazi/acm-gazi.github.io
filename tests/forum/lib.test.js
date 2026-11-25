@@ -4,7 +4,7 @@ import {
   isAllowedEmail, YEAR_OPTIONS, formatByline, validatePost, validateComment,
   validateSignup, validateImageFile, excerpt, firstImageUrl, getIdParam,
   formatDate, translateAuthError, storagePathsFromMarkdown, formatMajors, validateProfile,
-  validateAvatarFile, safeNext, parseAuthHash, parseVerifyParams, charCount, draftKey, imageObjectPath, coverCropRect, validateCoverFile, summarizePosts, postStatusInfo, removablePostFiles, articleBanner, canDeleteComment, articleDate, olderThanFilter, takePage, avatarCropRect, validatePasswordChange, isOwnFile, isUploadedImage, hasExternalImage, adminError, filterMembers, validateRejectReason, validateName, latestPostsUrl, banMessage, memberActions,
+  validateAvatarFile, safeNext, parseAuthHash, parseVerifyParams, charCount, draftKey, imageObjectPath, coverCropRect, validateCoverFile, summarizePosts, postStatusInfo, removablePostFiles, articleBanner, canDeleteComment, articleDate, olderThanFilter, takePage, avatarCropRect, validatePasswordChange, isOwnFile, isUploadedImage, hasExternalImage, adminError, filterMembers, validateRejectReason, validateName, latestPostsUrl, banMessage, memberActions, takeMath, takeMathBlock,
 } from '../../static/js/forum/lib.js';
 import { renderMarkdown, PURIFY_CONFIG } from '../../static/js/forum/render.js';
 
@@ -447,4 +447,39 @@ describe('memberActions (buttons an admin sees for a member)', () => {
 describe('ban errors in Turkish', () => {
   for (const k of ['cannot_ban_admin', 'cannot_ban_self', 'member_banned', 'author_banned', 'reason_required'])
     test(k, () => assert.doesNotMatch(adminError(k), /tekrar dene/));
+});
+
+describe('formulas', () => {
+  const VAR = String.raw`\text{Var}\left[\frac{\partial C(\theta)}{\partial \theta_k}\right] \in \mathcal{O}(b^{-n}) \quad (b > 1)`;
+  const D = '$$';
+  test('block formula, one line', () => assert.deepEqual(takeMathBlock(D + VAR + D + '\n\nmetin'), { raw: D + VAR + D + '\n', tex: VAR, display: true }));
+  test('block formula, several lines', () => assert.equal(takeMathBlock('$$\na\n+ b\n$$').tex, 'a\n+ b'));
+  test('block formula with Windows line ends', () => assert.equal(takeMathBlock('$$\r\na\r\n$$\r\nmetin').tex, 'a'));
+  test('a block formula ends its line', () => assert.equal(takeMathBlock('$$x$$ metin'), undefined));
+  test('a blank line ends an unclosed formula', () => assert.equal(takeMathBlock('$$a\n\nb$$'), undefined));
+  test('unclosed or empty', () => { for (const t of ['$$a', '$$$$', '$$ $$', 'a $$x$$']) assert.equal(takeMathBlock(t), undefined, t); });
+  test('inline', () => assert.deepEqual(takeMath('$x^2$ metin'), { raw: '$x^2$', tex: 'x^2', display: false }));
+  test('two dollars inside a sentence are a display formula', () => assert.deepEqual(takeMath('$$x$$ metin'), { raw: '$$x$$', tex: 'x', display: true }));
+  test('escaped dollar inside', () => assert.equal(takeMath(String.raw`$5\$ + x$`).tex, String.raw`5\$ + x`));
+  test('prices and variables are not formulas', () => {
+    for (const t of ['$5 ve $10 arası', '$ 5 $', '$HOME ve $PATH', '$x', '$a\nb$', '$', '$a `b$`']) assert.equal(takeMath(t), undefined, t);
+  });
+  test('too long is refused, and quickly', () => {
+    assert.equal(takeMath('$' + 'x'.repeat(2000) + '$'), undefined);
+    assert.equal(takeMathBlock(D + 'x'.repeat(6000) + D), undefined);
+    const bad = '$a '.repeat(16000);
+    const started = Date.now();
+    for (let i = 0; i < bad.length; i += 3) takeMath(bad.slice(i));
+    assert.ok(Date.now() - started < 3000);
+  });
+  test('excerpt shows a short word instead of the source', () => {
+    assert.equal(excerpt('Önce\n\n' + D + VAR + D + '\n\nsonra $x_1$ bitti'), 'Önce [formül] sonra [formül] bitti');
+    assert.equal(excerpt('Fiyat $5 ve $10 arası'), 'Fiyat $5 ve $10 arası');
+    assert.equal(excerpt('ilk $c > d$ son'), 'ilk [formül] son');
+  });
+  test('reserved marker characters never reach the parser', () => {
+    let seen;
+    renderMarkdown('a0b', { marked: { parse: (x) => { seen = x; return x; } }, DOMPurify: { sanitize: (x) => x } });
+    assert.equal(seen, 'a0b');
+  });
 });
