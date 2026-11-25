@@ -12,8 +12,8 @@ description = "Gazi Üniversitesi Bilgisayar Makineleri Birliği (ACM) Öğrenci
 unsafe = true
 
 [params.forum]
-supabaseUrl = "https://jcwxsrilqydhvljlvesj.supabase.co"
-supabaseKey = "sb_publishable_YH_JUmlf31VZgV-SuTRcmg_erQFuXf1"
+supabaseUrl = "https://eyjnvkkcafmykcgihseq.supabase.co"
+supabaseKey = "sb_publishable_LLAKiUOiRDzsgBNADZh5SQ_hZ2oYML9"
 
 [build]
 noJSConfigInAssets = true

@@ -1,19 +1,23 @@
 # ACM Forum — Supabase setup guide
 
-Project: `https://jcwxsrilqydhvljlvesj.supabase.co` (organization **ACM Gazi**).
+Project: `https://eyjnvkkcafmykcgihseq.supabase.co` (organization **ACM Gazi**).
 Never share or commit the **secret / service_role** key or the database password.
 
-## Already done (2026-11-22)
+## Project settings (moved from Tokyo to Frankfurt on 2026-11-25)
 
-- Project created (Free plan; region appears to be ap-northeast-1, Tokyo), Data API on, RLS-on-new-tables on.
+- Free plan, region **Central EU (Frankfurt)**, `eu-central-1`. Data API on, "Automatically expose new tables" off, RLS on new tables on.
 - Authentication → Sign In / Providers → Email: **Confirm email** on.
 - Authentication → URL Configuration: Site URL `https://acmgazi.org`; Redirect URLs `https://acmgazi.org/**`, `http://localhost:1313/**`.
+- Authentication → Emails → SMTP Settings: host `smtp.gmail.com`, port `465`, the club's Gmail address as user name and sender, sender name `ACM Gazi`, a Google App Password without spaces.
+- Authentication → Rate Limits: 100 e-mails per hour.
+- The site reads the project URL and publishable key from `hugo.toml` (`[params.forum]`); the tests read them from `.env.test`.
 
 ## 1. Database (run once; safe to re-run after updates)
 
 1. Dashboard → **SQL Editor** → **New query**.
 2. Paste the whole content of `supabase/schema.sql` → **Run**.
-3. Expected: "Success. No rows returned".
+3. Expected: "Success. No rows returned". The files in `supabase/migrations/` are only for older databases.
+4. Allow a non-Gazi address if needed: `insert into public.signup_allowlist (email) values ('istisna@example.com') on conflict do nothing;`
 
 ## 2. Gazi-only sign-up hook
 
@@ -35,7 +39,8 @@ Never share or commit the **secret / service_role** key or the database password
 2. SQL Editor → run `supabase/test-setup.sql`. Expected: 3 rows, `Test Admin` has role `admin`.
 3. In the repo folder copy `.env.test.example` to `.env.test` and fill in the three passwords.
    `.env.test` is git-ignored — never commit it or paste it into chat.
-4. Run `npm run test:rls` — every test must pass.
+4. SQL Editor → run `supabase/checks/005-check.sql`. Every row must say OK.
+5. Check that the sign-up hook is enabled, then run `npm run test:rls` — every test must pass.
 
 ## 5. Your own admin account
 
@@ -54,7 +59,3 @@ Gmail/Outlook open links in incoming mail to scan them, which used up Supabase's
 **Authentication → Emails → Templates**:
 - **Confirm signup** — Subject: `ACM Forum hesabını doğrula` — Body: content of `supabase/email-templates/confirm-signup.html`.
 - **Reset password** — Subject: `ACM Forum şifre yenileme` — Body: content of `supabase/email-templates/reset-password.html`.
-
-## Later (before launch)
-
-- Custom SMTP (the built-in sender only allows a few mails per hour).
