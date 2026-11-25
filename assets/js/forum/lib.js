@@ -320,9 +320,12 @@ export function draftKey(userId, postId) {
 
 const EXT_BY_TYPE = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'image/gif': 'gif' };
 
-/** Storage path for an uploaded image: "<user id>/<random uuid>.<ext>". */
-export function imageObjectPath(userId, file, uuid = () => crypto.randomUUID()) {
-  return `${userId}/${uuid()}.${EXT_BY_TYPE[file.type] ?? 'bin'}`;
+/** 32 random hex characters. crypto.randomUUID is missing on older phones and on plain http. */
+const randomName = () => [...crypto.getRandomValues(new Uint8Array(16))].map((b) => b.toString(16).padStart(2, '0')).join('');
+
+/** Storage path for an uploaded image: "<user id>/<random name>.<ext>". */
+export function imageObjectPath(userId, file, random = randomName) {
+  return `${userId}/${random()}.${EXT_BY_TYPE[file.type] ?? 'bin'}`;
 }
 
 const COVER_RATIO = 16 / 9;

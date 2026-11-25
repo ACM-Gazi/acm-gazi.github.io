@@ -259,6 +259,17 @@ describe('imageObjectPath', () => {
     assert.equal(p, 'u1/abc.jpg');
   });
   test('webp', () => assert.equal(imageObjectPath('u1', { type: 'image/webp' }, () => 'z'), 'u1/z.webp'));
+  test('own random name, also where crypto.randomUUID is missing (older phones, plain http)', () => {
+    const saved = crypto.randomUUID;
+    crypto.randomUUID = undefined;
+    try {
+      const names = Array.from({ length: 50 }, () => imageObjectPath('u1', { type: 'image/png' }));
+      for (const n of names) assert.match(n, /^u1\/[0-9a-f]{32}\.png$/);
+      assert.equal(new Set(names).size, 50);
+    } finally {
+      crypto.randomUUID = saved;
+    }
+  });
 });
 
 describe('coverCropRect (centre crop to 16:9, max 1600px wide)', () => {
