@@ -1,5 +1,5 @@
 // /forum/yeni/ — write a new article or edit one of your own (?id=<uuid>).
-import { getClient, requireUser, publicUrl } from './client.js';
+import { getClient, requireUser, publicUrl, writeProblem } from './client.js';
 import { renderMarkdown, showError } from './render.js';
 import { openArticlePreview } from './article.js';
 import { cropToBlob } from './image.js';
@@ -79,18 +79,21 @@ async function start() {
   }
 
   // ---------- Image upload (toolbar button, drag & drop, paste) ----------
+  let uploads = 0; // images still on their way
   function uploadImage(file, onSuccess, onError) {
     $('#upload-status').textContent = '';
     const problem = validateImageFile(file);
     if (problem) return onError(problem);
     const path = imageObjectPath(userId, file);
+    uploads += 1;
     getClient().storage.from('forum-images')
       .upload(path, file, { contentType: file.type, cacheControl: '31536000', upsert: false })
       .then(({ error }) => {
-        if (error) return onError('Görsel yüklenemedi. Lütfen tekrar dene.');
+        if (error) return writeProblem('Görsel yüklenemedi. Lütfen tekrar dene.').then(onError);
         onSuccess(getClient().storage.from('forum-images').getPublicUrl(path).data.publicUrl);
       })
-      .catch(() => onError('Görsel yüklenemedi. İnternet bağlantını kontrol et.'));
+      .catch(() => onError('Görsel yüklenemedi. İnternet bağlantını kontrol et.'))
+      .finally(() => { uploads -= 1; });
   }
 
   const label = (icon, text) => `<span aria-hidden="true">${icon}</span><span class="tb-label">${text}</span>`;
@@ -138,10 +141,18 @@ async function start() {
       { name: 'link', action: EasyMDE.drawLink, icon: '<span aria-hidden="true">🔗</span>', title: 'Bağlantı ekle' },
       { name: 'code', action: EasyMDE.toggleCodeBlock, icon: '<span aria-hidden="true">&lt;/&gt;</span>', title: 'Kod' },
       '|',
-      { name: 'upload-image', action: EasyMDE.drawUploadedImage, icon: label('🖼', 'Görsel ekle'), title: 'Görsel ekle' },
+      { name: 'upload-image', action: () => imageInput.click(), icon: label('🖼', 'Görsel ekle'), title: 'Görsel ekle' },
       { name: 'preview', action: EasyMDE.togglePreview, icon: label('👁', 'Önizle'), title: 'Önizle', noDisable: true },
       { name: 'side-by-side', action: EasyMDE.toggleSideBySide, icon: label('⇆', 'Yan yana'), title: 'Yan yana göster', noDisable: true, noMobile: true },
     ],
+  });
+  // Own file picker: EasyMDE's adds a listener per click, so a cancelled pick inserted the next image twice,
+  // and picking the same file again did nothing.
+  const imageInput = $('.imageInput', editor.gui.toolbar);
+  imageInput.addEventListener('change', () => {
+    const files = [...imageInput.files];
+    imageInput.value = '';
+    if (files.length) editor.uploadImagesUsingCustomFunction(uploadImage, files);
   });
   editor.codemirror.getInputField().setAttribute('aria-labelledby', 'post-body-label');
   titleInput.value = saved.title;
@@ -184,7 +195,7 @@ async function start() {
       showCover(path);
       scheduleDraft();
     } catch {
-      status.textContent = 'Kapak görseli yüklenemedi. Başka bir görsel dene ya da internet bağlantını kontrol et.';
+      status.textContent = await writeProblem('Kapak görseli yüklenemedi. Başka bir görsel dene ya da internet bağlantını kontrol et.');
     } finally {
       coverBusy = false;
       $('#cover-busy').hidden = true;
@@ -274,6 +285,7 @@ async function start() {
     const title = titleInput.value.trim();
     const body = editor.value().trim();
     const { errors } = validatePost({ title, body });
+    if (uploads) errors.body = 'Görsel yükleniyor. Bitmesini bekle.';
     if (!errors.body && hasExternalImage(body, window.FORUM_CONFIG.url)) {
       errors.body = 'Başka sitelerden bağlanan görseller gösterilmez. Görselleri "Görsel ekle" ile yükle.';
     }
@@ -303,7 +315,7 @@ async function start() {
       await removeFiles(replaced); // awaited: leaving the page would cancel the request
       location.href = '/forum/makalelerim/?gonderildi=1';
     } catch (err) {
-      formError.textContent = translateAuthError(err?.message);
+      formError.textContent = await writeProblem(translateAuthError(err?.message));
       formError.hidden = false;
       btn.disabled = false; btn.textContent = text;
     }

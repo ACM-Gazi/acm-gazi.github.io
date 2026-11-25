@@ -1,5 +1,5 @@
 // /forum/makalelerim/ — the member's own articles with their review status.
-import { getClient, requireUser, publicUrl } from './client.js';
+import { getClient, requireUser, publicUrl, writeProblem } from './client.js';
 import { deletePost } from './posts.js';
 import { el, showLoading, showError, showEmpty, confirmDialog } from './render.js';
 import { summarizePosts, postStatusInfo } from './lib.js';
@@ -82,7 +82,7 @@ async function remove(post, button) {
   } catch {
     button.disabled = false;
     button.textContent = 'Sil';
-    notice('Yazı silinemedi. İnternet bağlantını kontrol edip tekrar dene.', 'error');
+    notice(await writeProblem('Yazı silinemedi. İnternet bağlantını kontrol edip tekrar dene.'), 'error');
   }
 }
 

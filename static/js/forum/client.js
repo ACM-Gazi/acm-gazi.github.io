@@ -41,6 +41,16 @@ export async function refreshProfile() {
   await mountForumBar();
 }
 
+/** Text for a refused write: the ban message when the account was banned while the page was open, otherwise the given text. */
+export async function writeProblem(text) {
+  try {
+    await refreshProfile();
+    return banMessage(await getMyProfile()) ?? text;
+  } catch {
+    return text;
+  }
+}
+
 export function publicUrl(bucket, path) {
   return `${window.FORUM_CONFIG.url}/storage/v1/object/public/${bucket}/${path.split('/').map(encodeURIComponent).join('/')}`;
 }

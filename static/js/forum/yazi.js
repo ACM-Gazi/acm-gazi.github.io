@@ -1,5 +1,5 @@
 // /forum/yazi/?id=<uuid> — one article with its comments. Readable without an account.
-import { getClient, getSession, getMyProfile, publicUrl, avatarEl } from './client.js';
+import { getClient, getSession, getMyProfile, publicUrl, avatarEl, writeProblem } from './client.js';
 import { el, showLoading, showError, showEmpty, confirmDialog } from './render.js';
 import { renderArticle, authorInfo } from './article.js';
 import { getIdParam, articleBanner, articleDate, canDeleteComment, validateComment, charCount, formatDate, LIMITS } from './lib.js';
@@ -82,7 +82,7 @@ async function removeComment(comment, button) {
     document.getElementById('comments-title').focus();
   } catch {
     button.disabled = false;
-    commentError('Yorum silinemedi. İnternet bağlantını kontrol edip tekrar dene.');
+    commentError(await writeProblem('Yorum silinemedi. İnternet bağlantını kontrol edip tekrar dene.'));
   }
 }
 
@@ -117,7 +117,7 @@ function commentForm() {
       renderComments();
       document.getElementById('comment-list').lastElementChild.scrollIntoView({ block: 'nearest' });
     } catch {
-      commentError('Yorum gönderilemedi. İnternet bağlantını kontrol edip tekrar dene.');
+      commentError(await writeProblem('Yorum gönderilemedi. İnternet bağlantını kontrol edip tekrar dene.'));
     } finally {
       send.disabled = false;
       send.textContent = 'Yorum yap';

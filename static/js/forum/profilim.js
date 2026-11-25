@@ -1,5 +1,5 @@
 // /forum/profilim/ — own photo, department, class and password.
-import { getClient, requireUser, refreshProfile, avatarEl } from './client.js';
+import { getClient, requireUser, refreshProfile, avatarEl, writeProblem } from './client.js';
 import { showError } from './render.js';
 import { clearErrors, formError, showFieldErrors, busy, values, initPasswordToggles } from './forms.js';
 import { cropToBlob } from './image.js';
@@ -77,7 +77,7 @@ function setPhoto(file) {
       await removeFile(old);
     } catch {
       if (path && profile.avatar_path !== path) await removeFile(path);
-      $('#photo-error').textContent = 'Fotoğraf yüklenemedi. Başka bir fotoğraf dene ya da internet bağlantını kontrol et.';
+      $('#photo-error').textContent = await writeProblem('Fotoğraf yüklenemedi. Başka bir fotoğraf dene ya da internet bağlantını kontrol et.');
     }
   });
 }
@@ -91,7 +91,7 @@ function clearPhoto() {
       notice('Profil fotoğrafın kaldırıldı.');
       await removeFile(old);
     } catch {
-      $('#photo-error').textContent = 'Fotoğraf kaldırılamadı. İnternet bağlantını kontrol edip tekrar dene.';
+      $('#photo-error').textContent = await writeProblem('Fotoğraf kaldırılamadı. İnternet bağlantını kontrol edip tekrar dene.');
     }
   });
 }
@@ -110,7 +110,7 @@ function submitInfo(e) {
       await saveProfile({ major: v.major.trim(), major2: v.major2.trim() || null, year: v.year });
       notice('Bilgilerin kaydedildi.');
     } catch {
-      formError(form, SAVE_FAILED);
+      formError(form, await writeProblem(SAVE_FAILED));
     }
   });
 }
