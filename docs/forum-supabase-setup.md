@@ -16,7 +16,7 @@ Never share or commit the **secret / service_role** key or the database password
 
 1. Dashboard → **SQL Editor** → **New query**.
 2. Paste the whole content of `supabase/schema.sql` → **Run**.
-3. Expected: "Success. No rows returned". The files in `supabase/migrations/` are only for older databases.
+3. Expected: "Success. No rows returned".
 4. Allow a non-Gazi address if needed: `insert into public.signup_allowlist (email) values ('istisna@example.com') on conflict do nothing;`
 
 ## 2. Gazi-only sign-up hook

@@ -40,7 +40,7 @@ create table if not exists public.posts (
   approved_at   timestamptz,
   approved_by   uuid references public.profiles(id) on delete set null
 );
-alter table public.posts add column if not exists cover_path text;  -- see migrations/002-cover-image.sql
+alter table public.posts add column if not exists cover_path text;
 update public.posts set cover_path = author_id::text || '/no-cover' where cover_path is null;
 alter table public.posts alter column cover_path set not null;
 alter table public.posts drop constraint if exists posts_cover_in_author_folder;
