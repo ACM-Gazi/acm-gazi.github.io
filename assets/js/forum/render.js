@@ -4,7 +4,7 @@ import { isUploadedImage, takeMath, takeMathBlock, takeAlignMark, isTooComplex, 
 export const PURIFY_CONFIG = {
   USE_PROFILES: { html: true },
   ALLOW_DATA_ATTR: false,
-  FORBID_TAGS: ['style', 'iframe', 'form', 'input', 'textarea', 'button', 'select', 'object', 'embed', 'video', 'audio', 'dialog', 'picture', 'source'],
+  FORBID_TAGS: ['style', 'iframe', 'form', 'input', 'textarea', 'button', 'select', 'object', 'embed', 'video', 'audio', 'dialog', 'picture', 'source', 'template', 'slot'],
   // class/id/name: otherwise article text could borrow the site's own styles (e.g. a full-screen overlay).
   FORBID_ATTR: ['style', 'class', 'id', 'name', 'popover', 'popovertarget', 'background', 'autofocus', 'tabindex', 'srcset', 'sizes'],
 };
@@ -70,7 +70,7 @@ export function renderMarkdown(md, { marked, DOMPurify } = globalThis) {
   return DOMPurify.sanitize(html, PURIFY_CONFIG);
 }
 
-const KATEX = 'https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min';
+const KATEX = 'https://cdn.jsdelivr.net/npm/katex@0.18.11/dist/katex.min';
 let katexPromise = null;
 let katex = null; // set once both the library and its stylesheet are there
 
@@ -79,8 +79,8 @@ function loadKatex() {
   katexPromise ??= new Promise((resolve, reject) => {
     const add = (node) => new Promise((ok, fail) => { node.addEventListener('load', ok); node.addEventListener('error', fail); document.head.append(node); });
     Promise.all([
-      add(el('link', { rel: 'stylesheet', href: `${KATEX}.css`, crossorigin: 'anonymous', integrity: 'sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+' })),
-      add(el('script', { src: `${KATEX}.js`, crossorigin: 'anonymous', integrity: 'sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg' })),
+      add(el('link', { rel: 'stylesheet', href: `${KATEX}.css`, crossorigin: 'anonymous', integrity: 'sha384-NJ/T2p1ROqNH3Yico+wdWm5Rv2rlinAOvV25Sw1zLOaxg8yLDPVv8GGAUccx50rh' })),
+      add(el('script', { src: `${KATEX}.js`, crossorigin: 'anonymous', integrity: 'sha384-vaygNa7Kw+54Zb42f7K+4bfhZp4vWSHPJMKwd7nVmlgSvRADUrCRRdCpc1/CJwO+' })),
     ]).then(() => { katex = globalThis.katex; resolve(); }, reject);
   }).catch((err) => { katexPromise = null; throw err; });
   return katexPromise;

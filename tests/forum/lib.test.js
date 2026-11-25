@@ -424,7 +424,7 @@ describe('admin helpers', () => {
 
 describe('sanitizer: no other way to load pictures', () => {
   test('tags and attributes', () => {
-    for (const t of ['picture', 'source']) assert.ok(PURIFY_CONFIG.FORBID_TAGS.includes(t));
+    for (const t of ['picture', 'source', 'template', 'slot']) assert.ok(PURIFY_CONFIG.FORBID_TAGS.includes(t));
     for (const a of ['srcset', 'sizes']) assert.ok(PURIFY_CONFIG.FORBID_ATTR.includes(a));
   });
 });
