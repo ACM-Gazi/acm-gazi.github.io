@@ -1,4 +1,4 @@
-{{/* Forum sub-header. Actions are filled by mountForumBar() once the session is known. */}}
+{{/* Forum sub-header. Actions are filled by mountForumBar() (called by every page script) once the session is known. */}}
 <section id="forum-bar" class="forum-bar glass-card" aria-label="ACM Forum">
   <a href="/forum/" class="forum-bar-title">
     <span class="forum-bar-kicker">ACM FORUM</span>
@@ -6,7 +6,3 @@
   </a>
   <div id="forum-bar-user" class="forum-bar-actions"></div>
 </section>
-<script type="module">
-  import { mountForumBar } from '/js/forum/client.js';
-  mountForumBar();
-</script>

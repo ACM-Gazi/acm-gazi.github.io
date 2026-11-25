@@ -85,5 +85,5 @@
     {{ partial "forum-majors.html" . }}
     <noscript><p>Profilini görmek için tarayıcında JavaScript&#39;i etkinleştir.</p></noscript>
   </div>
-  <script type="module" src="/js/forum/profilim.js"></script>
+  {{ partial "forum-script.html" "profilim" }}
 {{ end }}

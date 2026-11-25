@@ -14,3 +14,12 @@ unsafe = true
 [params.forum]
 supabaseUrl = "https://jcwxsrilqydhvljlvesj.supabase.co"
 supabaseKey = "sb_publishable_YH_JUmlf31VZgV-SuTRcmg_erQFuXf1"
+
+[build]
+noJSConfigInAssets = true
+
+# Local preview only: the browser must ask whether its copies are still current.
+[[server.headers]]
+for = "/**"
+[server.headers.values]
+Cache-Control = "no-cache"

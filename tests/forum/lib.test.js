@@ -5,8 +5,8 @@ import {
   validateSignup, validateImageFile, excerpt, firstImageUrl, getIdParam,
   formatDate, translateAuthError, storagePathsFromMarkdown, formatMajors, validateProfile,
   validateAvatarFile, safeNext, parseAuthHash, parseVerifyParams, charCount, draftKey, imageObjectPath, coverCropRect, validateCoverFile, summarizePosts, postStatusInfo, removablePostFiles, articleBanner, canDeleteComment, articleDate, olderThanFilter, takePage, avatarCropRect, validatePasswordChange, isOwnFile, isUploadedImage, hasExternalImage, adminError, filterMembers, validateRejectReason, validateName, latestPostsUrl, banMessage, memberActions, takeMath, takeMathBlock,
-} from '../../static/js/forum/lib.js';
-import { renderMarkdown, PURIFY_CONFIG } from '../../static/js/forum/render.js';
+} from '../../assets/js/forum/lib.js';
+import { renderMarkdown, PURIFY_CONFIG } from '../../assets/js/forum/render.js';
 
 const ALLOW = ['istisna@example.com'];
 

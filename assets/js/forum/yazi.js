@@ -1,8 +1,10 @@
 // /forum/yazi/?id=<uuid> — one article with its comments. Readable without an account.
-import { getClient, getSession, getMyProfile, publicUrl, avatarEl, writeProblem } from './client.js';
+import { getClient, getSession, getMyProfile, publicUrl, avatarEl, writeProblem, mountForumBar } from './client.js';
 import { el, showLoading, showError, showEmpty, confirmDialog } from './render.js';
 import { renderArticle, authorInfo } from './article.js';
 import { getIdParam, articleBanner, articleDate, canDeleteComment, validateComment, charCount, formatDate, LIMITS } from './lib.js';
+
+mountForumBar();
 
 const root = document.getElementById('article-root');
 const postId = getIdParam(location.search);

@@ -1,5 +1,5 @@
 // /forum/yeni/ — write a new article or edit one of your own (?id=<uuid>).
-import { getClient, getSession, requireUser, publicUrl, writeProblem } from './client.js';
+import { getClient, getSession, requireUser, publicUrl, writeProblem, mountForumBar } from './client.js';
 import { renderInto, showError } from './render.js';
 import { openArticlePreview } from './article.js';
 import { cropToBlob } from './image.js';
@@ -7,6 +7,8 @@ import {
   validatePost, validateImageFile, getIdParam, charCount, draftKey, imageObjectPath,
   translateAuthError, LIMITS, coverCropRect, validateCoverFile, formatDate, hasExternalImage,
 } from './lib.js';
+
+mountForumBar();
 
 const $ = (sel, root = document) => root.querySelector(sel);
 const root = $('#editor-root');

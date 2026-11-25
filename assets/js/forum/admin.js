@@ -1,9 +1,11 @@
 // /forum/admin/ — review queue, all articles and members. Every rule is enforced by the database; this page is only the UI.
-import { getClient, requireAdmin, publicUrl, avatarEl } from './client.js';
+import { getClient, requireAdmin, publicUrl, avatarEl, mountForumBar } from './client.js';
 import { el, showLoading, showError, confirmDialog, inputDialog } from './render.js';
 import { renderArticle, authorInfo } from './article.js';
 import { deletePost } from './posts.js';
 import { postStatusInfo, articleDate, adminError, filterMembers, validateRejectReason, validateName, formatByline, formatDate, memberActions, isOwnFile } from './lib.js';
+
+mountForumBar();
 
 const $ = (sel) => document.querySelector(sel);
 const root = $('#admin-root');

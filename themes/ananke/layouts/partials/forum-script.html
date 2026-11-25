@@ -1,0 +1,4 @@
+{{/* One script per page with everything it imports, named after its content: a browser can never mix files of two versions. */}}
+{{- $opts := dict "target" "es2020" "minify" hugo.IsProduction "targetPath" (printf "js/forum/%s.js" .) -}}
+{{- $js := resources.Get (printf "js/forum/%s.js" .) | js.Build $opts | fingerprint -}}
+<script type="module" src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}" onerror="document.querySelectorAll('.forum-loading').forEach(function (e) { e.textContent = 'Sayfa yüklenemedi. Sayfayı yenile.'; })"></script>

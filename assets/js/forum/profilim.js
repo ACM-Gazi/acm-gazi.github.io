@@ -1,5 +1,5 @@
 // /forum/profilim/ — own photo, department, class and password.
-import { getClient, requireUser, refreshProfile, avatarEl, writeProblem } from './client.js';
+import { getClient, requireUser, refreshProfile, avatarEl, writeProblem, mountForumBar } from './client.js';
 import { showError } from './render.js';
 import { clearErrors, formError, showFieldErrors, busy, values, initPasswordToggles } from './forms.js';
 import { cropToBlob } from './image.js';
@@ -7,6 +7,8 @@ import {
   YEAR_OPTIONS, validateProfile, validateAvatarFile, validatePasswordChange, avatarCropRect,
   imageObjectPath, isOwnFile, translateAuthError,
 } from './lib.js';
+
+mountForumBar();
 
 const $ = (sel) => document.querySelector(sel);
 const root = $('#profile-root');

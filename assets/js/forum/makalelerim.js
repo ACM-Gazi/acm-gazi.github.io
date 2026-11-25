@@ -1,8 +1,10 @@
 // /forum/makalelerim/ — the member's own articles with their review status.
-import { getClient, getSession, requireUser, publicUrl, writeProblem } from './client.js';
+import { getClient, getSession, requireUser, publicUrl, writeProblem, mountForumBar } from './client.js';
 import { deletePost } from './posts.js';
 import { el, showLoading, showError, showEmpty, confirmDialog } from './render.js';
 import { summarizePosts, postStatusInfo } from './lib.js';
+
+mountForumBar();
 
 const root = document.getElementById('my-posts');
 const FILTERS = [['all', 'Tümü'], ['approved', 'Yayında'], ['pending', 'Beklemede'], ['rejected', 'Reddedildi']];

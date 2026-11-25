@@ -1,8 +1,10 @@
 // /forum/ — published articles, newest first. Readable without an account.
-import { getClient, getSession } from './client.js';
+import { getClient, getSession, mountForumBar } from './client.js';
 import { el, showLoading, showError, showEmpty } from './render.js';
 import { articleCard } from './card.js';
 import { CARD_COLUMNS, olderThanFilter, takePage } from './lib.js';
+
+mountForumBar();
 
 const root = document.getElementById('forum-content');
 const PAGE_SIZE = 10;

@@ -1,7 +1,9 @@
 // /forum/giris/ — log in, sign up, forgot password, set new password.
-import { getClient, getSession } from './client.js';
+import { getClient, getSession, mountForumBar } from './client.js';
 import { clearErrors, formError, showFieldErrors, busy, values, initPasswordToggles } from './forms.js';
 import { YEAR_OPTIONS, validateSignup, translateAuthError, safeNext, parseAuthHash, parseVerifyParams, isAllowedEmail, LIMITS } from './lib.js';
+
+mountForumBar();
 
 const $ = (sel, root = document) => root.querySelector(sel);
 const REDIRECT_TO = location.origin + '/forum/giris/';
