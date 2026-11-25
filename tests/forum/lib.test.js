@@ -4,7 +4,7 @@ import {
   isAllowedEmail, YEAR_OPTIONS, formatByline, validatePost, validateComment,
   validateSignup, validateImageFile, excerpt, firstImageUrl, getIdParam,
   formatDate, translateAuthError, storagePathsFromMarkdown, formatMajors, validateProfile,
-  validateAvatarFile, safeNext, parseAuthHash, parseVerifyParams, charCount, draftKey, imageObjectPath, coverCropRect, validateCoverFile, summarizePosts, postStatusInfo, removablePostFiles, articleBanner, canDeleteComment, articleDate, olderThanFilter, takePage, avatarCropRect, validatePasswordChange, isOwnFile, isUploadedImage, hasExternalImage, adminError, filterMembers, validateRejectReason, validateName, latestPostsUrl, banMessage, memberActions, takeMath, takeMathBlock,
+  validateAvatarFile, safeNext, parseAuthHash, parseVerifyParams, charCount, draftKey, imageObjectPath, coverCropRect, validateCoverFile, summarizePosts, postStatusInfo, removablePostFiles, articleBanner, canDeleteComment, articleDate, olderThanFilter, takePage, avatarCropRect, validatePasswordChange, isOwnFile, isUploadedImage, hasExternalImage, adminError, filterMembers, validateRejectReason, validateName, latestPostsUrl, banMessage, memberActions, takeMath, takeMathBlock, alignLines, alignmentAt, takeAlignMark,
 } from '../../assets/js/forum/lib.js';
 import { renderMarkdown, PURIFY_CONFIG } from '../../assets/js/forum/render.js';
 
@@ -481,5 +481,42 @@ describe('formulas', () => {
     let seen;
     renderMarkdown('a0b', { marked: { parse: (x) => { seen = x; return x; } }, DOMPurify: { sanitize: (x) => x } });
     assert.equal(seen, 'a0b');
+  });
+});
+
+describe('text alignment', () => {
+  const run = (text, from, to, align) => alignLines(text.split('\n'), from, to, align).join('\n');
+  test('paragraph gets a mark on its first line only', () => assert.equal(run('a\nb\n\nc', 1, 1, 'justify'), '{yasla} a\nb\n\nc'));
+  test('several paragraphs', () => assert.equal(run('a\n\nb\n\nc', 0, 2, 'center'), '{ortala} a\n\n{ortala} b\n\nc'));
+  test('mark goes after heading, list and quote signs', () => assert.equal(
+    run('## Başlık\n- bir\n  devam\n1. iki\n> alıntı\n> devam', 0, 5, 'right'),
+    '## {sağa} Başlık\n- {sağa} bir\n  devam\n1. {sağa} iki\n> {sağa} alıntı\n> devam'));
+  test('nested list items and lists in quotes', () => assert.equal(
+    run('* **a:** b\n    * c\n\n> - d\n> ## e', 0, 4, 'justify'), '* {yasla} **a:** b\n    * {yasla} c\n\n> - {yasla} d\n> ## {yasla} e'));
+  test('a new choice replaces the old one', () => assert.equal(run('{ortala} a', 0, 0, 'justify'), '{yasla} a'));
+  test('left removes the mark', () => assert.equal(run('{yasla} a\n\n## {ortala} b', 0, 2, 'left'), 'a\n\n## b'));
+  test('the same choice again removes it', () => assert.equal(run('{yasla} a\n\n{yasla} b', 0, 2, 'justify'), 'a\n\nb'));
+  test('mixed selection becomes the same', () => assert.equal(run('{yasla} a\n\nb', 0, 2, 'justify'), '{yasla} a\n\n{yasla} b'));
+  test('code, formulas, tables, rules and HTML stay untouched', () => {
+    const text = '```\nkod\n\nkod\n```\n\n$$\nx\n$$\n\n$$y$$\n\n| a | b |\n|---|---|\n| 1 | 2 |\n\na | b\n--|--\n1 | 2\n\n---\n\n* * *\n\n<b>x</b>\n\n    kod\n\n~~~\nx\n~~~\n\n- ```\n  kod\n  ```\n\n[ref]: https://a.b';
+    assert.equal(run(text, 0, 60, 'justify'), text);
+  });
+  test('text after a code block or heading starts a new block', () => assert.equal(run('```\nx\n```\na\n# b\nc', 0, 5, 'center'), '```\nx\n```\n{ortala} a\n# {ortala} b\n{ortala} c'));
+  test('underlined headings keep their underline', () => assert.equal(run('Başlık\n---\na', 0, 2, 'center'), '{ortala} Başlık\n---\n{ortala} a'));
+  test('reads the alignment under the cursor', () => {
+    const lines = '{yasla} a\nb\n\n## {ortala} c\n\nd\n\n- {sağa} e'.split('\n');
+    assert.deepEqual([0, 1, 2, 3, 5, 7].map((l) => alignmentAt(lines, l)), ['justify', 'justify', null, 'center', 'left', 'right']);
+  });
+  test('mark at the start of a text', () => {
+    assert.deepEqual(takeAlignMark('{yasla} metin'), { align: 'justify', rest: 'metin' });
+    assert.deepEqual(takeAlignMark(' {saga}metin'), { align: 'right', rest: 'metin' });
+    for (const t of ['metin {yasla}', '{sol} x', '{YASLA', '']) assert.equal(takeAlignMark(t), null, t);
+  });
+  test('cards do not show marks', () => assert.equal(excerpt('## {ortala} Başlık\n\n{yasla} Metin\n\n- {sağa} madde'), 'Başlık Metin - madde'));
+  test('long texts are quick', () => {
+    const lines = 'satır\n\n'.repeat(12000).split('\n');
+    const started = Date.now();
+    for (let i = 0; i < 20; i++) alignmentAt(lines, i * 2);
+    assert.ok(Date.now() - started < 2000);
   });
 });

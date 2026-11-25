@@ -132,6 +132,87 @@ export function takeMathBlock(src) {
   return rest ? { ...math, raw: indent + math.raw + rest[0] } : undefined;
 }
 
+// ---------- Text alignment ----------
+// A paragraph, heading or list item is aligned by a word at its start: {ortala}, {sağa} or {yasla} (justified).
+// Nothing means left. The word is removed when the article is shown.
+const ALIGN_WORDS = { center: '{ortala}', right: '{sağa}', justify: '{yasla}' };
+const ALIGN_MARK = /^[ \t]*\{(ortala|sağa|saga|yasla)\}[ \t]*/;
+
+export function takeAlignMark(text) {
+  const m = ALIGN_MARK.exec(text);
+  if (!m) return null;
+  const align = { ortala: 'center', yasla: 'justify' }[m[1]] ?? 'right';
+  return { align, rest: text.slice(m[0].length) };
+}
+
+const BLOCK_SIGNS = /^(?:[ \t]{0,3}>[ \t]?|[ \t]*(?:[-*+]|\d{1,9}[.)])[ \t]+(?:\[[ xX]\][ \t]+)?|[ ]{0,3}#{1,6}[ \t]+)/;
+const RULE = /^[ \t>]*(?:(?:-[ \t]*){3,}|(?:\*[ \t]*){3,}|(?:_[ \t]*){3,})$/;
+const UNDERLINE = /^[ \t>]*(?:=+|-+)[ \t]*$/;
+const TABLE_RULE = /^[ \t>]*\|?[ \t]*:?-+:?[ \t]*(?:\|[ \t]*:?-+:?[ \t]*)*\|?[ \t]*$/;
+
+/** Every text block as { start, end, at }: first and last line, and the place in the first line where its text begins. */
+function textBlocks(lines) {
+  const blocks = [];
+  let fence = null; // closing sign of an open code block
+  let math = false;
+  let table = false;
+  let open = null; // block that the next line may continue
+  lines.forEach((raw, i) => {
+    const line = raw.replace(/\r$/, '');
+    if (fence) {
+      if (line.trim().startsWith(fence)) fence = null;
+      return;
+    }
+    if (math) {
+      if (line.includes('$$')) math = false;
+      return;
+    }
+    let at = 0;
+    for (let m; (m = BLOCK_SIGNS.exec(line.slice(at))); ) at += m[0].length;
+    const text = line.slice(at);
+    const quoteOnly = /^[ \t]{0,3}>/.test(line) && /^[ \t>]*$/.test(line.slice(0, at));
+    if (!text.trim()) { open = null; table = false; return; }
+    if (open && UNDERLINE.test(line)) { open = null; return; } // underlined heading
+    if (RULE.test(line)) { open = null; table = false; return; }
+    const code = /^[ \t]*(`{3,}|~{3,})/.exec(text);
+    if (code) { fence = code[1]; open = null; return; }
+    if (text.trimStart().startsWith('$$')) {
+      math = !text.trimStart().slice(2).includes('$$');
+      open = null;
+      return;
+    }
+    if (table) return;
+    if (text.includes('|') && TABLE_RULE.test(lines[i + 1] ?? '') && (lines[i + 1] ?? '').includes('-')) { table = true; open = null; return; }
+    const heading = /#{1,6}[ \t]+$/.test(line.slice(0, at));
+    const sign = at > 0 && !quoteOnly;
+    if (!sign && open && (!quoteOnly || open.quote)) { open.end = i; return; } // a further line of the same paragraph
+    if (!sign && (/^(?: {4}|\t)/.test(line) || /^[ \t]*<|^ {0,3}\[[^\]]+\]:/.test(text))) { open = null; return; } // code, HTML, link list
+    const block = { start: i, end: i, at: at + (text.length - text.trimStart().length), quote: quoteOnly };
+    blocks.push(block);
+    open = heading ? null : block;
+  });
+  return blocks;
+}
+
+/** The lines with every block between two lines aligned. Choosing what is already there sets it back to left. */
+export function alignLines(lines, from, to, align) {
+  const chosen = textBlocks(lines).filter((b) => b.start <= to && b.end >= from);
+  const same = chosen.every((b) => takeAlignMark(lines[b.start].slice(b.at))?.align === align);
+  const word = same ? undefined : ALIGN_WORDS[align];
+  const out = [...lines];
+  for (const { start, at } of chosen) {
+    const text = lines[start].slice(at);
+    out[start] = lines[start].slice(0, at) + (word ? `${word} ` : '') + (takeAlignMark(text)?.rest ?? text);
+  }
+  return out;
+}
+
+/** Alignment of the block on a line; null where there is no text to align. */
+export function alignmentAt(lines, line) {
+  const block = textBlocks(lines).find((b) => b.start <= line && b.end >= line);
+  return block ? takeAlignMark(lines[block.start].slice(block.at))?.align ?? 'left' : null;
+}
+
 export function excerpt(markdown, max = 200) {
   const text = String(markdown ?? '')
     .replace(/```[\s\S]*?```/g, ' ')          // code fences
@@ -142,6 +223,7 @@ export function excerpt(markdown, max = 200) {
     .replace(/<[^>]*>/g, ' ')                   // html tags
     .replace(/^\s{0,3}#{1,6}\s+/gm, '')         // heading marks
     .replace(/^\s{0,3}>\s?/gm, '')              // quotes
+    .replace(/\{(?:ortala|sağa|saga|yasla)\}[ \t]*/g, '') // alignment
     .replace(/[*_~`]+/g, '')                    // emphasis, inline code
     .replace(/\s+/g, ' ')
     .trim();

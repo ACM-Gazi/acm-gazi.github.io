@@ -1,5 +1,5 @@
 // Markdown -> safe HTML, plus small shared DOM helpers.
-import { isUploadedImage, takeMath, takeMathBlock } from './lib.js';
+import { isUploadedImage, takeMath, takeMathBlock, takeAlignMark } from './lib.js';
 
 export const PURIFY_CONFIG = {
   USE_PROFILES: { html: true },
@@ -80,9 +80,22 @@ function drawFormulas(spans) {
   }
 }
 
-/** Puts an article text into an element: safe HTML, then formulas. */
+/** Turns {ortala}, {sağa} and {yasla} at the start of a block into its alignment. */
+function alignBlocks(node) {
+  for (const block of node.querySelectorAll('p, h1, h2, h3, h4, h5, h6, li')) {
+    let first = block.firstChild;
+    while (first?.nodeType === Node.TEXT_NODE && !first.data.trim()) first = first.nextSibling;
+    const mark = first?.nodeType === Node.TEXT_NODE ? takeAlignMark(first.data.trimStart()) : null;
+    if (!mark) continue;
+    first.data = mark.rest;
+    block.classList.add(`forum-align-${mark.align}`);
+  }
+}
+
+/** Puts an article text into an element: safe HTML, then alignment and formulas. */
 export function renderInto(node, md) {
   node.innerHTML = renderMarkdown(md); // sanitized by DOMPurify
+  alignBlocks(node);
   if (!formulas.length) return;
   const found = formulas;
   const texts = [];

@@ -652,6 +652,16 @@
   outline-offset: 1px;
 }
 
+.forum-editor .editor-toolbar button svg {
+  display: block;
+}
+
+.forum-editor .cm-s-easymde span.cm-align-mark {
+  opacity: 0.45;
+  font-size: 12px;
+  font-weight: normal;
+}
+
 .forum-editor .editor-toolbar i.separator {
   height: 24px;
   margin: 0 4px;
@@ -682,7 +692,7 @@
 }
 
 .forum-editor .CodeMirror-selected,
-.forum-editor .CodeMirror-focused .CodeMirror-selected,
+.forum-editor .EasyMDEContainer .CodeMirror-focused .CodeMirror-selected,
 .forum-editor .CodeMirror-line::selection,
 .forum-editor .CodeMirror-line > span::selection,
 .forum-editor .CodeMirror-line > span > span::selection {
@@ -752,6 +762,23 @@
 .forum-prose h6 {
   margin: 1.4em 0 0.5em;
   line-height: 1.3;
+}
+
+/* Alignment chosen in the editor. */
+.forum-prose .forum-align-center { text-align: center; }
+.forum-prose .forum-align-right { text-align: right; }
+.forum-prose p.forum-align-justify,
+.forum-prose li.forum-align-justify { text-align: justify; hyphens: auto; } /* never headings: few words, wide gaps */
+.forum-prose .forum-align-right > img { margin-right: 0; }
+.forum-prose li.forum-align-center,
+.forum-prose li.forum-align-right { list-style-position: inside; }
+
+@media only screen and (max-width: 600px) {
+  /* Short lines: justified text would have wide gaps between the words. */
+  .forum-prose p.forum-align-justify,
+  .forum-prose li.forum-align-justify { text-align: left; }
+
+  .forum-editor .editor-toolbar i.separator { display: none; }
 }
 
 /* Formulas. A wide one scrolls inside its own line; nothing a formula draws can leave the article. */

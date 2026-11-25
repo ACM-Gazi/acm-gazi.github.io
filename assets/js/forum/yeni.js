@@ -5,7 +5,7 @@ import { openArticlePreview } from './article.js';
 import { cropToBlob } from './image.js';
 import {
   validatePost, validateImageFile, getIdParam, charCount, draftKey, imageObjectPath,
-  translateAuthError, LIMITS, coverCropRect, validateCoverFile, formatDate, hasExternalImage,
+  translateAuthError, LIMITS, coverCropRect, validateCoverFile, formatDate, hasExternalImage, alignLines, alignmentAt,
 } from './lib.js';
 
 mountForumBar();
@@ -14,6 +14,39 @@ const $ = (sel, root = document) => root.querySelector(sel);
 const root = $('#editor-root');
 const postId = getIdParam(location.search);
 const fmt = (n) => n.toLocaleString('tr-TR');
+
+// Title and start of a line of the given width, for the four icons known from Word.
+const ALIGN = {
+  left: ['Sola yasla', () => 2],
+  center: ['Ortala', (w) => 9 - w / 2],
+  right: ['Sağa yasla', (w) => 16 - w],
+  justify: ['İki yana yasla', () => 2],
+};
+function alignIcon(align) {
+  const lines = [14, 9, 14, 9].map((w, i) => [align === 'justify' ? 14 : w, 4 + i * 3.4]);
+  const path = lines.map(([w, y]) => `M${ALIGN[align][1](w)} ${y}h${w}`).join('');
+  return `<svg aria-hidden="true" width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="${path}"/></svg>`;
+}
+
+/** Aligns the selected paragraphs (or the one with the cursor). */
+function alignSelection(cm, align) {
+  const lines = cm.getValue().split('\n');
+  const [from, to] = [cm.getCursor('from'), cm.getCursor('to')];
+  const last = to.line > from.line && to.ch === 0 ? to.line - 1 : to.line;
+  const out = alignLines(lines, from.line, last, align);
+  cm.operation(() => {
+    out.forEach((text, i) => {
+      if (text === lines[i]) return;
+      // Only the changed part is replaced, so the cursor and the selection stay where they are.
+      let start = 0;
+      while (start < Math.min(text.length, lines[i].length) && text[start] === lines[i][start]) start += 1;
+      let end = 0;
+      while (end < Math.min(text.length, lines[i].length) - start && text[text.length - 1 - end] === lines[i][lines[i].length - 1 - end]) end += 1;
+      cm.replaceRange(text.slice(start, text.length - end), { line: i, ch: start }, { line: i, ch: lines[i].length - end });
+    });
+  });
+  cm.focus();
+}
 
 const storage = {
   get(key) { try { return JSON.parse(localStorage.getItem(key)); } catch { return null; } },
@@ -68,6 +101,7 @@ async function start() {
   const form = $('#post-form');
   const titleInput = $('#post-title');
   const formError = $('.forum-form-error', form);
+  const staysPublished = post?.status === 'approved' && profile?.role === 'admin'; // the database keeps an admin's article published
   const key = draftKey(userId, postId);
   storage.remove('acm-forum-draft:new'); // old key, shared by every account
   let saved = { title: post?.title ?? '', body: post?.body_md ?? '', cover: post?.cover_path ?? null };
@@ -79,7 +113,10 @@ async function start() {
     document.title = 'Yazıyı düzenle | ACM Gazi';
     $('#cancel-btn').href = '/forum/makalelerim/';
     $('#submit-btn').textContent = 'Değişiklikleri onaya gönder';
-    if (post.status === 'approved') notice('Bu yazı yayında. Düzenleme sonrası yazı tekrar onaya gider ve onaylanana kadar yayından kalkar.', 'warning');
+    if (staysPublished) {
+      $('#submit-btn').textContent = 'Değişiklikleri kaydet';
+      notice('Bu yazı yayında. Admin olduğun için değişiklikler hemen yayınlanır.', 'info');
+    } else if (post.status === 'approved') notice('Bu yazı yayında. Düzenleme sonrası yazı tekrar onaya gider ve onaylanana kadar yayından kalkar.', 'warning');
   }
 
   // ---------- Image upload (toolbar button, drag & drop, paste) ----------
@@ -145,11 +182,34 @@ async function start() {
       { name: 'link', action: EasyMDE.drawLink, icon: '<span aria-hidden="true">🔗</span>', title: 'Bağlantı ekle' },
       { name: 'code', action: EasyMDE.toggleCodeBlock, icon: '<span aria-hidden="true">&lt;/&gt;</span>', title: 'Kod' },
       '|',
+      ...Object.entries(ALIGN).map(([align, [title]]) => (
+        { name: `align-${align}`, action: (ed) => alignSelection(ed.codemirror, align), icon: alignIcon(align), title })),
+      '|',
       { name: 'upload-image', action: () => imageInput.click(), icon: label('🖼', 'Görsel ekle'), title: 'Görsel ekle' },
       { name: 'preview', action: EasyMDE.togglePreview, icon: label('👁', 'Önizle'), title: 'Önizle', noDisable: true },
       { name: 'side-by-side', action: EasyMDE.toggleSideBySide, icon: label('⇆', 'Yan yana'), title: 'Yan yana göster', noDisable: true, noMobile: true },
     ],
   });
+  // Alignment words are shown small and dim; the button of the current paragraph's alignment is lit.
+  editor.codemirror.addOverlay({
+    token(stream) {
+      if (stream.match(/^\{(?:ortala|sağa|saga|yasla)\}/)) return 'align-mark';
+      stream.next();
+      stream.eatWhile((c) => c !== '{');
+      return null;
+    },
+  });
+  const showAlignment = () => {
+    const current = alignmentAt(editor.value().split('\n'), editor.codemirror.getCursor().line);
+    for (const align of Object.keys(ALIGN)) {
+      const button = editor.toolbarElements?.[`align-${align}`];
+      button?.classList.toggle('active', align === current);
+      button?.setAttribute('aria-pressed', String(align === current));
+    }
+  };
+  editor.codemirror.on('cursorActivity', showAlignment);
+  editor.codemirror.on('change', showAlignment);
+
   // Own file picker: EasyMDE's adds a listener per click, so a cancelled pick inserted the next image twice,
   // and picking the same file again did nothing.
   const imageInput = $('.imageInput', editor.gui.toolbar);
@@ -317,7 +377,7 @@ async function start() {
       const replaced = saved.cover && saved.cover !== coverPath ? [saved.cover] : [];
       saved = { title: titleInput.value, body: editor.value(), cover: coverPath };
       await removeFiles(replaced); // awaited: leaving the page would cancel the request
-      location.href = '/forum/makalelerim/?gonderildi=1';
+      location.href = `/forum/makalelerim/?gonderildi=${staysPublished ? 'yayinda' : '1'}`;
     } catch (err) {
       formError.textContent = await writeProblem(translateAuthError(err?.message));
       formError.hidden = false;

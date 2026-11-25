@@ -112,8 +112,9 @@ async function load() {
   }
 }
 
-if (new URLSearchParams(location.search).get('gonderildi') === '1') {
-  notice('Yazın onaya gönderildi. Admin onayından sonra yayınlanacak.');
+const sent = new URLSearchParams(location.search).get('gonderildi');
+if (sent) {
+  notice(sent === 'yayinda' ? 'Değişiklikler kaydedildi ve yayında.' : 'Yazın onaya gönderildi. Admin onayından sonra yayınlanacak.');
   history.replaceState(null, '', location.pathname);
 }
 load();
